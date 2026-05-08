@@ -3488,14 +3488,17 @@ function go(id,el){
   G('bc-ic').textContent=PM[id]?PM[id].ic:'📝';
   G('bc-ttl').textContent=PM[id]?PM[id].ttl:id;
   G('new-btn').style.display=(id==='home'||id==='settings')?'none':'flex';
-  // FAB mirrors new-btn on mobile
   const fab=G('mob-fab');if(fab)fab.style.display=(id==='home'||id==='settings')?'none':'flex';
   closeSB();
-  renderAll();
-  if(id==='journal')renderJournal();
-  if(id==='planning'){setTimeout(()=>wcalRender(),50);}
   updateBN(id);
-  setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
+  // Defer heavy rendering until after the browser paints the panel switch
+  // and the sidebar close animation can run (transition is 220ms)
+  setTimeout(()=>{
+    renderAll();
+    if(id==='journal')renderJournal();
+    if(id==='planning')wcalRender();
+    setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
+  },0);
 }
 
 function updateBN(id){
@@ -8062,38 +8065,42 @@ function hardRefresh(){
   const arrow = indicator ? indicator.querySelector('.ptr-arrow') : null;
   if(!content || !indicator) return;
 
-  const THRESHOLD = 80;   // px to pull before triggering
-  const TRIGGER   = 130;  // px where it locks into "release to refresh"
+  const THRESHOLD = 60;   // px of dampened pull before showing indicator
+  const TRIGGER   = 200;  // px of dampened pull to lock "release to refresh" — high to prevent accidental triggers
   let startY = 0;
-  let currentY = 0;
   let pulling = false;
   let triggered = false;
   let rafId = null;
 
+  function reset(){
+    pulling = false; triggered = false;
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    indicator.classList.remove('visible','ready','spinning');
+    if(arrow) arrow.style.transform = '';
+    if(label) label.textContent = 'Pull down to refresh';
+  }
+
   function onTouchStart(e){
-    // Only activate when scrolled to very top
-    if(content.scrollTop > 2) return;
+    reset(); // always start clean
+    if(content.scrollTop > 2) return; // only at the very top
     startY = e.touches[0].clientY;
     pulling = true;
-    triggered = false;
   }
 
   function onTouchMove(e){
     if(!pulling) return;
-    currentY = e.touches[0].clientY;
-    const delta = currentY - startY;
+    const delta = e.touches[0].clientY - startY;
     if(delta <= 0){ reset(); return; }
 
-    // Prevent native scroll bounce while pulling
-    if(content.scrollTop <= 0 && delta > 0){
+    // Only block native scroll if we're actually pulling far enough to show the indicator
+    const pull = Math.min(delta * 0.45, 220);
+    if(pull > THRESHOLD && content.scrollTop <= 0){
       e.preventDefault();
     }
 
-    const pull = Math.min(delta * 0.45, 140); // dampen movement
-
     if(rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(()=>{
-      if(pull > 8){
+      if(pull > THRESHOLD){
         indicator.classList.add('visible');
         if(arrow) arrow.style.transform = `rotate(${Math.min(pull/TRIGGER*180,180)}deg)`;
       }
@@ -8113,51 +8120,21 @@ function hardRefresh(){
     if(!pulling) return;
     pulling = false;
     if(triggered){
-      // Lock in spinning state then refresh
+      // Soft refresh — re-render from stored state without reloading the page
       indicator.classList.add('spinning','visible');
       if(label) label.textContent = 'Refreshing…';
-      setTimeout(()=>hardRefresh(), 600);
+      setTimeout(()=>{
+        renderAll();
+        reset();
+      }, 500);
     } else {
       reset();
     }
   }
 
-  function reset(){
-    pulling = false; triggered = false;
-    indicator.classList.remove('visible','ready','spinning');
-    if(arrow) arrow.style.transform = '';
-    if(label) label.textContent = 'Pull down to refresh';
-  }
-
-  // Mouse support for desktop testing
-  let mouseDown = false, mouseStartY = 0;
-  function onMouseDown(e){
-    if(content.scrollTop > 2) return;
-    mouseDown = true; mouseStartY = e.clientY;
-  }
-  function onMouseMove(e){
-    if(!mouseDown) return;
-    const delta = e.clientY - mouseStartY;
-    if(delta < 20) return;
-    const pull = Math.min(delta * 0.45, 140);
-    indicator.classList.add('visible');
-    if(arrow) arrow.style.transform = `rotate(${Math.min(pull/TRIGGER*180,180)}deg)`;
-    if(pull >= TRIGGER){ triggered=true; indicator.classList.add('ready'); if(label) label.textContent='Release to refresh'; }
-    else { triggered=false; indicator.classList.remove('ready'); if(label) label.textContent='Pull down to refresh'; }
-  }
-  function onMouseUp(){
-    if(!mouseDown) return;
-    mouseDown = false;
-    if(triggered){ indicator.classList.add('spinning','visible'); if(label) label.textContent='Refreshing…'; setTimeout(()=>hardRefresh(),600); }
-    else reset();
-  }
-
   content.addEventListener('touchstart', onTouchStart, {passive:true});
   content.addEventListener('touchmove',  onTouchMove,  {passive:false});
   content.addEventListener('touchend',   onTouchEnd,   {passive:true});
-  content.addEventListener('mousedown',  onMouseDown);
-  window.addEventListener('mousemove',   onMouseMove);
-  window.addEventListener('mouseup',     onMouseUp);
 })();
 
 // ── AUTO DEBUGGER ──
