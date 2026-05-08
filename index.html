@@ -3431,6 +3431,7 @@ if(!S.liveCategories)S.liveCategories=[];
 if(!S.liveSpend)S.liveSpend=[];
 if(!S.journal)S.journal=[];
 if(!S.timeBlocks)S.timeBlocks=[];
+if(!S.financeSettings)S.financeSettings={grandTotal:0};
 // Migrate existing bills: add payments{}, ds, notes fields
 S.bills.forEach(b=>{
   if(!b.payments)b.payments={};
@@ -4255,27 +4256,31 @@ function renderFinOverview(){
   const periodLabel=finPeriod==='monthly'?'mo':finPeriod==='quarterly'?'qtr':'yr';
 
   // ── KPI CARDS ──
+  const gt=S.financeSettings.grandTotal||0;
+  const monthlyBillTotal=S.bills.reduce((s,b)=>s+b.a,0);
+  const afterBills=gt-monthlyBillTotal;
+  const afterEverything=gt-monthlyBillTotal-pExp;
   const kpiEl=G('fd-kpis');
   if(kpiEl)kpiEl.innerHTML=`
-    <div class="fd-kpi income" style="cursor:pointer;" title="View income transactions" onclick="openTransTab('income')">
-      <div class="fd-kpi-label">Income ↗</div>
-      <div class="fd-kpi-value up">${fmt(pInc)}</div>
-      <div class="fd-kpi-sub"><span class="fd-kpi-badge ${incDelta>=0?'up':'dn'}">${incDelta>=0?'↑':'↓'} ${fmt(Math.abs(incDelta))} vs last ${periodLabel}</span></div>
+    <div class="fd-kpi income" style="cursor:pointer;position:relative;" title="Click to set your grand total — your actual available balance or expected income" onclick="openGrandTotalEditor()">
+      <div class="fd-kpi-label">Grand Total <span style="font-size:9px;opacity:0.6;">✎ tap to set</span></div>
+      <div class="fd-kpi-value" style="color:var(--t);">${gt>0?fmt(gt):'—'}</div>
+      <div class="fd-kpi-sub" style="color:var(--ts);">${gt>0?'Your starting balance':'Set your balance to see On Hand'}</div>
     </div>
     <div class="fd-kpi expense" style="cursor:pointer;" title="View expense transactions" onclick="openTransTab('expense')">
-      <div class="fd-kpi-label">Expenses ↗</div>
-      <div class="fd-kpi-value dn">${fmt(pExp)}</div>
-      <div class="fd-kpi-sub">${pFin.filter(f=>f.t==='expense').length} transactions</div>
+      <div class="fd-kpi-label">Monthly Bills</div>
+      <div class="fd-kpi-value dn">${fmt(monthlyBillTotal)}</div>
+      <div class="fd-kpi-sub">${S.bills.length} recurring bill${S.bills.length!==1?'s':''}</div>
     </div>
-    <div class="fd-kpi net" style="cursor:pointer;" title="View all transactions" onclick="openTransTab('all')">
-      <div class="fd-kpi-label">Net ↗</div>
+    <div class="fd-kpi net">
+      <div class="fd-kpi-label">After Bills</div>
+      <div class="fd-kpi-value ${gt>0?(afterBills>=0?'up':'dn'):''}">${gt>0?fmtS(afterBills):'—'}</div>
+      <div class="fd-kpi-sub">${gt>0?(afterBills>=0?'💚 Bills covered':'🔴 Shortfall of '+fmt(Math.abs(afterBills))):'Set Grand Total above'}</div>
+    </div>
+    <div class="fd-kpi savings" style="cursor:pointer;" title="View all transactions" onclick="openTransTab('all')">
+      <div class="fd-kpi-label">This Period · Net</div>
       <div class="fd-kpi-value ${pNet>=0?'up':'dn'}">${fmtS(pNet)}</div>
-      <div class="fd-kpi-sub"><span class="fd-kpi-badge ${netDelta>=0?'up':'dn'}">${netDelta>=0?'↑':'↓'} ${fmt(Math.abs(netDelta))} vs last ${periodLabel}</span></div>
-    </div>
-    <div class="fd-kpi savings">
-      <div class="fd-kpi-label">Savings rate</div>
-      <div class="fd-kpi-value ${savingsRate>=20?'up':''}">${pInc>0?savingsRate+'%':'—'}</div>
-      <div class="fd-kpi-sub">${savingsRate>=30?'🔥 Excellent':savingsRate>=20?'👍 On track':savingsRate>0?'📊 Low':'⚠️ Negative'}</div>
+      <div class="fd-kpi-sub">${fmt(pInc)} in · ${fmt(pExp)} out</div>
     </div>`;
 
   // ── CHART ──
@@ -4657,6 +4662,16 @@ function closeFdDayModal(){
   fddType='expense';
 }
 
+function openGrandTotalEditor(){
+  const cur=S.financeSettings.grandTotal||0;
+  const val=prompt('Enter your Grand Total — your actual available balance or total income on hand.\n\nThis is the number your bills will be deducted from to show what you have After Bills.',cur>0?cur:'');
+  if(val===null)return;
+  const n=parseFloat(val.replace(/[$,]/g,''));
+  if(isNaN(n)||n<0){alert('Please enter a valid dollar amount.');return;}
+  S.financeSettings.grandTotal=n;
+  save();renderFinOverview();
+}
+
 function renderFinance(){
   const inc=S.finance.filter(f=>f.t==='income').reduce((s,f)=>s+f.a,0);
   const exp=S.finance.filter(f=>f.t==='expense').reduce((s,f)=>s+f.a,0);
@@ -4674,12 +4689,17 @@ function renderFinance(){
   const unpaidBillsCount=S.bills.filter(b=>getBillStatus(b)==='Unpaid').length;
   const activeDebtsCount=(S.otherPayments||[]).filter(p=>p.s!=='paid').length;
 
-  // Modern header meta — live this-month stats
+  // Header meta — show After Bills (grand total - monthly bills) or fall back to this-month net
   const hm=G('fin-header-meta');
+  const gtHdr=S.financeSettings.grandTotal||0;
+  const billsTotalHdr=S.bills.reduce((s,b)=>s+b.a,0);
+  const afterBillsHdr=gtHdr-billsTotalHdr;
   if(hm)hm.innerHTML=`
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
-      <div style="font-size:11px;font-weight:600;color:var(--ts);text-align:right;">This month</div>
-      <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;color:${mNet>=0?'var(--green)':'var(--red)'};">${mNet>=0?'+':''}${fmt(mNet)}</div>
+      <div style="font-size:11px;font-weight:600;color:var(--ts);text-align:right;">${gtHdr>0?'After Bills':'This month'}</div>
+      <div style="font-size:18px;font-weight:800;letter-spacing:-0.02em;color:${gtHdr>0?(afterBillsHdr>=0?'var(--green)':'var(--red)'):(mNet>=0?'var(--green)':'var(--red)')};cursor:${gtHdr<=0?'pointer':'default'};" onclick="${gtHdr<=0?'openGrandTotalEditor()':''}">
+        ${gtHdr>0?(afterBillsHdr>=0?'+':'')+fmt(afterBillsHdr):(mNet>=0?'+':'')+fmt(mNet)}
+      </div>
       <div style="display:flex;gap:8px;font-size:11px;color:var(--ts);">
         ${unpaidBillsCount>0?`<span style="color:var(--amber);font-weight:600;">${unpaidBillsCount} bill${unpaidBillsCount>1?'s':''} due</span>`:''}
         ${activeDebtsCount>0?`<span style="color:var(--red);font-weight:600;">${activeDebtsCount} debt${activeDebtsCount>1?'s':''}</span>`:''}
