@@ -5677,8 +5677,6 @@ function addHabitStack(){
   S.habitStacks.push({id:Date.now(),anchorId,anchorName:anchor.n,newHabit:newH,t:G('hs-time').value,streak:0,created:today});
   G('hs-new').value='';G('hs-time').value='';
   save();renderHabitStacks();
-  renderPlanInlineTodos();
-  renderPlanInlineProjects();
 }
 function togStack(id){
   if(!S.hslog)S.hslog={};
@@ -6297,8 +6295,7 @@ function doImport(e){
       });
       ['sidebarOrder'].forEach(field=>{if(incoming[field]!==undefined)S[field]=incoming[field];});
 
-      save();renderAll();
-      showBackupToast(meta?'✓ Synced from '+meta.exportedDate:'✓ Import complete');
+      save();setTimeout(()=>{renderAll();showBackupToast(meta?'✓ Synced from '+meta.exportedDate:'✓ Import complete');},50);
     }catch(err){
       alert('Could not read backup file. Please use a valid Life OS JSON backup.');
     }
@@ -8108,7 +8105,7 @@ function saveEM(){
 }
 
 // ── RENDER ALL ──
-function renderAll(){renderFinance();renderTrades();renderGoals();renderTodos();renderHabits();renderHabitStacks();renderHome();updateSidebarStats();renderRecurring();renderProjects();renderSettings();renderRoutines();renderMilestones();renderWantsNeeds();renderSavingsAccounts();}
+function renderAll(){renderFinance();renderTrades();renderGoals();renderTodos();renderHabits();renderHabitStacks();renderHome();updateSidebarStats();renderRecurring();renderProjects();renderSettings();renderRoutines();renderMilestones();renderWantsNeeds();renderSavingsAccounts();renderPlanInlineTodos();renderPlanInlineProjects();}
 renderAll();
 // Init QA money category dropdown
 setTimeout(()=>{if(typeof buildCatSelect==='function')buildCatSelect('qa-money-cat','expense');},80);
@@ -10590,6 +10587,7 @@ function planDeleteTodo(id){
   renderPlanInlineTodos();
   if(typeof renderTodos === 'function') renderTodos();
 }
+function escHtml(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
 function renderPlanInlineTodos(){
   const el = G('plan-inline-todos');
   const cnt = G('plan-inline-td-count');
