@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -2331,7 +2332,7 @@ html,body{background:var(--bg);}
 .edit-modal,.nf,.chart-box,.proj-card,.kanban-col,.summary-bar,.hero-stat{border-radius:16px;}
 
 /* ── WEEKLY CALENDAR (wcal) ── */
-.wcal-wrap{display:flex;flex-direction:column;height:calc(100vh - 200px);min-height:400px;}
+.wcal-wrap{display:flex;flex-direction:column;height:520px;min-height:360px;}
 .wcal-header{display:flex;align-items:center;gap:8px;padding:8px 0 10px;flex-shrink:0;}
 .wcal-nav-btn{background:var(--bg-card);border:1px solid var(--bd);border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--t);transition:background .15s;}
 .wcal-nav-btn:hover{background:var(--blue);color:#fff;}
@@ -2412,6 +2413,36 @@ html,body{background:var(--bg);}
 .journal-entry-section{margin-top:10px;}
 .journal-entry-section-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ts);margin-bottom:4px;}
 .journal-entry-section-text{font-size:13px;color:var(--t);line-height:1.5;white-space:pre-wrap;}
+
+/* ── GOOGLE CALENDAR INTEGRATION ── */
+.gcal-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:12px;flex-wrap:wrap;}
+.gcal-banner-status{font-size:12px;font-weight:500;color:var(--ts);flex:1;min-width:200px;}
+.gcal-connect-btn{font-size:12px;font-weight:600;padding:6px 14px;border:none;border-radius:6px;cursor:pointer;background:#4285f4;color:#fff;transition:opacity .15s;white-space:nowrap;}
+.gcal-connect-btn:hover{opacity:.85;}
+.wcal-block.gcal{background:#4285f4;color:#fff;border-left:3px solid #1a56db;opacity:.9;}
+.wcal-block.gcal-allday{position:relative;left:auto;right:auto;top:auto;height:auto;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;background:#4285f4;color:#fff;margin:1px 2px;}
+/* ── PLANNING PAGE INLINE SECTIONS ── */
+.plan-section-hdr{font-size:16px;font-weight:700;color:var(--t);margin:28px 0 10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--bd);padding-bottom:8px;}
+.plan-section-hdr .plan-section-count{font-size:12px;font-weight:400;color:var(--ts);margin-left:auto;}
+.plan-inline-box{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 20px;margin-bottom:8px;}
+.plan-todo-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bg-a);}
+.plan-todo-item:last-child{border-bottom:none;}
+.plan-todo-check{width:18px;height:18px;border-radius:50%;border:2px solid var(--bd);cursor:pointer;flex-shrink:0;margin-top:1px;transition:background .15s,border-color .15s;appearance:none;-webkit-appearance:none;}
+.plan-todo-check:checked{background:var(--green);border-color:var(--green);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 10 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 4L4 7L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;}
+.plan-todo-text{flex:1;font-size:13px;color:var(--t);line-height:1.4;}
+.plan-todo-text.done-txt{text-decoration:line-through;color:var(--ts);}
+.plan-todo-meta{font-size:11px;color:var(--th);margin-top:2px;}
+.plan-proj-mini{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:6px;cursor:pointer;transition:box-shadow .15s;}
+.plan-proj-mini:hover{box-shadow:var(--sh-md);}
+.plan-proj-mini-name{font-size:13px;font-weight:700;color:var(--t);}
+.plan-proj-mini-meta{font-size:11px;color:var(--ts);display:flex;align-items:center;gap:8px;}
+.plan-proj-mini-bar{height:4px;background:var(--bg-a);border-radius:2px;overflow:hidden;}
+.plan-proj-mini-prog{height:4px;background:var(--green);border-radius:2px;transition:width .3s;}
+.plan-projs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+/* GCal Setup Modal */
+.gcal-setup-modal{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:none;align-items:center;justify-content:center;}
+.gcal-setup-modal.open{display:flex;}
+.gcal-setup-box{background:var(--bg-card);border-radius:var(--rl);padding:24px;max-width:500px;width:90%;box-shadow:var(--sh-lg);}
 </style>
 </head>
 <body>
@@ -2915,6 +2946,13 @@ html,body{background:var(--bg);}
 
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
+        <!-- Google Calendar Connection Banner -->
+        <div class="gcal-banner" id="gcal-banner">
+          <span style="font-size:20px;">📅</span>
+          <div class="gcal-banner-status" id="gcal-status-text">Connect your Google Calendar to see your events alongside time blocks.</div>
+          <button class="gcal-connect-btn" id="gcal-connect-btn" onclick="gcalConnect()">Connect Google Calendar</button>
+          <button class="btn" onclick="gcalShowSetup()" style="font-size:11px;padding:5px 10px;">⚙ Setup</button>
+        </div>
         <div class="wcal-wrap">
           <div class="wcal-header">
             <button class="btn" id="wcal-prev" onclick="wcalNavWeek(-1)">← Prev</button>
@@ -2977,6 +3015,46 @@ html,body{background:var(--bg);}
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- ── PERSONAL TASKS & TODOS ── -->
+      <div class="plan-section-hdr">
+        ✅ Personal Tasks &amp; Todos
+        <span class="plan-section-count" id="plan-inline-td-count"></span>
+      </div>
+      <div class="plan-inline-box">
+        <div class="fr" style="margin-bottom:12px;gap:8px;">
+          <input class="fi" type="text" id="plan-td-t" placeholder="Add a task..." onkeydown="if(event.key==='Enter'){event.preventDefault();planAddTodo();}">
+          <select class="fi" id="plan-td-c" style="max-width:120px;">
+            <option>Personal</option><option>Admin</option><option>Errand</option><option>Health</option><option>Financial</option>
+          </select>
+          <select class="fi" id="plan-td-p" style="max-width:105px;">
+            <option value="high">🔴 High</option><option value="med" selected>🟡 Med</option><option value="low">⚪ Low</option>
+          </select>
+          <input class="fi" type="date" id="plan-td-d" style="max-width:150px;">
+          <button class="btn pri" onclick="planAddTodo()">Add</button>
+        </div>
+        <div id="plan-inline-todos"></div>
+      </div>
+
+      <!-- ── PROJECTS ── -->
+      <div class="plan-section-hdr">
+        🚀 Projects
+        <span class="plan-section-count" id="plan-inline-proj-count"></span>
+      </div>
+      <div class="plan-inline-box">
+        <div class="fr" style="margin-bottom:14px;gap:8px;">
+          <input class="fi" type="text" id="plan-proj-name" placeholder="New project name..." onkeydown="if(event.key==='Enter'){event.preventDefault();planAddProject();}">
+          <select class="fi" id="plan-proj-cat" style="max-width:130px;">
+            <option>Personal</option><option>Work</option><option>Creative</option><option>Health</option><option>Financial</option><option>Other</option>
+          </select>
+          <select class="fi" id="plan-proj-status" style="max-width:120px;">
+            <option value="active" selected>Active</option><option value="planning">Planning</option><option value="done">Done</option>
+          </select>
+          <input class="fi" type="date" id="plan-proj-deadline" style="max-width:150px;" placeholder="Deadline">
+          <button class="btn pri" onclick="planAddProject()">Create</button>
+        </div>
+        <div class="plan-projs-grid" id="plan-inline-proj-grid"></div>
       </div>
 
       <!-- TASKS TAB -->
@@ -5599,6 +5677,8 @@ function addHabitStack(){
   S.habitStacks.push({id:Date.now(),anchorId,anchorName:anchor.n,newHabit:newH,t:G('hs-time').value,streak:0,created:today});
   G('hs-new').value='';G('hs-time').value='';
   save();renderHabitStacks();
+  renderPlanInlineTodos();
+  renderPlanInlineProjects();
 }
 function togStack(id){
   if(!S.hslog)S.hslog={};
@@ -10030,6 +10110,26 @@ function wcalRender(){
       </div>`;
     });
 
+    // Google Calendar events
+    if(gcalEvents && gcalEvents.length){
+      const dayGcal = gcalEventsForDate(dStr);
+      dayGcal.forEach(e=>{
+        if(e.start.dateTime){
+          const st=new Date(e.start.dateTime);
+          const en=new Date(e.end.dateTime||e.start.dateTime);
+          const sh=st.getHours()+st.getMinutes()/60;
+          const eh=en.getHours()+en.getMinutes()/60;
+          const top=28+((sh-WCAL_START)*2)*40;
+          const height=Math.max(((eh-sh)*2)*40,20);
+          if(sh>=WCAL_START&&sh<=WCAL_END){
+            html+=`<div class="wcal-block gcal" style="top:${top}px;height:${height}px;" title="${e.summary||'(no title)'}" onclick="event.stopPropagation();">
+              <div class="wcal-block-title">📅 ${e.summary||'(no title)'}</div>
+            </div>`;
+          }
+        }
+      });
+    }
+
     html+=`</div>`;
   });
 
@@ -10354,6 +10454,225 @@ function quickJournalNote(){
   inp.value='';
   showBackupToast('Quick note saved ✓');
 }
+
+
+// ══════════════════════════════════════════
+// GOOGLE CALENDAR INTEGRATION
+// ══════════════════════════════════════════
+let gcalTokenClient = null;
+let gcalAccessToken = null;
+let gcalEvents = [];
+
+function gcalShowSetup(){
+  const saved = localStorage.getItem('gcal_client_id') || '';
+  G('gcal-client-id-input').value = saved;
+  G('gcal-setup-modal').classList.add('open');
+}
+function gcalCloseSetup(){
+  G('gcal-setup-modal').classList.remove('open');
+}
+function gcalSaveClientId(){
+  const id = (G('gcal-client-id-input').value || '').trim();
+  if(!id){ alert('Please paste your Google OAuth Client ID.'); return; }
+  localStorage.setItem('gcal_client_id', id);
+  gcalCloseSetup();
+  gcalInitClient(id);
+  setTimeout(gcalConnect, 200);
+}
+function gcalInitClient(clientId){
+  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2) return false;
+  gcalTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: clientId,
+    scope: 'https://www.googleapis.com/auth/calendar.readonly',
+    callback: (resp) => {
+      if(resp.error){ console.error('GCal auth error', resp); gcalSetStatus(false); return; }
+      gcalAccessToken = resp.access_token;
+      sessionStorage.setItem('gcal_token', resp.access_token);
+      gcalSetStatus(true);
+      gcalFetchEvents();
+    }
+  });
+  return true;
+}
+function gcalConnect(){
+  const clientId = localStorage.getItem('gcal_client_id');
+  if(!clientId){ gcalShowSetup(); return; }
+  if(!gcalTokenClient && !gcalInitClient(clientId)){
+    alert('Google sign-in library not ready yet — please wait a moment and try again.'); return;
+  }
+  if(gcalAccessToken){ gcalFetchEvents(); return; }
+  gcalTokenClient.requestAccessToken({prompt:''});
+}
+function gcalDisconnect(){
+  gcalAccessToken = null;
+  gcalEvents = [];
+  sessionStorage.removeItem('gcal_token');
+  gcalSetStatus(false);
+  wcalRender();
+}
+function gcalSetStatus(connected){
+  const statusEl = G('gcal-status-text');
+  const btn = G('gcal-connect-btn');
+  if(!statusEl || !btn) return;
+  if(connected){
+    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are displayed on your calendar.';
+    btn.textContent = 'Disconnect';
+    btn.style.background = 'var(--red)';
+    btn.onclick = gcalDisconnect;
+  } else {
+    statusEl.textContent = 'Connect your Google Calendar to see your events alongside time blocks.';
+    btn.textContent = 'Connect Google Calendar';
+    btn.style.background = '#4285f4';
+    btn.onclick = gcalConnect;
+  }
+}
+async function gcalFetchEvents(){
+  if(!gcalAccessToken) return;
+  const now = new Date();
+  const tmin = new Date(now); tmin.setDate(tmin.getDate() - 14);
+  const tmax = new Date(now); tmax.setDate(tmax.getDate() + 60);
+  try {
+    const r = await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=250`,
+      { headers: { Authorization: `Bearer ${gcalAccessToken}` } }
+    );
+    if(r.status === 401){ gcalAccessToken = null; sessionStorage.removeItem('gcal_token'); gcalSetStatus(false); return; }
+    const data = await r.json();
+    gcalEvents = (data.items || []).filter(e => e.start && (e.start.dateTime || e.start.date));
+    wcalRender();
+  } catch(e){ console.error('GCal fetch error', e); }
+}
+function gcalEventsForDate(dateStr){
+  return gcalEvents.filter(e => {
+    const d = e.start.dateTime ? e.start.dateTime.substring(0,10) : e.start.date;
+    return d === dateStr;
+  });
+}
+// Restore GCal session on load
+window.addEventListener('load', () => {
+  const clientId = localStorage.getItem('gcal_client_id');
+  const savedToken = sessionStorage.getItem('gcal_token');
+  if(clientId && savedToken){
+    gcalAccessToken = savedToken;
+    gcalSetStatus(true);
+    gcalFetchEvents();
+  }
+});
+
+// ══════════════════════════════════════════
+// PLANNING PAGE — INLINE TASKS SECTION
+// ══════════════════════════════════════════
+function planAddTodo(){
+  const t = (G('plan-td-t').value || '').trim();
+  if(!t) return;
+  const cat = G('plan-td-c').value;
+  const pri = G('plan-td-p').value;
+  const due = G('plan-td-d').value;
+  if(!S.todos) S.todos = [];
+  S.todos.push({ id: Date.now(), text: t, cat, priority: pri, due, done: false, subtasks: [], ts: Date.now() });
+  G('plan-td-t').value = '';
+  G('plan-td-d').value = '';
+  save();
+  renderPlanInlineTodos();
+  if(typeof renderTodos === 'function') renderTodos();
+}
+function planToggleTodo(id){
+  const t = (S.todos || []).find(x => x.id === id);
+  if(!t) return;
+  t.done = !t.done;
+  save();
+  renderPlanInlineTodos();
+  if(typeof renderTodos === 'function') renderTodos();
+}
+function planDeleteTodo(id){
+  S.todos = (S.todos || []).filter(x => x.id !== id);
+  save();
+  renderPlanInlineTodos();
+  if(typeof renderTodos === 'function') renderTodos();
+}
+function renderPlanInlineTodos(){
+  const el = G('plan-inline-todos');
+  const cnt = G('plan-inline-td-count');
+  if(!el) return;
+  const todos = (S.todos || []).filter(t => !t.deleted);
+  const active = todos.filter(t => !t.done);
+  const done = todos.filter(t => t.done);
+  if(cnt) cnt.textContent = `${active.length} active · ${done.length} done`;
+  if(!todos.length){
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--ts);font-size:13px;">No tasks yet — add one above.</div>';
+    return;
+  }
+  const priLabel = { high:'🔴', med:'🟡', low:'⚪' };
+  const renderList = (list) => list.map(t => `
+    <div class="plan-todo-item">
+      <input type="checkbox" class="plan-todo-check" ${t.done?'checked':''} onchange="planToggleTodo(${t.id})">
+      <div style="flex:1;">
+        <div class="plan-todo-text${t.done?' done-txt':''}">${priLabel[t.priority]||''} ${escHtml(t.text)}</div>
+        <div class="plan-todo-meta">${t.cat||''}${t.due?' · Due '+t.due:''}</div>
+      </div>
+      <button onclick="planDeleteTodo(${t.id})" style="background:none;border:none;color:var(--th);font-size:14px;cursor:pointer;padding:0 4px;line-height:1;">✕</button>
+    </div>`).join('');
+  let html = '';
+  if(active.length) html += renderList(active);
+  if(done.length){
+    html += `<div style="font-size:11px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin:12px 0 4px;">Completed (${done.length})</div>`;
+    html += renderList(done);
+  }
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// PLANNING PAGE — INLINE PROJECTS SECTION
+// ══════════════════════════════════════════
+function planAddProject(){
+  const name = (G('plan-proj-name').value || '').trim();
+  if(!name) return;
+  const cat = G('plan-proj-cat').value;
+  const status = G('plan-proj-status').value;
+  const deadline = G('plan-proj-deadline').value;
+  if(!S.projects) S.projects = [];
+  S.projects.push({ id: Date.now(), name, cat, status, deadline, desc:'', tasks:[], budget:0, spent:0, ts:Date.now() });
+  G('plan-proj-name').value = '';
+  G('plan-proj-deadline').value = '';
+  save();
+  renderPlanInlineProjects();
+  if(typeof renderProjects === 'function') renderProjects();
+}
+function renderPlanInlineProjects(){
+  const el = G('plan-inline-proj-grid');
+  const cnt = G('plan-inline-proj-count');
+  if(!el) return;
+  const projs = (S.projects || []);
+  const active = projs.filter(p => p.status !== 'done');
+  const done = projs.filter(p => p.status === 'done');
+  if(cnt) cnt.textContent = `${active.length} active · ${done.length} done`;
+  if(!projs.length){
+    el.innerHTML = '<div style="text-align:center;padding:20px 0;color:var(--ts);font-size:13px;">No projects yet — create one above.</div>';
+    return;
+  }
+  const statusBadge = { active:'<span style="color:var(--green);font-weight:700;">Active</span>', planning:'<span style="color:var(--amber);font-weight:700;">Planning</span>', review:'<span style="color:var(--blue);font-weight:700;">Review</span>', paused:'<span style="color:var(--ts);font-weight:700;">Paused</span>', done:'<span style="color:var(--ts);">Done</span>', blocked:'<span style="color:var(--red);font-weight:700;">Blocked</span>' };
+  const renderCards = (list) => list.map(p => {
+    const total = (p.tasks || []).length;
+    const doneT = (p.tasks || []).filter(t => t.done).length;
+    const pct = total ? Math.round(doneT / total * 100) : 0;
+    return `<div class="plan-proj-mini" onclick="openProjectDrawer&&openProjectDrawer(${p.id})">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div class="plan-proj-mini-name" style="flex:1;">${escHtml(p.name)}</div>
+        ${statusBadge[p.status]||''}
+      </div>
+      <div class="plan-proj-mini-meta">
+        <span>${p.cat||''}</span>
+        ${p.deadline?'<span>· Due '+p.deadline+'</span>':''}
+        ${total?'<span>· '+doneT+'/'+total+' tasks</span>':''}
+      </div>
+      ${total?`<div class="plan-proj-mini-bar"><div class="plan-proj-mini-prog" style="width:${pct}%"></div></div>`:''}
+    </div>`;
+  }).join('');
+  el.innerHTML = renderCards(active) + (done.length ? `<div style="grid-column:1/-1;font-size:11px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin:8px 0 2px;">Completed (${done.length})</div>` + renderCards(done) : '');
+}
+
+// Hook into renderAll so inline sections stay in sync
+const _origRenderAll = typeof renderAll === 'function' ? renderAll : null;
 
 </script>
 
@@ -10846,5 +11165,29 @@ function quickJournalNote(){
     <div class="daywiz-footer" id="daywiz-footer"></div>
   </div>
 </div>
+
+    <!-- Google Calendar Setup Modal -->
+    <div class="gcal-setup-modal" id="gcal-setup-modal" onclick="if(event.target===this)gcalCloseSetup()">
+      <div class="gcal-setup-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <h3 style="font-size:16px;font-weight:700;color:var(--t);">Google Calendar Setup</h3>
+          <button onclick="gcalCloseSetup()" style="background:none;border:none;font-size:20px;color:var(--ts);cursor:pointer;">✕</button>
+        </div>
+        <p style="font-size:13px;color:var(--ts);margin-bottom:4px;line-height:1.6;">To connect your Google Calendar:</p>
+        <ol style="font-size:13px;color:var(--ts);margin:0 0 14px 18px;line-height:2;">
+          <li>Go to <a href="https://console.cloud.google.com/" target="_blank" style="color:#4285f4;font-weight:600;">Google Cloud Console</a></li>
+          <li>Create a project → Enable <strong>Google Calendar API</strong></li>
+          <li>Create <strong>OAuth 2.0 Client ID</strong> (Web application)</li>
+          <li>Add your site URL as an Authorized JavaScript Origin</li>
+          <li>Paste the Client ID below</li>
+        </ol>
+        <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">OAuth 2.0 Client ID</label>
+        <input class="fi" id="gcal-client-id-input" placeholder="xxxxxxxx.apps.googleusercontent.com" style="margin-bottom:14px;">
+        <div style="display:flex;gap:8px;justify-content:flex-end;">
+          <button class="btn" onclick="gcalCloseSetup()">Cancel</button>
+          <button class="btn pri" onclick="gcalSaveClientId()" style="background:#4285f4;border-color:#4285f4;">Save &amp; Connect</button>
+        </div>
+      </div>
+    </div>
 </body>
 </html>
