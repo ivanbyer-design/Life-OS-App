@@ -2420,6 +2420,40 @@ html,body{background:var(--bg);}
 .gcal-connect-btn:hover{opacity:.85;}
 .wcal-block.gcal{background:#4285f4;color:#fff;border-left:3px solid #1a56db;opacity:.9;}
 .wcal-block.gcal-allday{position:relative;left:auto;right:auto;top:auto;height:auto;border-radius:4px;padding:2px 6px;font-size:10px;font-weight:600;background:#4285f4;color:#fff;margin:1px 2px;}
+/* ── MONTH CALENDAR VIEW ── */
+.mcal-wrap{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;margin-bottom:12px;box-shadow:var(--sh);}
+.mcal-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+.mcal-hdr-left{display:flex;align-items:center;gap:8px;}
+.mcal-title{font-size:14px;font-weight:700;color:var(--t);}
+.mcal-month-lbl{font-size:13px;font-weight:600;color:var(--t);min-width:136px;text-align:center;}
+.mcal-nav-btn{width:26px;height:26px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg-in);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts);font-size:14px;font-family:var(--font);line-height:1;transition:background .12s,color .12s;}
+.mcal-nav-btn:hover{background:var(--bg-a);color:var(--t);}
+.mcal-today-btn{font-family:var(--font);font-size:11px;font-weight:600;padding:3px 9px;border-radius:var(--r);border:1px solid var(--bd);background:var(--bg-in);color:var(--ts);cursor:pointer;transition:background .12s;}
+.mcal-today-btn:hover{background:var(--bg-a);color:var(--t);}
+.mcal-dow-row{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:3px;}
+.mcal-dow{text-align:center;font-size:10px;font-weight:700;color:var(--th);padding:3px 0;}
+.mcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.mcal-day{min-height:58px;padding:4px 3px;border-radius:6px;border:1px solid transparent;cursor:pointer;transition:background .12s,border-color .12s;overflow:hidden;}
+.mcal-day:hover{background:var(--bg-h);border-color:var(--bd);}
+.mcal-day.today{border-color:var(--gold)!important;background:var(--goldbg);}
+.mcal-day.other-month{opacity:0.35;}
+.mcal-day.selected{border-color:var(--blue)!important;background:var(--bbg)!important;}
+.mcal-day-num{font-size:11px;font-weight:600;color:var(--ts);margin-bottom:2px;text-align:right;padding-right:1px;}
+.mcal-day.today .mcal-day-num{color:var(--gold);font-weight:800;}
+.mcal-event-chip{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:1px 4px;border-radius:3px;margin-bottom:1px;color:#fff;line-height:1.4;font-weight:500;}
+.mcal-event-more{font-size:9px;color:var(--ts);text-align:right;padding-top:1px;}
+.mcal-detail{border-top:1px solid var(--bd);margin-top:12px;padding-top:12px;}
+.mcal-detail-hdr{font-size:12px;font-weight:700;color:var(--ts);margin-bottom:8px;letter-spacing:.03em;text-transform:uppercase;}
+.mcal-event-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);}
+.mcal-event-row:last-child{border-bottom:none;}
+.mcal-event-bar{width:3px;border-radius:2px;align-self:stretch;min-height:32px;flex-shrink:0;margin-top:2px;}
+.mcal-event-info{flex:1;min-width:0;}
+.mcal-event-name{font-size:13px;font-weight:600;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mcal-event-time{font-size:11px;color:var(--ts);margin-top:1px;}
+.mcal-event-loc{font-size:11px;color:var(--ts);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mcal-event-desc{font-size:11px;color:var(--ts);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.mcal-no-events{text-align:center;color:var(--th);font-size:12px;padding:10px 0;}
+.mcal-unconnected{text-align:center;padding:18px 0;color:var(--ts);font-size:13px;}
 /* ── PLANNING PAGE INLINE SECTIONS ── */
 .plan-section-hdr{font-size:16px;font-weight:700;color:var(--t);margin:28px 0 10px;display:flex;align-items:center;gap:8px;border-bottom:2px solid var(--bd);padding-bottom:8px;}
 .plan-section-hdr .plan-section-count{font-size:12px;font-weight:400;color:var(--ts);margin-left:auto;}
@@ -2947,6 +2981,27 @@ html,body{background:var(--bg);}
           <div class="gcal-banner-status" id="gcal-status-text">Connect your Google Calendar to see your events alongside time blocks.</div>
           <a class="gcal-connect-btn" id="gcal-connect-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account" style="display:inline-flex;align-items:center;text-decoration:none;">Connect Google Calendar</a>
         </div>
+        <!-- MONTH CALENDAR VIEW -->
+        <div class="mcal-wrap" id="mcal-wrap">
+          <div class="mcal-hdr">
+            <div class="mcal-hdr-left">
+              <div class="mcal-title">📅 Monthly View</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <button class="mcal-nav-btn" onclick="mcalPrev()">‹</button>
+              <span class="mcal-month-lbl" id="mcal-month-lbl">—</span>
+              <button class="mcal-nav-btn" onclick="mcalNext()">›</button>
+              <button class="mcal-today-btn" onclick="mcalGoToday()">Today</button>
+            </div>
+          </div>
+          <div class="mcal-dow-row">
+            <div class="mcal-dow">Sun</div><div class="mcal-dow">Mon</div><div class="mcal-dow">Tue</div>
+            <div class="mcal-dow">Wed</div><div class="mcal-dow">Thu</div><div class="mcal-dow">Fri</div><div class="mcal-dow">Sat</div>
+          </div>
+          <div class="mcal-grid" id="mcal-grid"></div>
+          <div id="mcal-detail"></div>
+        </div>
+
         <div class="wcal-wrap">
           <div class="wcal-header">
             <button class="btn" id="wcal-prev" onclick="wcalNavWeek(-1)">← Prev</button>
@@ -3568,7 +3623,7 @@ function go(id,el){
   setTimeout(()=>{
     renderAll();
     if(id==='journal')renderJournal();
-    if(id==='planning')wcalRender();
+    if(id==='planning'){wcalRender();renderMcal();}
     setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
   },0);
 }
@@ -7309,7 +7364,7 @@ function switchPlanTab(tab, btn){
   if(btn)btn.classList.add('on');
   const body=G('ptab-'+tab+'-body');
   if(body)body.classList.add('on');
-  if(tab==='calendar')setTimeout(()=>wcalRender(),30);
+  if(tab==='calendar')setTimeout(()=>{wcalRender();renderMcal();},30);
 }
 
 // ── SAVINGS ACCOUNTS ──
@@ -10486,6 +10541,7 @@ function gcalSetStatus(connected){
     btn.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account';
     btn.onclick = null;
   }
+  if(typeof renderMcal==='function')renderMcal();
 }
 
 async function gcalFetchEvents(){
@@ -10501,7 +10557,7 @@ async function gcalFetchEvents(){
     if(r.status === 401){ gcalDisconnect(); return; }
     const data = await r.json();
     gcalEvents = (data.items || []).filter(e => e.start && (e.start.dateTime || e.start.date));
-    wcalRender();
+    wcalRender();renderMcal();
   } catch(e){ console.error('GCal fetch error', e); }
 }
 
@@ -10546,6 +10602,149 @@ window.addEventListener('load', () => {
     gcalFetchEvents();
   }
 });
+
+// ══════════════════════════════════════════
+// MONTH CALENDAR VIEW
+// ══════════════════════════════════════════
+let mcalYear=new Date().getFullYear(),mcalMonth=new Date().getMonth(),mcalSelDay=null;
+const MCAL_PALETTE=['#4285f4','#0f9d58','#db4437','#f4b400','#ab47bc','#00acc1','#ff7043','#9e9d24','#795548','#607d8b'];
+
+function mcalPrev(){mcalMonth--;if(mcalMonth<0){mcalMonth=11;mcalYear--;}mcalSelDay=null;mcalExpandFetch();renderMcal();}
+function mcalNext(){mcalMonth++;if(mcalMonth>11){mcalMonth=0;mcalYear++;}mcalSelDay=null;mcalExpandFetch();renderMcal();}
+function mcalGoToday(){const n=new Date();mcalYear=n.getFullYear();mcalMonth=n.getMonth();mcalSelDay=null;mcalExpandFetch();renderMcal();}
+
+function mcalExpandFetch(){
+  // Expand the gcal fetch range to cover the displayed month
+  if(!gcalAccessToken)return;
+  const tmin=new Date(mcalYear,mcalMonth-1,1);
+  const tmax=new Date(mcalYear,mcalMonth+2,0,23,59,59);
+  // Only re-fetch if we've navigated out of the cached window
+  const hasData=gcalEvents.some(e=>{
+    const d=(e.start.dateTime||e.start.date||'').slice(0,7);
+    return d===mcalYear+'-'+String(mcalMonth+1).padStart(2,'0');
+  });
+  if(!hasData)gcalFetchEventsRange(tmin,tmax);
+}
+
+async function gcalFetchEventsRange(tmin,tmax){
+  if(!gcalAccessToken)return;
+  try{
+    const r=await fetch(
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=500`,
+      {headers:{Authorization:`Bearer ${gcalAccessToken}`}}
+    );
+    if(r.status===401){gcalDisconnect();return;}
+    const data=await r.json();
+    const newEvs=(data.items||[]).filter(e=>e.start&&(e.start.dateTime||e.start.date));
+    // Merge without duplicates (by id)
+    const existingIds=new Set(gcalEvents.map(e=>e.id));
+    newEvs.forEach(e=>{if(!existingIds.has(e.id))gcalEvents.push(e);});
+    renderMcal();wcalRender();
+  }catch(e){console.error('GCal range fetch',e);}
+}
+
+function mcalEventsForDay(y,m,d){
+  const dk=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+  return gcalEvents.filter(ev=>{
+    const start=ev.start||{};
+    const end=ev.end||{};
+    const sd=(start.dateTime||start.date||'').slice(0,10);
+    const ed=(end.dateTime||end.date||'').slice(0,10);
+    if(!sd)return false;
+    // All-day events: end date is exclusive
+    if(start.date&&!start.dateTime){return sd<=dk&&ed>dk;}
+    return sd===dk;
+  }).sort((a,b)=>{
+    const at=(a.start.dateTime||a.start.date||'');
+    const bt=(b.start.dateTime||b.start.date||'');
+    return at.localeCompare(bt);
+  });
+}
+
+function mcalFmtTime(ev){
+  if((ev.start||{}).date&&!(ev.start||{}).dateTime)return'All day';
+  if(!(ev.start||{}).dateTime)return'';
+  const s=new Date(ev.start.dateTime);
+  const e=ev.end&&ev.end.dateTime?new Date(ev.end.dateTime):null;
+  const ft=d=>d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true});
+  return e?ft(s)+' – '+ft(e):ft(s);
+}
+
+function mcalSelectDay(y,m,d){
+  mcalSelDay=(mcalSelDay&&mcalSelDay.y===y&&mcalSelDay.m===m&&mcalSelDay.d===d)?null:{y,m,d};
+  renderMcal();
+}
+
+function renderMcal(){
+  const grid=G('mcal-grid'),detail=G('mcal-detail'),lbl=G('mcal-month-lbl');
+  if(!grid)return;
+  const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  if(lbl)lbl.textContent=MONTHS[mcalMonth]+' '+mcalYear;
+
+  if(!gcalAccessToken){
+    grid.innerHTML='<div class="mcal-unconnected" style="grid-column:1/-1;"><div style="font-size:22px;margin-bottom:6px;">📅</div>Connect your Google Calendar above to see your events here.</div>';
+    if(detail)detail.innerHTML='';
+    return;
+  }
+
+  const todayStr=today;
+  const firstDay=new Date(mcalYear,mcalMonth,1).getDay();
+  const daysInMonth=new Date(mcalYear,mcalMonth+1,0).getDate();
+  const prevDays=new Date(mcalYear,mcalMonth,0).getDate();
+
+  let html='';
+  // Previous month fill
+  for(let i=0;i<firstDay;i++){
+    const d=prevDays-firstDay+i+1;
+    const pm=mcalMonth-1<0?11:mcalMonth-1,py=mcalMonth-1<0?mcalYear-1:mcalYear;
+    html+='<div class="mcal-day other-month" onclick="mcalSelectDay('+py+','+pm+','+d+')"><div class="mcal-day-num">'+d+'</div></div>';
+  }
+  // Current month days
+  for(let d=1;d<=daysInMonth;d++){
+    const dk=mcalYear+'-'+String(mcalMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isToday=dk===todayStr;
+    const isSel=mcalSelDay&&mcalSelDay.y===mcalYear&&mcalSelDay.m===mcalMonth&&mcalSelDay.d===d;
+    const evs=mcalEventsForDay(mcalYear,mcalMonth,d);
+    const shown=evs.slice(0,2),extra=evs.length-2;
+    html+='<div class="mcal-day'+(isToday?' today':'')+(isSel?' selected':'')+'" onclick="mcalSelectDay('+mcalYear+','+mcalMonth+','+d+')">'
+      +'<div class="mcal-day-num">'+d+'</div>'
+      +shown.map((ev,i)=>'<div class="mcal-event-chip" style="background:'+(ev._color||MCAL_PALETTE[i%MCAL_PALETTE.length]||'#4285f4')+';" title="'+(ev.summary||'Event').replace(/"/g,'&quot;')+'">'+(ev.summary||'Event')+'</div>').join('')
+      +(extra>0?'<div class="mcal-event-more">+'+extra+' more</div>':'')
+      +'</div>';
+  }
+  // Next month fill
+  const total=firstDay+daysInMonth,remaining=(7-total%7)%7;
+  for(let d=1;d<=remaining;d++){
+    const nm=mcalMonth+1>11?0:mcalMonth+1,ny=mcalMonth+1>11?mcalYear+1:mcalYear;
+    html+='<div class="mcal-day other-month" onclick="mcalSelectDay('+ny+','+nm+','+d+')"><div class="mcal-day-num">'+d+'</div></div>';
+  }
+  grid.innerHTML=html;
+
+  // Detail panel
+  if(detail){
+    if(mcalSelDay){
+      const {y,m,d}=mcalSelDay;
+      const selEvs=mcalEventsForDay(y,m,d);
+      const selDate=new Date(y,m,d).toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+      detail.innerHTML='<div class="mcal-detail"><div class="mcal-detail-hdr">'+selDate+'</div>'
+        +(selEvs.length?selEvs.map((ev,i)=>{
+          const color=ev._color||MCAL_PALETTE[i%MCAL_PALETTE.length]||'#4285f4';
+          const desc=(ev.description||'').replace(/<[^>]+>/g,'').slice(0,200);
+          return'<div class="mcal-event-row">'
+            +'<div class="mcal-event-bar" style="background:'+color+';"></div>'
+            +'<div class="mcal-event-info">'
+            +'<div class="mcal-event-name">'+(ev.summary||'(No title)')+'</div>'
+            +'<div class="mcal-event-time">'+mcalFmtTime(ev)+'</div>'
+            +(ev.location?'<div class="mcal-event-loc">📍 '+ev.location+'</div>':'')
+            +(desc?'<div class="mcal-event-desc">'+desc+'</div>':'')
+            +'</div></div>';
+        }).join(''):'<div class="mcal-no-events">No events on this day</div>')
+        +'</div>';
+    }else{
+      detail.innerHTML='';
+    }
+  }
+}
 
 // ══════════════════════════════════════════
 // PLANNING PAGE — INLINE TASKS SECTION
