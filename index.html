@@ -10456,7 +10456,6 @@ let gcalAccessToken = null;
 let gcalEvents = [];
 
 function gcalConnect(){
-  alert('Connecting to Google Calendar...');
   const REDIRECT = 'https://life-os-app-production-72ec.up.railway.app';
   const state = Math.random().toString(36).substring(2);
   try { sessionStorage.setItem('gcal_state', state); } catch(e){}
@@ -10467,7 +10466,9 @@ function gcalConnect(){
     + '&scope=' + encodeURIComponent(GCAL_SCOPE)
     + '&state=' + encodeURIComponent(state)
     + '&prompt=select_account';
-  window.location.href = url;
+  // Open in new tab — avoids navigation blocking on the current page
+  const w = window.open(url, '_blank');
+  if(!w) alert('Popup blocked — please allow popups for this site, then click Connect again.');
 }
 
 function gcalDisconnect(){
@@ -10534,7 +10535,7 @@ window.addEventListener('load', () => {
       alert('Google Calendar sign-in failed: ' + error + '\n\nIf this says "redirect_uri_mismatch", go to Google Cloud Console → Life OS app OAuth client → add this URL under Authorized Redirect URIs:\n' + window.location.origin);
       return;
     }
-    if(token && state && state === sessionStorage.getItem('gcal_state')){
+    if(token && (!state || state === sessionStorage.getItem('gcal_state'))){
       const expiresIn = parseInt(params.get('expires_in') || '3600');
       sessionStorage.setItem('gcal_token', token);
       sessionStorage.setItem('gcal_token_expiry', String(Date.now() + expiresIn * 1000));
