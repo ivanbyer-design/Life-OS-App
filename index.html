@@ -10461,6 +10461,12 @@ let gcalTokenClient = null;
 let gcalAccessToken = null;
 let gcalEvents = [];
 
+// Called by GSI library as soon as it finishes loading
+window.onGoogleLibraryLoad = function(){
+  const clientId = localStorage.getItem('gcal_client_id');
+  if(clientId) gcalInitClient(clientId);
+};
+
 function gcalShowSetup(){
   const saved = localStorage.getItem('gcal_client_id') || '';
   G('gcal-client-id-input').value = saved;
@@ -10476,40 +10482,22 @@ function gcalSaveClientId(){
   if(!id){ gcalShowError('Please paste your OAuth 2.0 Client ID.'); return; }
   localStorage.setItem('gcal_client_id', id);
   gcalCloseSetup();
-  gcalDoConnect(id);
-}
-function gcalWaitForGSI(clientId, attempts){
-  attempts = attempts || 0;
-  if(window.google && window.google.accounts && window.google.accounts.oauth2){
-    gcalInitClient(clientId);
-    gcalTokenClient.requestAccessToken({prompt: 'consent'});
-  } else if(attempts < 20){
-    setTimeout(() => gcalWaitForGSI(clientId, attempts + 1), 300);
-  } else {
-    gcalShowError('Google sign-in library failed to load. Check your internet connection and refresh.');
-  }
-}
-function gcalDoConnect(clientId){
-  gcalSetBusy(true);
-  if(window.google && window.google.accounts && window.google.accounts.oauth2){
-    gcalInitClient(clientId);
-    gcalTokenClient.requestAccessToken({prompt: 'consent'});
-  } else {
-    gcalWaitForGSI(clientId, 0);
-  }
+  // Re-init with new client ID then connect directly (still in click handler scope)
+  gcalInitClient(id);
+  gcalTokenClient.requestAccessToken({prompt: 'select_account'});
 }
 function gcalInitClient(clientId){
+  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2) return;
   gcalTokenClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
     scope: 'https://www.googleapis.com/auth/calendar.readonly',
     callback: (resp) => {
-      gcalSetBusy(false);
       if(resp.error){
         const msg = resp.error === 'popup_closed_by_user'
-          ? 'Sign-in popup was closed. Click Connect and complete the Google sign-in.'
+          ? 'Popup closed before sign-in completed — click Connect and try again.'
           : resp.error === 'access_denied'
-          ? 'Access was denied. Make sure you allow calendar access in the Google popup.'
-          : `Auth error: ${resp.error}. Check that this site's URL is added as an Authorized JavaScript Origin in Google Cloud Console.`;
+          ? 'Access denied. In the Google popup, make sure to allow calendar access.'
+          : `Sign-in error: ${resp.error}. Ensure <strong>${window.location.origin}</strong> is listed under Authorized JavaScript Origins in Google Cloud Console.`;
         gcalShowError(msg);
         gcalSetStatus(false);
         return;
@@ -10520,8 +10508,7 @@ function gcalInitClient(clientId){
       gcalFetchEvents();
     },
     error_callback: (err) => {
-      gcalSetBusy(false);
-      gcalShowError(`Could not open sign-in popup. Make sure <strong>${window.location.origin}</strong> is added as an Authorized JavaScript Origin in your Google Cloud OAuth client.`);
+      gcalShowError(`Popup was blocked or failed to open. Make sure <strong>${window.location.origin}</strong> is added as an Authorized JavaScript Origin in Google Cloud Console, then try again.`);
       gcalSetStatus(false);
     }
   });
@@ -10530,7 +10517,13 @@ function gcalConnect(){
   const clientId = localStorage.getItem('gcal_client_id');
   if(!clientId){ gcalShowSetup(); return; }
   if(gcalAccessToken){ gcalFetchEvents(); return; }
-  gcalDoConnect(clientId);
+  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
+    gcalShowError('Google sign-in library not loaded yet — please refresh the page and try again.');
+    return;
+  }
+  if(!gcalTokenClient) gcalInitClient(clientId);
+  // Must be called directly in click handler — no setTimeout — or browsers block the popup
+  gcalTokenClient.requestAccessToken({prompt: 'select_account'});
 }
 function gcalDisconnect(){
   gcalAccessToken = null;
@@ -10539,19 +10532,13 @@ function gcalDisconnect(){
   gcalSetStatus(false);
   wcalRender();
 }
-function gcalSetBusy(busy){
-  const btn = G('gcal-connect-btn');
-  if(!btn) return;
-  if(busy){ btn.textContent = 'Connecting…'; btn.disabled = true; }
-  else { btn.disabled = false; }
-}
 function gcalShowError(msg){
-  let el = G('gcal-error-msg');
+  const el = G('gcal-error-msg');
   if(!el) return;
   el.innerHTML = msg;
   el.style.display = 'block';
   clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.display = 'none'; }, 10000);
+  el._t = setTimeout(() => { el.style.display = 'none'; }, 12000);
 }
 function gcalSetStatus(connected){
   const statusEl = G('gcal-status-text');
