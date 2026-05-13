@@ -10511,7 +10511,8 @@ function gcalInitClient(clientId){
       gcalFetchEvents();
     },
     error_callback: (err) => {
-      gcalShowError(`Popup was blocked or failed to open. Make sure <strong>${window.location.origin}</strong> is added as an Authorized JavaScript Origin in Google Cloud Console, then try again.`);
+      const type = (err && err.type) || JSON.stringify(err);
+      alert('Google sign-in popup failed.\n\nError type: ' + type + '\n\nMost common cause: your Google account needs to be added as a Test User in the OAuth consent screen (Audience → Test users) in Google Cloud Console.');
       gcalSetStatus(false);
     }
   });
@@ -10519,11 +10520,19 @@ function gcalInitClient(clientId){
 function gcalConnect(){
   if(gcalAccessToken){ gcalFetchEvents(); return; }
   if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
-    gcalShowError('Google sign-in library not loaded — please refresh the page and try again.');
+    alert('Google sign-in library has not loaded yet.\n\nPlease do a hard refresh (Cmd+Shift+R) and try again.');
     return;
   }
   if(!gcalTokenClient) gcalInitClient(GCAL_CLIENT_ID);
-  gcalTokenClient.requestAccessToken({prompt: 'select_account'});
+  if(!gcalTokenClient){
+    alert('Google sign-in failed to initialize.\n\nPlease hard refresh (Cmd+Shift+R) and try again.');
+    return;
+  }
+  try {
+    gcalTokenClient.requestAccessToken({prompt: 'select_account'});
+  } catch(e){
+    alert('Could not open Google sign-in popup.\n\nError: ' + e.message + '\n\nMake sure ' + window.location.origin + ' is saved under Authorized JavaScript Origins in Google Cloud Console.');
+  }
 }
 function gcalDisconnect(){
   gcalAccessToken = null;
