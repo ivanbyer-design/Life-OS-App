@@ -10456,18 +10456,18 @@ let gcalAccessToken = null;
 let gcalEvents = [];
 
 function gcalConnect(){
+  alert('Connecting to Google Calendar...');
+  const REDIRECT = 'https://life-os-app-production-72ec.up.railway.app';
   const state = Math.random().toString(36).substring(2);
-  sessionStorage.setItem('gcal_state', state);
-  const redirectUri = window.location.origin + window.location.pathname.replace(/\/$/, '');
-  const params = new URLSearchParams({
-    client_id: GCAL_CLIENT_ID,
-    redirect_uri: redirectUri,
-    response_type: 'token',
-    scope: GCAL_SCOPE,
-    state: state,
-    prompt: 'select_account'
-  });
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+  try { sessionStorage.setItem('gcal_state', state); } catch(e){}
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth'
+    + '?client_id=' + encodeURIComponent(GCAL_CLIENT_ID)
+    + '&redirect_uri=' + encodeURIComponent(REDIRECT)
+    + '&response_type=token'
+    + '&scope=' + encodeURIComponent(GCAL_SCOPE)
+    + '&state=' + encodeURIComponent(state)
+    + '&prompt=select_account';
+  window.location.href = url;
 }
 
 function gcalDisconnect(){
