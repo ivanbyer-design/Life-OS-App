@@ -2953,6 +2953,7 @@ html,body{background:var(--bg);}
           <button class="gcal-connect-btn" id="gcal-connect-btn" onclick="gcalConnect()">Connect Google Calendar</button>
           <button class="btn" onclick="gcalShowSetup()" style="font-size:11px;padding:5px 10px;">⚙ Setup</button>
         </div>
+        <div id="gcal-error-msg" style="display:none;font-size:12px;color:#e53e3e;background:#fff0f0;border:1px solid #fca5a5;border-radius:6px;padding:8px 12px;margin-bottom:10px;line-height:1.5;"></div>
         <div class="wcal-wrap">
           <div class="wcal-header">
             <button class="btn" id="wcal-prev" onclick="wcalNavWeek(-1)">← Prev</button>
@@ -10463,6 +10464,8 @@ let gcalEvents = [];
 function gcalShowSetup(){
   const saved = localStorage.getItem('gcal_client_id') || '';
   G('gcal-client-id-input').value = saved;
+  const originEl = G('gcal-origin-display');
+  if(originEl) originEl.textContent = window.location.origin;
   G('gcal-setup-modal').classList.add('open');
 }
 function gcalCloseSetup(){
@@ -10470,35 +10473,64 @@ function gcalCloseSetup(){
 }
 function gcalSaveClientId(){
   const id = (G('gcal-client-id-input').value || '').trim();
-  if(!id){ alert('Please paste your Google OAuth Client ID.'); return; }
+  if(!id){ gcalShowError('Please paste your OAuth 2.0 Client ID.'); return; }
   localStorage.setItem('gcal_client_id', id);
   gcalCloseSetup();
-  gcalInitClient(id);
-  setTimeout(gcalConnect, 200);
+  gcalDoConnect(id);
+}
+function gcalWaitForGSI(clientId, attempts){
+  attempts = attempts || 0;
+  if(window.google && window.google.accounts && window.google.accounts.oauth2){
+    gcalInitClient(clientId);
+    gcalTokenClient.requestAccessToken({prompt: 'consent'});
+  } else if(attempts < 20){
+    setTimeout(() => gcalWaitForGSI(clientId, attempts + 1), 300);
+  } else {
+    gcalShowError('Google sign-in library failed to load. Check your internet connection and refresh.');
+  }
+}
+function gcalDoConnect(clientId){
+  gcalSetBusy(true);
+  if(window.google && window.google.accounts && window.google.accounts.oauth2){
+    gcalInitClient(clientId);
+    gcalTokenClient.requestAccessToken({prompt: 'consent'});
+  } else {
+    gcalWaitForGSI(clientId, 0);
+  }
 }
 function gcalInitClient(clientId){
-  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2) return false;
   gcalTokenClient = google.accounts.oauth2.initTokenClient({
     client_id: clientId,
     scope: 'https://www.googleapis.com/auth/calendar.readonly',
     callback: (resp) => {
-      if(resp.error){ console.error('GCal auth error', resp); gcalSetStatus(false); return; }
+      gcalSetBusy(false);
+      if(resp.error){
+        const msg = resp.error === 'popup_closed_by_user'
+          ? 'Sign-in popup was closed. Click Connect and complete the Google sign-in.'
+          : resp.error === 'access_denied'
+          ? 'Access was denied. Make sure you allow calendar access in the Google popup.'
+          : `Auth error: ${resp.error}. Check that this site's URL is added as an Authorized JavaScript Origin in Google Cloud Console.`;
+        gcalShowError(msg);
+        gcalSetStatus(false);
+        return;
+      }
       gcalAccessToken = resp.access_token;
       sessionStorage.setItem('gcal_token', resp.access_token);
       gcalSetStatus(true);
       gcalFetchEvents();
+    },
+    error_callback: (err) => {
+      gcalSetBusy(false);
+      gcalShowError(`Could not open sign-in popup. Make sure <strong>${window.location.origin}</strong> is added as an Authorized JavaScript Origin in your Google Cloud OAuth client.`);
+      gcalSetStatus(false);
     }
   });
-  return true;
 }
 function gcalConnect(){
   const clientId = localStorage.getItem('gcal_client_id');
   if(!clientId){ gcalShowSetup(); return; }
-  if(!gcalTokenClient && !gcalInitClient(clientId)){
-    alert('Google sign-in library not ready yet — please wait a moment and try again.'); return;
-  }
   if(gcalAccessToken){ gcalFetchEvents(); return; }
-  gcalTokenClient.requestAccessToken({prompt:''});
+  gcalDoConnect(clientId);
 }
 function gcalDisconnect(){
   gcalAccessToken = null;
@@ -10507,19 +10539,37 @@ function gcalDisconnect(){
   gcalSetStatus(false);
   wcalRender();
 }
+function gcalSetBusy(busy){
+  const btn = G('gcal-connect-btn');
+  if(!btn) return;
+  if(busy){ btn.textContent = 'Connecting…'; btn.disabled = true; }
+  else { btn.disabled = false; }
+}
+function gcalShowError(msg){
+  let el = G('gcal-error-msg');
+  if(!el) return;
+  el.innerHTML = msg;
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = 'none'; }, 10000);
+}
 function gcalSetStatus(connected){
   const statusEl = G('gcal-status-text');
   const btn = G('gcal-connect-btn');
+  const errEl = G('gcal-error-msg');
   if(!statusEl || !btn) return;
+  if(errEl && connected) errEl.style.display = 'none';
   if(connected){
     statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are displayed on your calendar.';
     btn.textContent = 'Disconnect';
-    btn.style.background = 'var(--red)';
+    btn.style.background = 'var(--red,#e53e3e)';
+    btn.disabled = false;
     btn.onclick = gcalDisconnect;
   } else {
     statusEl.textContent = 'Connect your Google Calendar to see your events alongside time blocks.';
     btn.textContent = 'Connect Google Calendar';
     btn.style.background = '#4285f4';
+    btn.disabled = false;
     btn.onclick = gcalConnect;
   }
 }
@@ -11171,16 +11221,34 @@ const _origRenderAll = typeof renderAll === 'function' ? renderAll : null;
           <h3 style="font-size:16px;font-weight:700;color:var(--t);">Google Calendar Setup</h3>
           <button onclick="gcalCloseSetup()" style="background:none;border:none;font-size:20px;color:var(--ts);cursor:pointer;">✕</button>
         </div>
-        <p style="font-size:13px;color:var(--ts);margin-bottom:4px;line-height:1.6;">To connect your Google Calendar:</p>
-        <ol style="font-size:13px;color:var(--ts);margin:0 0 14px 18px;line-height:2;">
-          <li>Go to <a href="https://console.cloud.google.com/" target="_blank" style="color:#4285f4;font-weight:600;">Google Cloud Console</a></li>
-          <li>Create a project → Enable <strong>Google Calendar API</strong></li>
-          <li>Create <strong>OAuth 2.0 Client ID</strong> (Web application)</li>
-          <li>Add your site URL as an Authorized JavaScript Origin</li>
-          <li>Paste the Client ID below</li>
-        </ol>
-        <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">OAuth 2.0 Client ID</label>
-        <input class="fi" id="gcal-client-id-input" placeholder="xxxxxxxx.apps.googleusercontent.com" style="margin-bottom:14px;">
+
+        <!-- Step 1: Cloud Console -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--t);margin-bottom:6px;">STEP 1 — Google Cloud Console</div>
+          <ol style="font-size:13px;color:var(--ts);margin:0 0 0 18px;line-height:2.1;">
+            <li>Open <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color:#4285f4;font-weight:600;">APIs &amp; Credentials</a> in Google Cloud Console</li>
+            <li>Click your <strong>OAuth 2.0 Client ID</strong> (Web application type)</li>
+            <li>Under <strong>Authorized JavaScript origins</strong>, click <strong>+ Add URI</strong></li>
+            <li>Paste <strong>exactly</strong> this URL (no trailing slash):</li>
+          </ol>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <code id="gcal-origin-display" style="font-size:12px;font-weight:700;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:7px 10px;flex:1;color:#4285f4;word-break:break-all;"></code>
+            <button onclick="navigator.clipboard.writeText(G('gcal-origin-display').textContent).then(()=>{this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',1500)})" style="font-size:11px;font-weight:600;padding:6px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--bg-card);color:var(--t);cursor:pointer;white-space:nowrap;">Copy</button>
+          </div>
+          <div style="font-size:11px;color:var(--ts);margin-top:6px;">5. Click <strong>Save</strong> in Google Cloud — changes take up to 5 minutes to propagate.</div>
+        </div>
+
+        <!-- Step 2: Client ID -->
+        <div style="margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--t);margin-bottom:6px;">STEP 2 — Paste your Client ID</div>
+          <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;">OAuth 2.0 Client ID</label>
+          <input class="fi" id="gcal-client-id-input" placeholder="xxxxxxxx.apps.googleusercontent.com" style="margin-bottom:6px;">
+          <div style="font-size:11px;color:var(--ts);">Find this on the OAuth client page — ends in <code style="background:var(--bg);padding:1px 4px;border-radius:3px;">.apps.googleusercontent.com</code></div>
+        </div>
+
+        <!-- Error area -->
+        <div id="gcal-error-msg" style="display:none;font-size:12px;color:#e53e3e;background:#fff0f0;border:1px solid #fca5a5;border-radius:6px;padding:8px 10px;margin-bottom:12px;line-height:1.5;"></div>
+
         <div style="display:flex;gap:8px;justify-content:flex-end;">
           <button class="btn" onclick="gcalCloseSetup()">Cancel</button>
           <button class="btn pri" onclick="gcalSaveClientId()" style="background:#4285f4;border-color:#4285f4;">Save &amp; Connect</button>
