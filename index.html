@@ -10457,14 +10457,21 @@ function quickJournalNote(){
 // ══════════════════════════════════════════
 // GOOGLE CALENDAR INTEGRATION
 // ══════════════════════════════════════════
+const GCAL_CLIENT_ID = '364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com';
 let gcalTokenClient = null;
 let gcalAccessToken = null;
 let gcalEvents = [];
 
 // Called by GSI library as soon as it finishes loading
 window.onGoogleLibraryLoad = function(){
-  const clientId = localStorage.getItem('gcal_client_id');
-  if(clientId) gcalInitClient(clientId);
+  gcalInitClient(GCAL_CLIENT_ID);
+  // Restore previous session if token still valid
+  const savedToken = sessionStorage.getItem('gcal_token');
+  if(savedToken){
+    gcalAccessToken = savedToken;
+    gcalSetStatus(true);
+    gcalFetchEvents();
+  }
 };
 
 function gcalShowSetup(){
@@ -10478,12 +10485,8 @@ function gcalCloseSetup(){
   G('gcal-setup-modal').classList.remove('open');
 }
 function gcalSaveClientId(){
-  const id = (G('gcal-client-id-input').value || '').trim();
-  if(!id){ gcalShowError('Please paste your OAuth 2.0 Client ID.'); return; }
-  localStorage.setItem('gcal_client_id', id);
   gcalCloseSetup();
-  // Re-init with new client ID then connect directly (still in click handler scope)
-  gcalInitClient(id);
+  if(!gcalTokenClient) gcalInitClient(GCAL_CLIENT_ID);
   gcalTokenClient.requestAccessToken({prompt: 'select_account'});
 }
 function gcalInitClient(clientId){
@@ -10514,15 +10517,12 @@ function gcalInitClient(clientId){
   });
 }
 function gcalConnect(){
-  const clientId = localStorage.getItem('gcal_client_id');
-  if(!clientId){ gcalShowSetup(); return; }
   if(gcalAccessToken){ gcalFetchEvents(); return; }
   if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
-    gcalShowError('Google sign-in library not loaded yet — please refresh the page and try again.');
+    gcalShowError('Google sign-in library not loaded — please refresh the page and try again.');
     return;
   }
-  if(!gcalTokenClient) gcalInitClient(clientId);
-  // Must be called directly in click handler — no setTimeout — or browsers block the popup
+  if(!gcalTokenClient) gcalInitClient(GCAL_CLIENT_ID);
   gcalTokenClient.requestAccessToken({prompt: 'select_account'});
 }
 function gcalDisconnect(){
@@ -10582,16 +10582,7 @@ function gcalEventsForDate(dateStr){
     return d === dateStr;
   });
 }
-// Restore GCal session on load
-window.addEventListener('load', () => {
-  const clientId = localStorage.getItem('gcal_client_id');
-  const savedToken = sessionStorage.getItem('gcal_token');
-  if(clientId && savedToken){
-    gcalAccessToken = savedToken;
-    gcalSetStatus(true);
-    gcalFetchEvents();
-  }
-});
+// Session restore is handled in onGoogleLibraryLoad above
 
 // ══════════════════════════════════════════
 // PLANNING PAGE — INLINE TASKS SECTION
