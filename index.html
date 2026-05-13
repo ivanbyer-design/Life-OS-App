@@ -2945,7 +2945,7 @@ html,body{background:var(--bg);}
         <div class="gcal-banner" id="gcal-banner">
           <span style="font-size:20px;">📅</span>
           <div class="gcal-banner-status" id="gcal-status-text">Connect your Google Calendar to see your events alongside time blocks.</div>
-          <button class="gcal-connect-btn" id="gcal-connect-btn" onclick="gcalConnect()">Connect Google Calendar</button>
+          <a class="gcal-connect-btn" id="gcal-connect-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account" style="display:inline-flex;align-items:center;text-decoration:none;">Connect Google Calendar</a>
         </div>
         <div class="wcal-wrap">
           <div class="wcal-header">
@@ -10456,19 +10456,8 @@ let gcalAccessToken = null;
 let gcalEvents = [];
 
 function gcalConnect(){
-  const REDIRECT = 'https://life-os-app-production-72ec.up.railway.app';
-  const state = Math.random().toString(36).substring(2);
-  try { sessionStorage.setItem('gcal_state', state); } catch(e){}
-  const url = 'https://accounts.google.com/o/oauth2/v2/auth'
-    + '?client_id=' + encodeURIComponent(GCAL_CLIENT_ID)
-    + '&redirect_uri=' + encodeURIComponent(REDIRECT)
-    + '&response_type=token'
-    + '&scope=' + encodeURIComponent(GCAL_SCOPE)
-    + '&state=' + encodeURIComponent(state)
-    + '&prompt=select_account';
-  // Open in new tab — avoids navigation blocking on the current page
-  const w = window.open(url, '_blank');
-  if(!w) alert('Popup blocked — please allow popups for this site, then click Connect again.');
+  // Handled by the <a href> on the button — this is a fallback only
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account';
 }
 
 function gcalDisconnect(){
@@ -10488,12 +10477,14 @@ function gcalSetStatus(connected){
     statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are showing on your calendar.';
     btn.textContent = 'Disconnect';
     btn.style.background = 'var(--red,#e53e3e)';
-    btn.onclick = gcalDisconnect;
+    btn.removeAttribute('href');
+    btn.onclick = (e) => { e.preventDefault(); gcalDisconnect(); };
   } else {
     statusEl.textContent = 'Connect your Google Calendar to see your events alongside time blocks.';
     btn.textContent = 'Connect Google Calendar';
     btn.style.background = '#4285f4';
-    btn.onclick = gcalConnect;
+    btn.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account';
+    btn.onclick = null;
   }
 }
 
