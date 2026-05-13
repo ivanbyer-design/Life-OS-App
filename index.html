@@ -13,7 +13,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -10455,120 +10454,54 @@ function quickJournalNote(){
 
 
 // ══════════════════════════════════════════
-// GOOGLE CALENDAR INTEGRATION
+// GOOGLE CALENDAR INTEGRATION — redirect flow (no popup, no external library)
 // ══════════════════════════════════════════
 const GCAL_CLIENT_ID = '364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com';
-let gcalTokenClient = null;
+const GCAL_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly';
 let gcalAccessToken = null;
 let gcalEvents = [];
 
-// Called by GSI library as soon as it finishes loading
-window.onGoogleLibraryLoad = function(){
-  gcalInitClient(GCAL_CLIENT_ID);
-  // Restore previous session if token still valid
-  const savedToken = sessionStorage.getItem('gcal_token');
-  if(savedToken){
-    gcalAccessToken = savedToken;
-    gcalSetStatus(true);
-    gcalFetchEvents();
-  }
-};
-
-function gcalShowSetup(){
-  const saved = localStorage.getItem('gcal_client_id') || '';
-  G('gcal-client-id-input').value = saved;
-  const originEl = G('gcal-origin-display');
-  if(originEl) originEl.textContent = window.location.origin;
-  G('gcal-setup-modal').classList.add('open');
-}
-function gcalCloseSetup(){
-  G('gcal-setup-modal').classList.remove('open');
-}
-function gcalSaveClientId(){
-  gcalCloseSetup();
-  if(!gcalTokenClient) gcalInitClient(GCAL_CLIENT_ID);
-  gcalTokenClient.requestAccessToken({prompt: 'select_account'});
-}
-function gcalInitClient(clientId){
-  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2) return;
-  gcalTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: clientId,
-    scope: 'https://www.googleapis.com/auth/calendar.readonly',
-    callback: (resp) => {
-      if(resp.error){
-        const msg = resp.error === 'popup_closed_by_user'
-          ? 'Popup closed before sign-in completed — click Connect and try again.'
-          : resp.error === 'access_denied'
-          ? 'Access denied. In the Google popup, make sure to allow calendar access.'
-          : `Sign-in error: ${resp.error}. Ensure <strong>${window.location.origin}</strong> is listed under Authorized JavaScript Origins in Google Cloud Console.`;
-        gcalShowError(msg);
-        gcalSetStatus(false);
-        return;
-      }
-      gcalAccessToken = resp.access_token;
-      sessionStorage.setItem('gcal_token', resp.access_token);
-      gcalSetStatus(true);
-      gcalFetchEvents();
-    },
-    error_callback: (err) => {
-      const type = (err && err.type) || JSON.stringify(err);
-      alert('Google sign-in popup failed.\n\nError type: ' + type + '\n\nMost common cause: your Google account needs to be added as a Test User in the OAuth consent screen (Audience → Test users) in Google Cloud Console.');
-      gcalSetStatus(false);
-    }
-  });
-}
 function gcalConnect(){
-  if(gcalAccessToken){ gcalFetchEvents(); return; }
-  if(!window.google || !window.google.accounts || !window.google.accounts.oauth2){
-    alert('Google sign-in library has not loaded yet.\n\nPlease do a hard refresh (Cmd+Shift+R) and try again.');
-    return;
-  }
-  if(!gcalTokenClient) gcalInitClient(GCAL_CLIENT_ID);
-  if(!gcalTokenClient){
-    alert('Google sign-in failed to initialize.\n\nPlease hard refresh (Cmd+Shift+R) and try again.');
-    return;
-  }
-  try {
-    gcalTokenClient.requestAccessToken({prompt: 'select_account'});
-  } catch(e){
-    alert('Could not open Google sign-in popup.\n\nError: ' + e.message + '\n\nMake sure ' + window.location.origin + ' is saved under Authorized JavaScript Origins in Google Cloud Console.');
-  }
+  const state = Math.random().toString(36).substring(2);
+  sessionStorage.setItem('gcal_state', state);
+  const redirectUri = window.location.origin + window.location.pathname.replace(/\/$/, '');
+  const params = new URLSearchParams({
+    client_id: GCAL_CLIENT_ID,
+    redirect_uri: redirectUri,
+    response_type: 'token',
+    scope: GCAL_SCOPE,
+    state: state,
+    prompt: 'select_account'
+  });
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
+
 function gcalDisconnect(){
   gcalAccessToken = null;
   gcalEvents = [];
   sessionStorage.removeItem('gcal_token');
+  sessionStorage.removeItem('gcal_token_expiry');
   gcalSetStatus(false);
   wcalRender();
 }
-function gcalShowError(msg){
-  const el = G('gcal-error-msg');
-  if(!el) return;
-  el.innerHTML = msg;
-  el.style.display = 'block';
-  clearTimeout(el._t);
-  el._t = setTimeout(() => { el.style.display = 'none'; }, 12000);
-}
+
 function gcalSetStatus(connected){
   const statusEl = G('gcal-status-text');
   const btn = G('gcal-connect-btn');
-  const errEl = G('gcal-error-msg');
   if(!statusEl || !btn) return;
-  if(errEl && connected) errEl.style.display = 'none';
   if(connected){
-    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are displayed on your calendar.';
+    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are showing on your calendar.';
     btn.textContent = 'Disconnect';
     btn.style.background = 'var(--red,#e53e3e)';
-    btn.disabled = false;
     btn.onclick = gcalDisconnect;
   } else {
     statusEl.textContent = 'Connect your Google Calendar to see your events alongside time blocks.';
     btn.textContent = 'Connect Google Calendar';
     btn.style.background = '#4285f4';
-    btn.disabled = false;
     btn.onclick = gcalConnect;
   }
 }
+
 async function gcalFetchEvents(){
   if(!gcalAccessToken) return;
   const now = new Date();
@@ -10579,19 +10512,54 @@ async function gcalFetchEvents(){
       `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=250`,
       { headers: { Authorization: `Bearer ${gcalAccessToken}` } }
     );
-    if(r.status === 401){ gcalAccessToken = null; sessionStorage.removeItem('gcal_token'); gcalSetStatus(false); return; }
+    if(r.status === 401){ gcalDisconnect(); return; }
     const data = await r.json();
     gcalEvents = (data.items || []).filter(e => e.start && (e.start.dateTime || e.start.date));
     wcalRender();
   } catch(e){ console.error('GCal fetch error', e); }
 }
+
 function gcalEventsForDate(dateStr){
   return gcalEvents.filter(e => {
     const d = e.start.dateTime ? e.start.dateTime.substring(0,10) : e.start.date;
     return d === dateStr;
   });
 }
-// Session restore is handled in onGoogleLibraryLoad above
+
+// On every page load: handle OAuth redirect callback, then restore saved session
+window.addEventListener('load', () => {
+  // Check if returning from Google OAuth redirect
+  if(window.location.hash){
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const token = params.get('access_token');
+    const state = params.get('state');
+    const error = params.get('error');
+    // Always clean the token out of the URL immediately
+    history.replaceState(null, '', window.location.pathname);
+    if(error){
+      alert('Google Calendar sign-in failed: ' + error + '\n\nIf this says "redirect_uri_mismatch", go to Google Cloud Console → Life OS app OAuth client → add this URL under Authorized Redirect URIs:\n' + window.location.origin);
+      return;
+    }
+    if(token && state && state === sessionStorage.getItem('gcal_state')){
+      const expiresIn = parseInt(params.get('expires_in') || '3600');
+      sessionStorage.setItem('gcal_token', token);
+      sessionStorage.setItem('gcal_token_expiry', String(Date.now() + expiresIn * 1000));
+      sessionStorage.removeItem('gcal_state');
+      gcalAccessToken = token;
+      gcalSetStatus(true);
+      gcalFetchEvents();
+      return;
+    }
+  }
+  // Restore previously saved session if token not expired
+  const saved = sessionStorage.getItem('gcal_token');
+  const expiry = parseInt(sessionStorage.getItem('gcal_token_expiry') || '0');
+  if(saved && Date.now() < expiry){
+    gcalAccessToken = saved;
+    gcalSetStatus(true);
+    gcalFetchEvents();
+  }
+});
 
 // ══════════════════════════════════════════
 // PLANNING PAGE — INLINE TASKS SECTION
