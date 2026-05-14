@@ -10551,33 +10551,11 @@ function mcalNext(){mcalMonth++;if(mcalMonth>11){mcalMonth=0;mcalYear++;}mcalSel
 function mcalGoToday(){const n=new Date();mcalYear=n.getFullYear();mcalMonth=n.getMonth();mcalSelDay=null;mcalExpandFetch();renderMcal();}
 
 function mcalExpandFetch(){
-  // Expand the gcal fetch range to cover the displayed month
-  if(!gcalAccessToken)return;
-  const tmin=new Date(mcalYear,mcalMonth-1,1);
-  const tmax=new Date(mcalYear,mcalMonth+2,0,23,59,59);
-  // Only re-fetch if we've navigated out of the cached window
   const hasData=gcalEvents.some(e=>{
     const d=(e.start.dateTime||e.start.date||'').slice(0,7);
     return d===mcalYear+'-'+String(mcalMonth+1).padStart(2,'0');
   });
-  if(!hasData)gcalFetchEventsRange(tmin,tmax);
-}
-
-async function gcalFetchEventsRange(tmin,tmax){
-  if(!gcalAccessToken)return;
-  try{
-    const r=await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=500`,
-      {headers:{Authorization:`Bearer ${gcalAccessToken}`}}
-    );
-    if(r.status===401){gcalDisconnect();return;}
-    const data=await r.json();
-    const newEvs=(data.items||[]).filter(e=>e.start&&(e.start.dateTime||e.start.date));
-    // Merge without duplicates (by id)
-    const existingIds=new Set(gcalEvents.map(e=>e.id));
-    newEvs.forEach(e=>{if(!existingIds.has(e.id))gcalEvents.push(e);});
-    renderMcal();wcalRender();
-  }catch(e){console.error('GCal range fetch',e);}
+  if(!hasData)gcalFetchEvents();
 }
 
 function mcalEventsForDay(y,m,d){
@@ -10617,12 +10595,6 @@ function renderMcal(){
   if(!grid)return;
   const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
   if(lbl)lbl.textContent=MONTHS[mcalMonth]+' '+mcalYear;
-
-  if(!gcalAccessToken){
-    grid.innerHTML='<div class="mcal-unconnected" style="grid-column:1/-1;"><div style="font-size:22px;margin-bottom:6px;">📅</div>Connect Google Calendar above to see your events.</div>';
-    if(detail)detail.innerHTML='';
-    return;
-  }
 
   const todayStr=today;
   const firstDay=new Date(mcalYear,mcalMonth,1).getDay();
