@@ -10518,10 +10518,10 @@ function gcalConnect(){
 function gcalDisconnect(){
   gcalAccessToken = null;
   gcalEvents = [];
-  sessionStorage.removeItem('gcal_token');
-  sessionStorage.removeItem('gcal_token_expiry');
+  localStorage.removeItem('gcal_token');
+  localStorage.removeItem('gcal_token_exp');
   gcalSetStatus(false);
-  wcalRender();
+  wcalRender();renderMcal();
 }
 
 function gcalSetStatus(connected){
@@ -10569,43 +10569,49 @@ function gcalEventsForDate(dateStr){
   });
 }
 
-// On every page load: handle OAuth redirect callback, then restore saved session
-window.addEventListener('load', () => {
-  // Check if returning from Google OAuth redirect
-  if(window.location.hash){
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const token = params.get('access_token');
-    const state = params.get('state');
-    const error = params.get('error');
-    // Always clean the token out of the URL immediately
-    history.replaceState(null, '', window.location.pathname);
-    if(error){
-      alert('Google Calendar sign-in failed: ' + error + '\n\nIf this says "redirect_uri_mismatch", go to Google Cloud Console → Life OS app OAuth client → add this URL under Authorized Redirect URIs:\n' + window.location.origin);
-      return;
-    }
-    if(token && (!state || state === sessionStorage.getItem('gcal_state'))){
-      const expiresIn = parseInt(params.get('expires_in') || '3600');
-      sessionStorage.setItem('gcal_token', token);
-      sessionStorage.setItem('gcal_token_expiry', String(Date.now() + expiresIn * 1000));
-      sessionStorage.removeItem('gcal_state');
-      gcalAccessToken = token;
-      gcalSetStatus(true);
-      // Navigate to Planning → Calendar so the calendar is immediately visible
-      go('planning', G('ni-planning'));
-      switchPlanTab('calendar', G('ptab-calendar'));
-      gcalFetchEvents();
-      return;
-    }
+// ── GCAL INIT: runs synchronously at script-bottom so all functions exist ──
+(function gcalInit(){
+  // 1. Handle OAuth redirect hash (#access_token=...) returned from Google
+  if(window.location.hash && window.location.hash.includes('access_token')){
+    try{
+      const params=new URLSearchParams(window.location.hash.replace(/^#/,''));
+      const token=params.get('access_token');
+      const error=params.get('error');
+      // Strip token from URL bar immediately
+      try{history.replaceState(null,'',window.location.pathname);}catch(e){}
+      if(error){
+        alert('Google Calendar sign-in failed: '+error
+          +'\n\nIf it says "redirect_uri_mismatch", make sure '
+          +window.location.origin
+          +' is listed under Authorized Redirect URIs in your Google Cloud Console OAuth client.');
+        return;
+      }
+      if(token){
+        const exp=Date.now()+(parseInt(params.get('expires_in')||'3600')*1000);
+        localStorage.setItem('gcal_token',token);
+        localStorage.setItem('gcal_token_exp',String(exp));
+        gcalAccessToken=token;
+        // Navigate then fetch — use setTimeout so renderAll has settled
+        setTimeout(()=>{
+          gcalSetStatus(true);
+          go('planning',G('ni-planning'));
+          switchPlanTab('calendar',G('ptab-calendar'));
+          gcalFetchEvents();
+        },150);
+        return;
+      }
+    }catch(e){console.error('gcalInit hash parse',e);}
   }
-  // Restore previously saved session if token not expired
-  const saved = sessionStorage.getItem('gcal_token');
-  const expiry = parseInt(sessionStorage.getItem('gcal_token_expiry') || '0');
-  if(saved && Date.now() < expiry){
-    gcalAccessToken = saved;
-    gcalSetStatus(true);
-    gcalFetchEvents();
-  }
-});
+  // 2. Restore a saved token (from localStorage, survives cross-origin redirects)
+  try{
+    const saved=localStorage.getItem('gcal_token');
+    const exp=parseInt(localStorage.getItem('gcal_token_exp')||'0');
+    if(saved&&Date.now()<exp){
+      gcalAccessToken=saved;
+      setTimeout(()=>{gcalSetStatus(true);gcalFetchEvents();},150);
+    }
+  }catch(e){}
+})();
 
 // ══════════════════════════════════════════
 // MONTH CALENDAR VIEW
