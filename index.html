@@ -2975,11 +2975,11 @@ html,body{background:var(--bg);}
 
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
-        <!-- Google Calendar Connection Banner -->
+        <!-- Google Calendar Status Banner (powered by n8n) -->
         <div class="gcal-banner" id="gcal-banner">
           <span style="font-size:20px;">📅</span>
-          <div class="gcal-banner-status" id="gcal-status-text">Connect your Google Calendar to see your events alongside time blocks.</div>
-          <a class="gcal-connect-btn" id="gcal-connect-btn" href="https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account" style="display:inline-flex;align-items:center;text-decoration:none;">Connect Google Calendar</a>
+          <div class="gcal-banner-status" id="gcal-status-text"><span style="color:var(--green);font-weight:700;">● Connected via n8n</span> — fetching your Google Calendar events…</div>
+          <button class="gcal-connect-btn" onclick="gcalFetchEvents()" style="background:var(--bg-in);color:var(--t);border:1px solid var(--bd);">↻ Refresh</button>
         </div>
         <!-- MONTH CALENDAR VIEW -->
         <div class="mcal-wrap" id="mcal-wrap">
@@ -10504,63 +10504,33 @@ function quickJournalNote(){
 
 
 // ══════════════════════════════════════════
-// GOOGLE CALENDAR INTEGRATION — redirect flow (no popup, no external library)
+// GOOGLE CALENDAR — powered by n8n webhook
 // ══════════════════════════════════════════
-const GCAL_CLIENT_ID = '364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com';
-const GCAL_SCOPE = 'https://www.googleapis.com/auth/calendar.readonly';
-let gcalAccessToken = null;
+const GCAL_N8N_WEBHOOK = 'https://n8n-production-8608.up.railway.app/webhook/gcal-events';
 let gcalEvents = [];
 
-function gcalConnect(){
-  // Handled by the <a href> on the button — this is a fallback only
-  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account';
-}
-
-function gcalDisconnect(){
-  gcalAccessToken = null;
-  gcalEvents = [];
-  localStorage.removeItem('gcal_token');
-  localStorage.removeItem('gcal_token_exp');
-  gcalSetStatus(false);
-  wcalRender();renderMcal();
-}
-
-function gcalSetStatus(connected){
-  const statusEl = G('gcal-status-text');
-  const btn = G('gcal-connect-btn');
-  if(!statusEl || !btn) return;
-  if(connected){
-    statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — Google Calendar events are showing on your calendar.';
-    btn.textContent = 'Disconnect';
-    btn.style.background = 'var(--red,#e53e3e)';
-    btn.removeAttribute('href');
-    btn.onclick = (e) => { e.preventDefault(); gcalDisconnect(); };
-  } else {
-    statusEl.textContent = 'Connect your Google Calendar to see your events alongside time blocks.';
-    btn.textContent = 'Connect Google Calendar';
-    btn.style.background = '#4285f4';
-    btn.href = 'https://accounts.google.com/o/oauth2/v2/auth?client_id=364122352577-99bd1ql2teqgp86m3mre9uv8be5ahpi7.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Flife-os-app-production-72ec.up.railway.app&response_type=token&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar.readonly&prompt=select_account';
-    btn.onclick = null;
-  }
-  if(typeof renderMcal==='function')renderMcal();
-}
-
 async function gcalFetchEvents(){
-  if(!gcalAccessToken) return;
-  // Fetch from start of prev month to end of month+2 so the month calendar is fully populated
+  const statusEl = G('gcal-status-text');
+  if(statusEl) statusEl.innerHTML = '<span style="color:var(--ts);">⏳ Fetching events…</span>';
   const now = new Date();
-  const tmin = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const tmax = new Date(now.getFullYear(), now.getMonth() + 3, 0, 23, 59, 59);
+  const tmin = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+  const tmax = new Date(now.getFullYear(), now.getMonth() + 3, 0, 23, 59, 59).toISOString();
   try {
-    const r = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=500`,
-      { headers: { Authorization: `Bearer ${gcalAccessToken}` } }
-    );
-    if(r.status === 401){ gcalDisconnect(); return; }
-    const data = await r.json();
-    gcalEvents = (data.items || []).filter(e => e.start && (e.start.dateTime || e.start.date));
-    wcalRender();renderMcal();
-  } catch(e){ console.error('GCal fetch error', e); }
+    const r = await fetch(`${GCAL_N8N_WEBHOOK}?timeMin=${encodeURIComponent(tmin)}&timeMax=${encodeURIComponent(tmax)}`);
+    if(!r.ok) throw new Error('n8n responded ' + r.status);
+    const raw = await r.json();
+    // n8n returns items as [{json:{...event}}, ...] or directly as [{...event}, ...]
+    const items = Array.isArray(raw) ? raw : (raw.data || []);
+    gcalEvents = items
+      .map(i => i.json || i)
+      .filter(e => e && e.start && (e.start.dateTime || e.start.date));
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected via n8n</span> — ' + gcalEvents.length + ' events loaded.';
+    wcalRender(); renderMcal();
+  } catch(e){
+    console.error('gcalFetchEvents', e);
+    if(statusEl) statusEl.innerHTML = '<span style="color:var(--red);">⚠ Could not reach n8n webhook.</span> Make sure the workflow is published.';
+    renderMcal();
+  }
 }
 
 function gcalEventsForDate(dateStr){
@@ -10570,49 +10540,8 @@ function gcalEventsForDate(dateStr){
   });
 }
 
-// ── GCAL INIT: runs synchronously at script-bottom so all functions exist ──
-(function gcalInit(){
-  // 1. Handle OAuth redirect hash (#access_token=...) returned from Google
-  if(window.location.hash && window.location.hash.includes('access_token')){
-    try{
-      const params=new URLSearchParams(window.location.hash.replace(/^#/,''));
-      const token=params.get('access_token');
-      const error=params.get('error');
-      // Strip token from URL bar immediately
-      try{history.replaceState(null,'',window.location.pathname);}catch(e){}
-      if(error){
-        alert('Google Calendar sign-in failed: '+error
-          +'\n\nIf it says "redirect_uri_mismatch", make sure '
-          +window.location.origin
-          +' is listed under Authorized Redirect URIs in your Google Cloud Console OAuth client.');
-        return;
-      }
-      if(token){
-        const exp=Date.now()+(parseInt(params.get('expires_in')||'3600')*1000);
-        localStorage.setItem('gcal_token',token);
-        localStorage.setItem('gcal_token_exp',String(exp));
-        gcalAccessToken=token;
-        // Navigate then fetch — use setTimeout so renderAll has settled
-        setTimeout(()=>{
-          gcalSetStatus(true);
-          go('planning',G('ni-planning'));
-          switchPlanTab('calendar',G('ptab-calendar'));
-          gcalFetchEvents();
-        },150);
-        return;
-      }
-    }catch(e){console.error('gcalInit hash parse',e);}
-  }
-  // 2. Restore a saved token (from localStorage, survives cross-origin redirects)
-  try{
-    const saved=localStorage.getItem('gcal_token');
-    const exp=parseInt(localStorage.getItem('gcal_token_exp')||'0');
-    if(saved&&Date.now()<exp){
-      gcalAccessToken=saved;
-      setTimeout(()=>{gcalSetStatus(true);gcalFetchEvents();},150);
-    }
-  }catch(e){}
-})();
+// Fetch on load
+setTimeout(gcalFetchEvents, 300);
 
 // ══════════════════════════════════════════
 // MONTH CALENDAR VIEW
@@ -10692,10 +10621,9 @@ function renderMcal(){
   const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
   if(lbl)lbl.textContent=MONTHS[mcalMonth]+' '+mcalYear;
 
-  if(!gcalAccessToken){
-    grid.innerHTML='<div class="mcal-unconnected" style="grid-column:1/-1;"><div style="font-size:22px;margin-bottom:6px;">📅</div>Connect your Google Calendar above to see your events here.</div>';
+  if(!gcalEvents.length && !G('mcal-grid').innerHTML){
+    grid.innerHTML='<div class="mcal-unconnected" style="grid-column:1/-1;"><div style="font-size:22px;margin-bottom:6px;">⏳</div>Loading your calendar events…</div>';
     if(detail)detail.innerHTML='';
-    return;
   }
 
   const todayStr=today;
