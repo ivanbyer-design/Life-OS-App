@@ -10546,12 +10546,13 @@ function gcalSetStatus(connected){
 
 async function gcalFetchEvents(){
   if(!gcalAccessToken) return;
+  // Fetch from start of prev month to end of month+2 so the month calendar is fully populated
   const now = new Date();
-  const tmin = new Date(now); tmin.setDate(tmin.getDate() - 14);
-  const tmax = new Date(now); tmax.setDate(tmax.getDate() + 60);
+  const tmin = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const tmax = new Date(now.getFullYear(), now.getMonth() + 3, 0, 23, 59, 59);
   try {
     const r = await fetch(
-      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=250`,
+      `https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=${encodeURIComponent(tmin.toISOString())}&timeMax=${encodeURIComponent(tmax.toISOString())}&singleEvents=true&orderBy=startTime&maxResults=500`,
       { headers: { Authorization: `Bearer ${gcalAccessToken}` } }
     );
     if(r.status === 401){ gcalDisconnect(); return; }
@@ -10589,6 +10590,9 @@ window.addEventListener('load', () => {
       sessionStorage.removeItem('gcal_state');
       gcalAccessToken = token;
       gcalSetStatus(true);
+      // Navigate to Planning → Calendar so the calendar is immediately visible
+      go('planning', G('ni-planning'));
+      switchPlanTab('calendar', G('ptab-calendar'));
       gcalFetchEvents();
       return;
     }
