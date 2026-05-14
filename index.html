@@ -6279,7 +6279,8 @@ function renderHome(){
     att.push(`<div class="callout blue"><span class="co-ic">🔄</span><span class="co-tx"><strong>${habitsLeft.length} habits</strong> still to complete today</span></div>`);
   }
 
-  G('home-attn').innerHTML=att.length
+  const attnEl=G('home-attn');
+  if(attnEl)attnEl.innerHTML=att.length
     ? att.join('')
     : `<div class="callout green"><span class="co-ic">✅</span><span class="co-tx" style="font-weight:600;">All clear — no urgent items right now.</span></div>`;
 
