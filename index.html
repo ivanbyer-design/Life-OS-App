@@ -6346,7 +6346,6 @@ function doImport(e){
       ['sidebarOrder'].forEach(field=>{if(incoming[field]!==undefined)S[field]=incoming[field];});
 
       save();setTimeout(()=>{renderAll();showBackupToast(meta?'✓ Synced from '+meta.exportedDate:'✓ Import complete');},50);
-      fetch('http://2.25.162.103:5050/webhook',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({_meta:{importedAt:new Date().toISOString(),source:'life_os_import',exportedDate:meta?meta.exportedDate:null},...S})}).catch(()=>{});
     }catch(err){
       alert('Could not read backup file. Please use a valid Life OS JSON backup.');
     }
@@ -10507,7 +10506,7 @@ function quickJournalNote(){
 // ══════════════════════════════════════════
 // GOOGLE CALENDAR — via n8n webhook
 // ══════════════════════════════════════════
-const GCAL_WEBHOOK = 'https://n8n-production-8608.up.railway.app/webhook/gcal-events';
+const GCAL_WEBHOOK = 'https://n8n.lifemeos.xyz/webhook/gcal-events';
 let gcalEvents = [];
 
 async function gcalFetchEvents(){
@@ -10772,6 +10771,76 @@ function renderPlanInlineProjects(){
 // Hook into renderAll so inline sections stay in sync
 const _origRenderAll = typeof renderAll === 'function' ? renderAll : null;
 
+
+// ══════════════════════════════════════════
+// AGENT MEMORY — DataTable (fast) + Postgres (persistent)
+// ══════════════════════════════════════════
+const MEMORY_READ_URL  = "/api/memory/read";
+const MEMORY_WRITE_URL = "/api/memory/write";
+const PG_MEMORY_URL    = "/api/pg/memory";
+const PG_EVENTS_URL    = "/api/pg/events";
+
+async function saveMemory(content, category = "general") {
+  const payload = JSON.stringify({ agent: "life_os", content, category, source: "life_os" });
+  const opts = { method: "POST", headers: { "Content-Type": "application/json" }, body: payload };
+  await Promise.allSettled([
+    fetch(MEMORY_WRITE_URL, opts),
+    fetch(PG_MEMORY_URL, opts)
+  ]);
+}
+
+async function saveEvent(event_type, title, data = {}) {
+  try {
+    await fetch(PG_EVENTS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event_type, title, data })
+    });
+  } catch(e) { console.warn("Event save failed:", e); }
+}
+
+async function loadMemories(category = "") {
+  try {
+    const url = category ? `${MEMORY_READ_URL}?agent=life_os&category=${encodeURIComponent(category)}` : MEMORY_READ_URL;
+    const r = await fetch(url);
+    if (!r.ok) return [];
+    const data = await r.json();
+    const items = Array.isArray(data) ? data : (data.data || []);
+    return items.map(i => i.json || i).filter(Boolean);
+  } catch(e) { console.warn("Memory read failed:", e); return []; }
+}
+
+// Auto-save when habit is logged
+const _origHabitToggle = typeof habitToggle === "function" ? habitToggle : null;
+if (_origHabitToggle) {
+  window.habitToggle = function(id) {
+    _origHabitToggle(id);
+    const h = (habits || []).find(x => x.id === id);
+    if (h) {
+      saveMemory(`Habit logged: ${h.name}`, "habits");
+      saveEvent("habit", h.name, { id: h.id });
+    }
+  };
+}
+
+// Auto-save when a task is completed
+const _origTaskCheck = typeof taskCheck === "function" ? taskCheck : null;
+if (_origTaskCheck) {
+  window.taskCheck = function(id) {
+    _origTaskCheck(id);
+    const t = (tasks || []).find(x => x.id === id);
+    if (t && t.done) {
+      saveMemory(`Task completed: ${t.text}`, "tasks");
+      saveEvent("task", t.text, { id: t.id, done: true });
+    }
+  };
+}
+
+// Load memories on page load and log to console
+(async () => {
+  const mems = await loadMemories();
+  if (mems.length) console.log(`[Memory] Loaded ${mems.length} entries (DataTable + Postgres active)`);
+})();
 </script>
 
 
