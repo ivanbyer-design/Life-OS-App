@@ -2472,6 +2472,22 @@ html,body{background:var(--bg);}
 .plan-proj-mini-bar{height:4px;background:var(--bg-a);border-radius:2px;overflow:hidden;}
 .plan-proj-mini-prog{height:4px;background:var(--green);border-radius:2px;transition:width .3s;}
 .plan-projs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
+
+/* ── HOME DIRECTORY LAYOUT ── */
+.home-dir-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-top:16px;align-items:start;}
+@media(max-width:768px){.home-dir-grid{grid-template-columns:1fr;}}
+.home-dir-tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+.home-dir-tile{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 12px;cursor:pointer;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column;gap:3px;}
+.home-dir-tile:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.home-dir-tile-icon{font-size:20px;margin-bottom:2px;}
+.home-dir-tile-name{font-size:12px;font-weight:700;color:var(--t);}
+.home-dir-tile-stat{font-size:11px;color:var(--ts);}
+.home-dir-tile-stat.good{color:var(--green);}
+.home-dir-tile-stat.warn{color:var(--amber);}
+.home-dir-tile-stat.bad{color:var(--red);}
+.home-proj-panel-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;max-height:340px;overflow-y:auto;}
+.home-proj-panel-list::-webkit-scrollbar{width:3px;}
+.home-proj-panel-list::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
 </style>
 </head>
 <body>
@@ -2524,9 +2540,9 @@ html,body{background:var(--bg);}
 
     <!-- HOME -->
     <div class="panel on" id="p-home">
-      <button class="mob-menu-pill" onclick="openSB()">☰ Menu</button>
+      <button class="mob-menu-pill" onclick="openSB()">&#9776; Menu</button>
 
-      <!-- WEEKLY SNAPSHOT CARD — greeting + day buttons + calendar merged -->
+      <!-- HEADER -->
       <div class="home-weekly-card">
         <div class="home-weekly-top">
           <div class="home-weekly-left">
@@ -2534,42 +2550,65 @@ html,body{background:var(--bg);}
             <div class="home-weekly-title">My Life OS</div>
             <div class="home-weekly-date" id="home-date"></div>
           </div>
+          <div class="home-hero-streak">
+            <div class="home-hero-streak-num" id="home-streak-num">&mdash;</div>
+            <div class="home-hero-streak-lb">day streak</div>
+          </div>
           <div class="home-weekly-day-btns">
-            <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))" aria-label="Start your day journal">🌅 Start My Day</button>
-            <button class="hero-day-btn end day-ctrl-btn"   onclick="go('journal',G('ni-journal'))"   aria-label="End your day journal">🌙 End My Day</button>
-            <button class="hero-day-btn quick-add-btn day-ctrl-btn" onclick="openHomeQA()" aria-label="Quick add anything">⚡ Quick Add</button>
+            <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
+            <button class="hero-day-btn end day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
+            <button class="hero-day-btn quick-add-btn day-ctrl-btn" onclick="openHomeQA()">&#9889; Quick Add</button>
           </div>
         </div>
-        <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin:0 0 10px!important;">📅 Weekly Snapshot</div>
-        <div id="home-weekly"></div>
       </div>
-      <div class="home-hero-stats" id="home-hero-stats" style="display:none;"></div>
-      <div class="divider"></div>
-      <!-- COMMAND CENTER QUICK-LINKS -->
-      <div class="bh2" style="margin-top:14px;">⚡ Quick Access</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 14px;">
+
+      <!-- TWO-COLUMN: LIFE DIRECTORY + PROJECTS -->
+      <div class="home-dir-grid">
+        <div class="home-dir-col">
+          <div class="bh2" style="margin-bottom:0;">&#128194; Life Directory</div>
+          <div id="home-dir-tiles" class="home-dir-tiles-grid"></div>
+        </div>
+        <div class="home-proj-col">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0;">
+            <div class="bh2" style="margin:0;">&#128640; Projects</div>
+            <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)">View all</button>
+          </div>
+          <div id="home-proj-panel" class="home-proj-panel-list"></div>
+        </div>
+      </div>
+
+      <!-- WEEKLY CALENDAR -->
+      <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:20px;margin-bottom:8px;">&#128197; This Week</div>
+      <div id="home-weekly"></div>
+
+      <div class="divider" style="margin:16px 0;"></div>
+
+      <!-- QUICK ACCESS -->
+      <div class="bh2" style="margin-bottom:8px;">&#9889; Quick Access</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px;">
         <div onclick="go('journal',G('ni-journal'))" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">📓</div>
+          <div style="font-size:26px;margin-bottom:6px;">&#128211;</div>
           <div style="font-size:12px;font-weight:700;color:var(--t);">Journal Today</div>
         </div>
         <div onclick="go('planning',G('ni-planning'))" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">🗓️</div>
+          <div style="font-size:26px;margin-bottom:6px;">&#128197;</div>
           <div style="font-size:12px;font-weight:700;color:var(--t);">Plan My Week</div>
         </div>
         <div onclick="openFinQuickAdd()" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">💰</div>
+          <div style="font-size:26px;margin-bottom:6px;">&#128176;</div>
           <div style="font-size:12px;font-weight:700;color:var(--t);">Log Money</div>
         </div>
         <div onclick="go('planning',G('ni-planning'));setTimeout(()=>{switchPlanTab('todos',G('ptab-todos'));G('td-t')&&G('td-t').focus();},100)" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">✅</div>
+          <div style="font-size:26px;margin-bottom:6px;">&#9989;</div>
           <div style="font-size:12px;font-weight:700;color:var(--t);">Add Task</div>
         </div>
       </div>
 
-      <div class="bh2 editable-hdr" data-hdr="home-qlog-hdr" id="hdr-home-qlog">⚡ Quick log</div>
+      <!-- QUICK LOG -->
+      <div class="bh2 editable-hdr" data-hdr="home-qlog-hdr" id="hdr-home-qlog">&#9889; Quick log</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;" class="two-col">
         <div class="nf" style="margin:0;">
-          <div class="nf-ttl">💰 Log finance</div>
+          <div class="nf-ttl">&#128176; Log finance</div>
           <div class="fr">
             <input class="fi" type="text" id="qf-d" placeholder="Description" onkeydown="if(event.key==='Enter')quickFin()">
             <input class="fi" type="number" id="qf-a" placeholder="Amount" step="0.01" onkeydown="if(event.key==='Enter')quickFin()">
@@ -2578,15 +2617,15 @@ html,body{background:var(--bg);}
           <div style="display:flex;justify-content:flex-end;margin-top:4px;"><button class="btn pri" onclick="quickFin()">Add</button></div>
         </div>
         <div class="nf" style="margin:0;">
-          <div class="nf-ttl">✅ Quick task</div>
+          <div class="nf-ttl">&#9989; Quick task</div>
           <div class="fr">
             <input class="fi" type="text" id="qt-t" placeholder="Task description" onkeydown="if(event.key==='Enter')quickTodo()">
-            <select class="fi" id="qt-p" style="max-width:110px;"><option value="high">🔴 High</option><option value="med" selected>🟡 Med</option><option value="low">⚪ Low</option></select>
+            <select class="fi" id="qt-p" style="max-width:110px;"><option value="high">&#128308; High</option><option value="med" selected>&#128993; Med</option><option value="low">&#9898; Low</option></select>
           </div>
           <div style="display:flex;justify-content:flex-end;margin-top:4px;"><button class="btn pri" onclick="quickTodo()">Add</button></div>
         </div>
         <div class="nf" style="margin:0;">
-          <div class="nf-ttl">📓 Quick Journal</div>
+          <div class="nf-ttl">&#128211; Quick Journal</div>
           <div class="fr">
             <textarea class="fi" id="qqj-txt" placeholder="A quick note for today..." style="min-height:60px;resize:none;" rows="2"></textarea>
           </div>
@@ -2595,6 +2634,7 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
+    <!-- FINANCE DASHBOARD -->
     <!-- FINANCE DASHBOARD -->
     <div class="panel" id="p-finance">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
@@ -5993,6 +6033,51 @@ function renderHomeDebts(){
     </div>`;
 }
 
+function renderLifeDir(){
+  const el=G('home-dir-tiles');
+  if(!el)return;
+  const now=new Date();
+  const mPrefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const mFin=S.finance.filter(f=>f.dt&&f.dt.startsWith(mPrefix));
+  const mNet=mFin.filter(f=>f.t==='income').reduce((s,f)=>s+f.a,0)-mFin.filter(f=>f.t==='expense').reduce((s,f)=>s+f.a,0);
+  const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
+  const habitsDone=S.habits.filter(h=>S.hlog&&S.hlog[today+'-'+h.id]).length;
+  const habitsTotal=S.habits.length;
+  const unpaidBills=S.bills.filter(b=>getBillStatus(b)==='Unpaid').length;
+  const activeGoals=(S.goals||[]).filter(g=>g.todos&&!g.todos.every(t=>t.done)).length;
+  const tiles=[
+    {icon:'&#128526;',name:'Finance',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))"},
+    {icon:'&#9989;',name:'Tasks',stat:todayTasks===0?'All clear today':todayTasks+' remaining',cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('todos',G('ptab-todos')),80)"},
+    {icon:'&#128260;',name:'Habits',stat:habitsTotal?habitsDone+'/'+habitsTotal+' today':'No habits set',cls:habitsTotal&&habitsDone===habitsTotal?'good':habitsTotal?'warn':'',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('habits',G('ptab-habits')),80)"},
+    {icon:'&#127919;',name:'Goals',stat:activeGoals+' active',cls:'',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('goals',G('ptab-goals')),80)"},
+    {icon:'&#128211;',name:'Journal',stat:'Write today',cls:'',action:"go('journal',G('ni-journal'))"},
+    {icon:'&#129534;',name:'Bills',stat:unpaidBills+' unpaid',cls:unpaidBills>0?'bad':'good',action:"go('finance',G('ni-finance'));setTimeout(()=>switchFinTab('bills',G('ftab-bills')),80)"},
+  ];
+  el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
+}
+
+function renderHomeProjPanel(){
+  const el=G('home-proj-panel');
+  if(!el)return;
+  const projects=(S.projects||[]).filter(p=>p.status!=='done').sort((a,b)=>{
+    const o={blocked:0,active:1,planning:2,review:3,paused:4};
+    return (o[a.status]||9)-(o[b.status]||9);
+  });
+  if(!projects.length){
+    el.innerHTML='<div style="color:var(--ts);font-size:12px;padding:12px 0;">No active projects &mdash; <span style="color:var(--blue);cursor:pointer;" onclick="go(&#39;planning&#39;,G(&#39;ni-planning&#39;));setTimeout(()=>switchPlanTab(&#39;projects&#39;,G(&#39;ptab-projects&#39;)),80)">create one</span></div>';
+    return;
+  }
+  const sm={active:'ps-active',planning:'ps-planning',review:'ps-review',paused:'ps-paused',blocked:'ps-blocked'};
+  const sl={active:'Active',planning:'Planning',review:'Review',paused:'Paused',blocked:'Blocked'};
+  el.innerHTML=projects.map(p=>{
+    const tasks=p.tasks||[];
+    const done=tasks.filter(t=>t.done).length;
+    const pct=tasks.length?Math.round(done/tasks.length*100):0;
+    const dot=p.color?`<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${p.color};margin-right:5px;flex-shrink:0;"></span>`:'';
+    return`<div class="plan-proj-mini" onclick="openProjectDrawer('${p.id}')"><div style="display:flex;align-items:center;justify-content:space-between;gap:8px;"><div class="plan-proj-mini-name">${dot}${p.name}</div><span class="proj-bucket-status ${sm[p.status]||'ps-active'}" style="flex-shrink:0;">${sl[p.status]||p.status}</span></div><div class="plan-proj-mini-meta">${done}/${tasks.length} tasks &middot; ${pct}%</div><div class="plan-proj-mini-bar"><div class="plan-proj-mini-prog" style="width:${pct}%;background:${p.color||'var(--green)'};"></div></div></div>`;
+  }).join('');
+}
+
 function renderHome(){
   // ── GREETING ──
   const hour=new Date().getHours();
@@ -6060,6 +6145,8 @@ function renderHome(){
     </div>`;
   }
   renderProjectOverview();
+  renderLifeDir();
+  renderHomeProjPanel();
 
   renderWeekly();
   const finEl=G('home-fin-snapshot');
