@@ -2553,7 +2553,7 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
-      <!-- TWO-COLUMN: LIFE DIRECTORY + PROJECTS -->
+      <!-- TWO-COLUMN: LIFE DIRECTORY + PROJECTS & CALENDAR -->
       <div class="home-dir-grid">
         <div class="home-dir-col">
           <div class="bh2" style="margin-bottom:0;">&#128194; Life Directory</div>
@@ -2564,13 +2564,11 @@ html,body{background:var(--bg);}
             <div class="bh2" style="margin:0;">&#128640; Projects</div>
             <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)">View all</button>
           </div>
-          <div id="home-proj-panel" class="home-proj-panel-list"></div>
+          <div id="home-proj-overview"></div>
+          <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:16px;margin-bottom:8px;">&#128197; This Week</div>
+          <div id="home-weekly"></div>
         </div>
       </div>
-
-      <!-- WEEKLY CALENDAR -->
-      <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:20px;margin-bottom:8px;">&#128197; This Week</div>
-      <div id="home-weekly"></div>
 
       <div class="divider" style="margin:16px 0;"></div>
 
