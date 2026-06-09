@@ -70,10 +70,11 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);bac
 .ic-btn{width:30px;height:30px;border-radius:var(--r);border:none;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ts);font-size:15px;transition:background .15s,color .15s;}
 .ic-btn:hover{background:var(--bg-a);color:var(--t);}
 .sb-sec{padding:10px 18px 4px;font-size:10px;font-weight:700;color:var(--th);letter-spacing:0.1em;text-transform:uppercase;margin-top:6px;}
-.ni{display:flex;align-items:center;gap:9px;padding:8px 11px;margin:3px 6px;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:500;color:var(--ts);transition:background .15s,color .15s,box-shadow .15s,border-color .15s;background:var(--bg-in);border:1px solid var(--bd);}
-.ni:hover{background:var(--bg-a);color:var(--t);border-color:var(--bd2);}
-.ni.on{background:color-mix(in srgb,var(--blue) 12%,var(--bg-card));color:var(--blue);font-weight:600;border-color:var(--blue);box-shadow:0 0 0 1px var(--blue) inset;}
-.ni-ic{font-size:16px;width:22px;text-align:center;flex-shrink:0;}
+.ni{display:flex;align-items:center;gap:10px;padding:10px 14px;margin:3px 8px;border-radius:var(--r);cursor:pointer;font-size:13px;font-weight:600;color:var(--ts);transition:background .15s,color .15s,transform .25s var(--spring),box-shadow .2s,border-color .15s;background:var(--bg-card);border:1.5px solid var(--bd2);box-shadow:var(--sh);}
+.ni:hover{background:var(--bg-a);color:var(--t);border-color:var(--bd2);transform:translateX(4px);}
+.ni.on{background:color-mix(in srgb,var(--blue) 16%,var(--bg-card));color:var(--blue);font-weight:700;border-color:var(--blue);box-shadow:0 0 0 1.5px var(--blue) inset,var(--sh-md);}
+.ni-ic{font-size:14px;width:26px;height:26px;border-radius:8px;background:var(--bg-a);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ni.on .ni-ic{background:color-mix(in srgb,var(--blue) 22%,var(--bg-card));}
 .ni-lb{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sb-div{height:1px;background:var(--bd);margin:6px 10px;}
 .sb-ft{margin-top:auto;padding:10px;border-top:1px solid var(--bd);}
@@ -2506,7 +2507,7 @@ html,body{background:var(--bg);}
 @keyframes bucketIn{0%{opacity:0;transform:translateY(20px) scale(0.85);}65%{transform:translateY(-6px) scale(1.04);}100%{opacity:1;transform:translateY(0) scale(1);}}
 
 /* ── WEEK CAL DAY BUTTONS ── */
-.week-cal-day-btns{display:flex;gap:10px;padding:12px 14px 0;background:var(--bg-a);}
+.week-cal-day-btns{display:flex;gap:10px;padding:14px 14px 14px;background:var(--bg-a);border-top:1px solid var(--bd2);}
 .week-cal-day-btns .hero-day-btn{flex:1;font-size:12px;padding:9px 12px;}
 
 /* ── EISENHOWER MATRIX ── */
@@ -2528,11 +2529,25 @@ html,body{background:var(--bg);}
 .eis-q.q3 .eis-q-label{color:var(--amber);}
 .eis-q.q4 .eis-q-label{color:var(--ts);}
 .eis-q-action{font-size:9px;color:var(--ts);margin-bottom:8px;font-style:italic;}
-.eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;}
+.eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:2px;padding:5px 6px;border-radius:8px;cursor:pointer;transition:background .12s,transform .2s var(--spring);}
+.eis-task:hover{background:rgba(255,255,255,0.06);}
+.eis-task.focused{background:var(--bg-a);border-radius:8px;}
 .eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;}
 .eis-task-txt{font-size:11px;color:var(--t);line-height:1.35;flex:1;}
 .eis-empty{font-size:10px;color:var(--th);font-style:italic;margin-top:2px;}
 .eis-more{font-size:10px;color:var(--ts);margin-top:3px;cursor:pointer;}
+.eis-task-arr{font-size:13px;color:var(--ts);flex-shrink:0;margin-left:2px;transition:transform .2s var(--spring);}
+.eis-task.focused .eis-task-arr{transform:rotate(90deg);color:var(--blue);}
+.eis-move-panel{display:flex;align-items:center;gap:5px;padding:5px 6px 8px;flex-wrap:wrap;animation:panelFadeIn .2s var(--spring);}
+.eis-move-lbl{font-size:9px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;}
+.eis-move-btn{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;border:1.5px solid var(--bd2);background:var(--bg-h);color:var(--ts);cursor:pointer;transition:all .2s var(--spring);font-family:var(--font);}
+.eis-move-btn:hover{transform:scale(1.12);}
+.eis-move-btn.active{background:var(--blue);color:var(--ti);border-color:var(--blue);}
+.eis-move-btn.clr{background:transparent;color:var(--th);border-style:dashed;font-size:9px;}
+.eis-add-row{display:flex;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);}
+.eis-add-inp{font-size:11px!important;padding:5px 8px!important;}
+.eis-add-btn{flex-shrink:0;width:28px;height:28px;border-radius:10px;border:1.5px solid var(--bd2);background:var(--bg-h);color:var(--t);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--spring);font-family:var(--font);}
+.eis-add-btn:hover{transform:scale(1.18);background:var(--blue);color:var(--ti);border-color:var(--blue);}
 
 /* ── PERSONAL TO-DOS ── */
 .home-ptodos-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 16px 12px;box-shadow:var(--sh);}
@@ -5913,10 +5928,6 @@ function renderWeekly(){
     <div class="week-scroll" id="week-scroll">
       <div class="week-days">${cols}</div>
     </div>
-    <div class="week-cal-day-btns">
-      <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
-      <button class="hero-day-btn end day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
-    </div>
     <div class="week-summary">
       <div class="ws-cell" onclick="go('finance',G('ni-finance'));setTimeout(()=>switchFinTab('entries',G('ftab-entries')),80);" title="View transactions">
         <div class="ws-cell-ic">💰</div>
@@ -5948,6 +5959,10 @@ function renderWeekly(){
         <div class="ws-cell-lb">Bills due</div>
         <div class="ws-cell-vl ${wkBills.length>0?'dn':''}">${wkBills.length}</div>
       </div>
+    </div>
+    <div class="week-cal-day-btns">
+      <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
+      <button class="hero-day-btn end day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
     </div>
   </div>`;
 
@@ -6088,44 +6103,46 @@ function renderHomeProjPanel(){
   }).join('');
 }
 
+window._eisFocused=null;
+function eisFocus(id){window._eisFocused=(window._eisFocused===id?null:id);renderEisenhowerMatrix();}
+function eisMove(todoId,q){const t=S.todos.find(t=>t.id===todoId);if(t){t.eis=q;save();}window._eisFocused=null;renderEisenhowerMatrix();renderTodos&&renderTodos();}
+function eisClear(todoId){const t=S.todos.find(t=>t.id===todoId);if(t){delete t.eis;save();}window._eisFocused=null;renderEisenhowerMatrix();}
+function eisAddTask(q){
+  const inp=G('eis-add-'+q);
+  const text=(inp&&inp.value||'').trim();
+  if(!text)return;
+  const priority=(q===1||q===2)?'high':'med';
+  const d=(q===1||q===3)?today:null;
+  S.todos.push({id:Date.now(),t:text,p:priority,done:false,d,eis:q});
+  if(inp)inp.value='';
+  save();renderEisenhowerMatrix();if(typeof renderTodos==='function')renderTodos();
+}
 function renderEisenhowerMatrix(){
   const el=G('home-eis-matrix');
   if(!el)return;
+  const focused=window._eisFocused||null;
   const open=S.todos.filter(t=>!t.done);
   const todayDate=new Date(today);
-  const urgent=t=>{
-    if(!t.d)return false;
-    const diff=(new Date(t.d)-todayDate)/(1000*60*60*24);
-    return diff<=3;
-  };
-  const important=t=>t.p==='high';
-  const q1=open.filter(t=>urgent(t)&&important(t));
-  const q2=open.filter(t=>!urgent(t)&&important(t));
-  const q3=open.filter(t=>urgent(t)&&!important(t));
-  const q4=open.filter(t=>!urgent(t)&&!important(t));
+  const autoUrgent=t=>{if(!t.d)return false;return(new Date(t.d)-todayDate)/(1000*60*60*24)<=3;};
+  const autoImportant=t=>t.p==='high';
+  const getQ=t=>{if(t.eis)return t.eis;const u=autoUrgent(t),i=autoImportant(t);return u&&i?1:!u&&i?2:u&&!i?3:4;};
+  const q1=open.filter(t=>getQ(t)===1);
+  const q2=open.filter(t=>getQ(t)===2);
+  const q3=open.filter(t=>getQ(t)===3);
+  const q4=open.filter(t=>getQ(t)===4);
   const dotColor=t=>t.p==='high'?'var(--red)':t.p==='low'?'var(--ts)':'var(--amber)';
-  const taskHtml=(arr,max=4)=>{
-    if(!arr.length)return'<div class="eis-empty">None</div>';
+  const qLabels=['Q1','Q2','Q3','Q4'];
+  const movePanel=(t,curQ)=>`<div class="eis-move-panel"><span class="eis-move-lbl">Move:</span>${qLabels.map((l,i)=>`<button class="eis-move-btn${(i+1)===curQ?' active':''}" onclick="event.stopPropagation();eisMove(${t.id},${i+1})">${l}</button>`).join('')}${t.eis?`<button class="eis-move-btn clr" onclick="event.stopPropagation();eisClear(${t.id})">auto</button>`:''}</div>`;
+  const taskHtml=(arr,curQ,max=5)=>{
+    if(!arr.length&&focused===null)return'<div class="eis-empty">None</div>';
     const shown=arr.slice(0,max);
     const more=arr.length>max?`<div class="eis-more">+${arr.length-max} more</div>`:'';
-    return shown.map(t=>`<div class="eis-task"><div class="eis-dot" style="background:${dotColor(t)};"></div><div class="eis-task-txt">${t.t||''}</div></div>`).join('')+more;
+    const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot" style="background:${dotColor(t)};margin-top:5px;"></div><div class="eis-task-txt">${t.t||''}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
+    return(rows||'<div class="eis-empty">None</div>')+more;
   };
-  el.innerHTML=`<div class="eis-wrap">
-    <div class="eis-axis-row">
-      <div></div>
-      <div class="eis-axis-top">&#9889; Urgent</div>
-      <div class="eis-axis-top" style="color:var(--ts);">Not Urgent</div>
-    </div>
-    <div class="eis-grid">
-      <div class="eis-axis-side" style="grid-row:span 2;">
-        <div class="eis-axis-label">Important &uarr;</div>
-      </div>
-      <div class="eis-q q1"><div class="eis-q-label">Q1 &mdash; Do First</div><div class="eis-q-action">Critical &amp; due now</div>${taskHtml(q1)}</div>
-      <div class="eis-q q2"><div class="eis-q-label">Q2 &mdash; Schedule</div><div class="eis-q-action">Important, plan it</div>${taskHtml(q2)}</div>
-      <div class="eis-q q3"><div class="eis-q-label">Q3 &mdash; Delegate</div><div class="eis-q-action">Urgent, low impact</div>${taskHtml(q3)}</div>
-      <div class="eis-q q4"><div class="eis-q-label">Q4 &mdash; Eliminate</div><div class="eis-q-action">Neither urgent nor key</div>${taskHtml(q4)}</div>
-    </div>
-  </div>`;
+  const addRow=q=>`<div class="eis-add-row"><input class="fi eis-add-inp" id="eis-add-${q}" placeholder="Add task..." onkeydown="if(event.key==='Enter')eisAddTask(${q})"><button class="eis-add-btn" onclick="eisAddTask(${q})">+</button></div>`;
+  const qs=[{arr:q1,q:1,cls:'q1',lbl:'Q1 — Do First',sub:'Urgent &amp; Important'},{arr:q2,q:2,cls:'q2',lbl:'Q2 — Schedule',sub:'Important, not urgent'},{arr:q3,q:3,cls:'q3',lbl:'Q3 — Delegate',sub:'Urgent, not important'},{arr:q4,q:4,cls:'q4',lbl:'Q4 — Eliminate',sub:'Neither urgent nor key'}];
+  el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">&#9889; Urgent</div><div class="eis-axis-top" style="color:var(--ts);">Not Urgent</div></div><div class="eis-grid"><div class="eis-axis-side" style="grid-row:span 2;"><div class="eis-axis-label">Important &uarr;</div></div>${qs.map(x=>`<div class="eis-q ${x.cls}"><div class="eis-q-label">${x.lbl}</div><div class="eis-q-action">${x.sub}</div>${taskHtml(x.arr,x.q)}${addRow(x.q)}</div>`).join('')}</div></div>`;
 }
 
 function renderPersonalTodos(){
