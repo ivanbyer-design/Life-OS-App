@@ -1483,13 +1483,14 @@ input:-webkit-autofill,input:-webkit-autofill:focus{
 }
 
 /* WEEKLY SNAPSHOT CARD */
-.home-weekly-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh);margin:8px 0 0;}
+.home-weekly-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:22px 18px 18px;box-shadow:var(--sh);margin:8px 0 0;}
 .home-weekly-card .bh2{margin:0 0 8px!important;}
 .home-weekly-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:12px;}
 .home-weekly-left{flex:1;min-width:0;}
-.home-weekly-greeting{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:2px;}
-.home-weekly-title{font-size:20px;font-weight:800;color:var(--t);letter-spacing:-0.02em;line-height:1.15;}
-.home-weekly-date{font-size:12px;color:var(--ts);margin-top:3px;}
+.home-weekly-greeting{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;text-align:center;}
+.home-weekly-title{font-size:24px;font-weight:900;color:var(--t);letter-spacing:-0.03em;line-height:1.15;text-align:center;}
+.home-weekly-date{font-size:12px;color:var(--ts);margin-top:4px;text-align:center;}
+.home-dir-divider{height:1px;background:var(--bd);margin:18px 0 14px;}
 .home-weekly-day-btns{display:flex;flex-direction:column;gap:7px;flex-shrink:0;width:140px;}
 .home-weekly-day-btns .hero-day-btn{width:100%;margin:0;font-size:12px;padding:8px 10px;}
 
@@ -2557,17 +2558,12 @@ html,body{background:var(--bg);}
     <div class="panel on" id="p-home">
       <button class="mob-menu-pill" onclick="openSB()">&#9776; Menu</button>
 
-      <!-- HEADER -->
+      <!-- HEADER + LIFE DIRECTORY (merged) -->
       <div class="home-weekly-card">
         <div class="home-weekly-greeting" id="home-greeting">Good morning</div>
         <div class="home-weekly-title">My Life OS</div>
         <div class="home-weekly-date" id="home-date"></div>
-
-      </div>
-
-      <!-- LIFE DIRECTORY -->
-      <div class="home-dir-col" style="margin-top:16px;">
-        <div class="bh2" style="margin-bottom:0;">&#128194; Life Directory</div>
+        <div class="home-dir-divider"></div>
         <div id="home-dir-tiles" class="home-dir-tiles-grid"></div>
       </div>
 
