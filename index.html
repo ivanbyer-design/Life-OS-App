@@ -2504,6 +2504,51 @@ html,body{background:var(--bg);}
 @keyframes tileIn{0%{opacity:0;transform:translateY(22px) scale(0.88);}65%{transform:translateY(-5px) scale(1.03);}100%{opacity:1;transform:translateY(0) scale(1);}}
 .proj-bucket{animation:bucketIn .45s var(--spring) both;}
 @keyframes bucketIn{0%{opacity:0;transform:translateY(20px) scale(0.85);}65%{transform:translateY(-6px) scale(1.04);}100%{opacity:1;transform:translateY(0) scale(1);}}
+
+/* ── WEEK CAL DAY BUTTONS ── */
+.week-cal-day-btns{display:flex;gap:10px;padding:12px 14px 0;background:var(--bg-a);}
+.week-cal-day-btns .hero-day-btn{flex:1;font-size:12px;padding:9px 12px;}
+
+/* ── EISENHOWER MATRIX ── */
+.eis-wrap{margin-top:10px;}
+.eis-axis-row{display:grid;grid-template-columns:28px 1fr 1fr;gap:0;margin-bottom:2px;}
+.eis-axis-top{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--ts);text-align:center;padding-bottom:4px;}
+.eis-grid{display:grid;grid-template-columns:28px 1fr 1fr;gap:0;}
+.eis-axis-side{display:flex;align-items:center;justify-content:center;}
+.eis-axis-label{font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--ts);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);}
+.eis-col{display:flex;flex-direction:column;gap:2px;}
+.eis-q{border-radius:var(--r);padding:12px 12px 10px;min-height:110px;margin:2px;}
+.eis-q.q1{background:color-mix(in srgb,var(--red) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--red) 25%,transparent);}
+.eis-q.q2{background:color-mix(in srgb,var(--green) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--green) 25%,transparent);}
+.eis-q.q3{background:color-mix(in srgb,var(--amber) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--amber) 25%,transparent);}
+.eis-q.q4{background:var(--bg-h);border:1px solid var(--bd);}
+.eis-q-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1px;}
+.eis-q.q1 .eis-q-label{color:var(--red);}
+.eis-q.q2 .eis-q-label{color:var(--green);}
+.eis-q.q3 .eis-q-label{color:var(--amber);}
+.eis-q.q4 .eis-q-label{color:var(--ts);}
+.eis-q-action{font-size:9px;color:var(--ts);margin-bottom:8px;font-style:italic;}
+.eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;}
+.eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.eis-task-txt{font-size:11px;color:var(--t);line-height:1.35;flex:1;}
+.eis-empty{font-size:10px;color:var(--th);font-style:italic;margin-top:2px;}
+.eis-more{font-size:10px;color:var(--ts);margin-top:3px;cursor:pointer;}
+
+/* ── PERSONAL TO-DOS ── */
+.home-ptodos-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 16px 12px;box-shadow:var(--sh);}
+.home-ptodos-inp-row{display:flex;gap:8px;margin-bottom:12px;}
+.home-ptodos-inp-row .fi{flex:1;}
+.ptodo-item{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:var(--r);transition:background .15s,transform .2s var(--spring);}
+.ptodo-item:hover{background:var(--bg-h);}
+.ptodo-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--bd2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:background .15s,border-color .15s,transform .2s var(--spring);}
+.ptodo-cb:hover{transform:scale(1.15);}
+.ptodo-cb.done{background:var(--green);border-color:var(--green);color:#fff;}
+.ptodo-txt{flex:1;font-size:13px;color:var(--t);line-height:1.4;}
+.ptodo-txt.done{text-decoration:line-through;color:var(--th);}
+.ptodo-del{background:none;border:none;cursor:pointer;color:var(--th);font-size:13px;padding:3px 6px;border-radius:8px;opacity:0;transition:opacity .12s,background .12s,color .12s;}
+.ptodo-item:hover .ptodo-del{opacity:1;}
+.ptodo-del:hover{background:var(--rbg);color:var(--red);}
+.ptodos-empty{font-size:13px;color:var(--th);padding:8px 0;text-align:center;}
 </style>
 </head>
 <body>
@@ -2571,12 +2616,6 @@ html,body{background:var(--bg);}
       <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:20px;margin-bottom:8px;">&#128197; This Week</div>
       <div id="home-weekly"></div>
 
-      <!-- START / END DAY BUTTONS (below calendar) -->
-      <div style="display:flex;gap:12px;margin-top:14px;">
-        <button class="hero-day-btn start day-ctrl-btn" style="flex:1;" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
-        <button class="hero-day-btn end day-ctrl-btn" style="flex:1;" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
-      </div>
-
       <!-- PROJECT BUCKETS (full width, below calendar) -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:0;">
         <div class="bh2" style="margin:0;">&#128640; Projects</div>
@@ -2584,56 +2623,22 @@ html,body{background:var(--bg);}
       </div>
       <div id="home-proj-overview"></div>
 
-      <div class="divider" style="margin:16px 0;"></div>
 
-      <!-- QUICK ACCESS -->
-      <div class="bh2" style="margin-bottom:8px;">&#9889; Quick Access</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 14px;">
-        <div onclick="go('journal',G('ni-journal'))" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">&#128211;</div>
-          <div style="font-size:12px;font-weight:700;color:var(--t);">Journal Today</div>
-        </div>
-        <div onclick="go('planning',G('ni-planning'))" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">&#128197;</div>
-          <div style="font-size:12px;font-weight:700;color:var(--t);">Plan My Week</div>
-        </div>
-        <div onclick="openFinQuickAdd()" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">&#128176;</div>
-          <div style="font-size:12px;font-weight:700;color:var(--t);">Log Money</div>
-        </div>
-        <div onclick="go('planning',G('ni-planning'));setTimeout(()=>{switchPlanTab('todos',G('ptab-todos'));G('td-t')&&G('td-t').focus();},100)" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-          <div style="font-size:26px;margin-bottom:6px;">&#9989;</div>
-          <div style="font-size:12px;font-weight:700;color:var(--t);">Add Task</div>
-        </div>
+      <!-- EISENHOWER MATRIX -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:0;">
+        <div class="bh2" style="margin:0;">&#127919; Eisenhower Matrix</div>
+        <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('todos',G('ptab-todos')),80)">All tasks</button>
       </div>
+      <div id="home-eis-matrix"></div>
 
-      <!-- QUICK LOG -->
-      <div class="bh2 editable-hdr" data-hdr="home-qlog-hdr" id="hdr-home-qlog">&#9889; Quick log</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;" class="two-col">
-        <div class="nf" style="margin:0;">
-          <div class="nf-ttl">&#128176; Log finance</div>
-          <div class="fr">
-            <input class="fi" type="text" id="qf-d" placeholder="Description" onkeydown="if(event.key==='Enter')quickFin()">
-            <input class="fi" type="number" id="qf-a" placeholder="Amount" step="0.01" onkeydown="if(event.key==='Enter')quickFin()">
-            <select class="fi" id="qf-t"><option value="income">Income</option><option value="expense">Expense</option></select>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:4px;"><button class="btn pri" onclick="quickFin()">Add</button></div>
+      <!-- PERSONAL TO-DOS -->
+      <div class="bh2" style="margin-top:22px;margin-bottom:8px;">&#9989; Personal To&#8209;Dos</div>
+      <div class="home-ptodos-card">
+        <div class="home-ptodos-inp-row">
+          <input class="fi" type="text" id="ptodo-inp" placeholder="Add a personal to-do..." onkeydown="if(event.key==='Enter')addPersonalTodo()">
+          <button class="btn pri" onclick="addPersonalTodo()">Add</button>
         </div>
-        <div class="nf" style="margin:0;">
-          <div class="nf-ttl">&#9989; Quick task</div>
-          <div class="fr">
-            <input class="fi" type="text" id="qt-t" placeholder="Task description" onkeydown="if(event.key==='Enter')quickTodo()">
-            <select class="fi" id="qt-p" style="max-width:110px;"><option value="high">&#128308; High</option><option value="med" selected>&#128993; Med</option><option value="low">&#9898; Low</option></select>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:4px;"><button class="btn pri" onclick="quickTodo()">Add</button></div>
-        </div>
-        <div class="nf" style="margin:0;">
-          <div class="nf-ttl">&#128211; Quick Journal</div>
-          <div class="fr">
-            <textarea class="fi" id="qqj-txt" placeholder="A quick note for today..." style="min-height:60px;resize:none;" rows="2"></textarea>
-          </div>
-          <div style="display:flex;justify-content:flex-end;margin-top:4px;"><button class="btn pri" onclick="quickJournalNote()">Save</button></div>
-        </div>
+        <div id="home-personal-todos"></div>
       </div>
     </div>
 
@@ -3585,7 +3590,7 @@ G('h-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',mo
 document.querySelectorAll('input[type=date]').forEach(el=>{if(!el.value)el.value=today;});
 
 // STATE
-let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[]};
+let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[],personalTodos:[]};
 try{const d=localStorage.getItem('lifeOS_v3');if(d)S=Object.assign(S,JSON.parse(d));}catch(e){}
 if(!S.otherPayments)S.otherPayments=[];
 if(!S.customCategories)S.customCategories=[];
@@ -5908,6 +5913,10 @@ function renderWeekly(){
     <div class="week-scroll" id="week-scroll">
       <div class="week-days">${cols}</div>
     </div>
+    <div class="week-cal-day-btns">
+      <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
+      <button class="hero-day-btn end day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
+    </div>
     <div class="week-summary">
       <div class="ws-cell" onclick="go('finance',G('ni-finance'));setTimeout(()=>switchFinTab('entries',G('ftab-entries')),80);" title="View transactions">
         <div class="ws-cell-ic">💰</div>
@@ -6079,6 +6088,82 @@ function renderHomeProjPanel(){
   }).join('');
 }
 
+function renderEisenhowerMatrix(){
+  const el=G('home-eis-matrix');
+  if(!el)return;
+  const open=S.todos.filter(t=>!t.done);
+  const todayDate=new Date(today);
+  const urgent=t=>{
+    if(!t.d)return false;
+    const diff=(new Date(t.d)-todayDate)/(1000*60*60*24);
+    return diff<=3;
+  };
+  const important=t=>t.p==='high';
+  const q1=open.filter(t=>urgent(t)&&important(t));
+  const q2=open.filter(t=>!urgent(t)&&important(t));
+  const q3=open.filter(t=>urgent(t)&&!important(t));
+  const q4=open.filter(t=>!urgent(t)&&!important(t));
+  const dotColor=t=>t.p==='high'?'var(--red)':t.p==='low'?'var(--ts)':'var(--amber)';
+  const taskHtml=(arr,max=4)=>{
+    if(!arr.length)return'<div class="eis-empty">None</div>';
+    const shown=arr.slice(0,max);
+    const more=arr.length>max?`<div class="eis-more">+${arr.length-max} more</div>`:'';
+    return shown.map(t=>`<div class="eis-task"><div class="eis-dot" style="background:${dotColor(t)};"></div><div class="eis-task-txt">${t.t||''}</div></div>`).join('')+more;
+  };
+  el.innerHTML=`<div class="eis-wrap">
+    <div class="eis-axis-row">
+      <div></div>
+      <div class="eis-axis-top">&#9889; Urgent</div>
+      <div class="eis-axis-top" style="color:var(--ts);">Not Urgent</div>
+    </div>
+    <div class="eis-grid">
+      <div class="eis-axis-side" style="grid-row:span 2;">
+        <div class="eis-axis-label">Important &uarr;</div>
+      </div>
+      <div class="eis-q q1"><div class="eis-q-label">Q1 &mdash; Do First</div><div class="eis-q-action">Critical &amp; due now</div>${taskHtml(q1)}</div>
+      <div class="eis-q q2"><div class="eis-q-label">Q2 &mdash; Schedule</div><div class="eis-q-action">Important, plan it</div>${taskHtml(q2)}</div>
+      <div class="eis-q q3"><div class="eis-q-label">Q3 &mdash; Delegate</div><div class="eis-q-action">Urgent, low impact</div>${taskHtml(q3)}</div>
+      <div class="eis-q q4"><div class="eis-q-label">Q4 &mdash; Eliminate</div><div class="eis-q-action">Neither urgent nor key</div>${taskHtml(q4)}</div>
+    </div>
+  </div>`;
+}
+
+function renderPersonalTodos(){
+  const el=G('home-personal-todos');
+  if(!el)return;
+  const list=S.personalTodos||[];
+  if(!list.length){
+    el.innerHTML='<div class="ptodos-empty">No personal to-dos yet — add one above</div>';
+    return;
+  }
+  el.innerHTML=list.map(t=>`
+    <div class="ptodo-item">
+      <div class="ptodo-cb${t.done?' done':''}" onclick="togglePersonalTodo(${t.id})">${t.done?'&#10003;':''}</div>
+      <div class="ptodo-txt${t.done?' done':''}">${t.text||''}</div>
+      <button class="ptodo-del" onclick="delPersonalTodo(${t.id})">&#10005;</button>
+    </div>`).join('');
+}
+
+function addPersonalTodo(){
+  const inp=G('ptodo-inp');
+  const text=(inp&&inp.value||'').trim();
+  if(!text)return;
+  if(!S.personalTodos)S.personalTodos=[];
+  S.personalTodos.push({id:Date.now(),text,done:false});
+  inp.value='';
+  save();renderPersonalTodos();
+}
+
+function togglePersonalTodo(id){
+  const t=(S.personalTodos||[]).find(t=>t.id===id);
+  if(t){t.done=!t.done;save();renderPersonalTodos();}
+}
+
+function delPersonalTodo(id){
+  S.personalTodos=(S.personalTodos||[]).filter(t=>t.id!==id);
+  save();renderPersonalTodos();
+}
+
 function renderHome(){
   // ── GREETING ──
   const hour=new Date().getHours();
@@ -6146,6 +6231,8 @@ function renderHome(){
     </div>`;
   }
   renderProjectOverview();
+  renderEisenhowerMatrix();
+  renderPersonalTodos();
   renderLifeDir();
   renderHomeProjPanel();
 
