@@ -2526,7 +2526,7 @@ html,body{background:var(--bg);}
     <div class="panel on" id="p-home">
       <button class="mob-menu-pill" onclick="openSB()">☰ Menu</button>
 
-      <!-- WEEKLY SNAPSHOT CARD — greeting + day buttons + calendar merged -->
+      <!-- LIFE OS HEADER -->
       <div class="home-weekly-card">
         <div class="home-weekly-top">
           <div class="home-weekly-left">
@@ -2534,18 +2534,40 @@ html,body{background:var(--bg);}
             <div class="home-weekly-title">My Life OS</div>
             <div class="home-weekly-date" id="home-date"></div>
           </div>
+          <div class="home-hero-streak">
+            <div class="home-hero-streak-num" id="home-streak-num">—</div>
+            <div class="home-hero-streak-lb">day streak</div>
+          </div>
           <div class="home-weekly-day-btns">
             <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))" aria-label="Start your day journal">🌅 Start My Day</button>
             <button class="hero-day-btn end day-ctrl-btn"   onclick="go('journal',G('ni-journal'))"   aria-label="End your day journal">🌙 End My Day</button>
             <button class="hero-day-btn quick-add-btn day-ctrl-btn" onclick="openHomeQA()" aria-label="Quick add anything">⚡ Quick Add</button>
           </div>
         </div>
+      </div>
+
+      <!-- LIFE OVERVIEW STATS -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:18px 0 8px;">
+        <div class="bh2" style="margin:0;">📊 Life Overview</div>
+      </div>
+      <div id="home-stats-quad"></div>
+
+      <!-- PROJECT BUCKETS -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:20px 0 8px;">
+        <div class="bh2" style="margin:0;">🚀 Projects</div>
+        <button class="btn sml" onclick="navToPage('projects')">View all</button>
+      </div>
+      <div id="home-proj-overview"></div>
+
+      <!-- WEEKLY SNAPSHOT -->
+      <div style="margin:20px 0 8px;">
         <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin:0 0 10px!important;">📅 Weekly Snapshot</div>
         <div id="home-weekly"></div>
       </div>
-      <div class="home-hero-stats" id="home-hero-stats" style="display:none;"></div>
+
       <div class="divider"></div>
-      <!-- COMMAND CENTER QUICK-LINKS -->
+
+      <!-- QUICK ACCESS -->
       <div class="bh2" style="margin-top:14px;">⚡ Quick Access</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:8px 0 14px;">
         <div onclick="go('journal',G('ni-journal'))" style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 12px;text-align:center;cursor:pointer;transition:transform .15s,box-shadow .15s;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='var(--sh-md)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
@@ -2566,6 +2588,7 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
+      <!-- QUICK LOG -->
       <div class="bh2 editable-hdr" data-hdr="home-qlog-hdr" id="hdr-home-qlog">⚡ Quick log</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;" class="two-col">
         <div class="nf" style="margin:0;">
@@ -2594,8 +2617,6 @@ html,body{background:var(--bg);}
         </div>
       </div>
     </div>
-
-    <!-- FINANCE DASHBOARD -->
     <div class="panel" id="p-finance">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
 
