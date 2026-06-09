@@ -266,57 +266,57 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);bac
 }
 
 /* WEEKLY SNAPSHOT */
-.week-cal{overflow:hidden;margin:0;}
-.week-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;border:1px solid var(--bd);border-radius:var(--rl);}
+.week-cal{border-radius:var(--rl);overflow:hidden;border:1.5px solid var(--bd2);box-shadow:var(--sh-md);margin:0;}
+.week-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;background:var(--bg-a);}
 .week-scroll::-webkit-scrollbar{height:4px;}
 .week-scroll::-webkit-scrollbar-track{background:transparent;}
 .week-scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
 .week-days{display:flex;min-width:max-content;}
-.week-day{width:150px;flex-shrink:0;border-right:1px solid var(--bd);scroll-snap-align:start;transition:background .15s;}
+.week-day{width:172px;flex-shrink:0;border-right:1px solid var(--bd2);scroll-snap-align:start;transition:background .15s;background:transparent;}
 .week-day:last-child{border-right:none;}
-.week-day.is-weekend{background:color-mix(in srgb,var(--bg-h) 60%,var(--bg-card));}
-.week-day.is-today{background:color-mix(in srgb,var(--bbg) 55%,var(--bg-card));}
-.week-day:hover:not(.is-today){background:var(--bg-h);}
-.week-day.is-today:hover{background:color-mix(in srgb,var(--bbg) 65%,var(--bg-card));}
+.week-day.is-weekend{background:rgba(0,0,0,0.06);}
+.week-day.is-today{background:color-mix(in srgb,var(--bbg) 45%,var(--bg-a));}
+.week-day:hover:not(.is-today){background:rgba(255,255,255,0.04);}
+.week-day.is-today:hover{background:color-mix(in srgb,var(--bbg) 55%,var(--bg-a));}
 /* Day header */
-.wd-hdr{padding:10px 8px 8px;text-align:center;border-bottom:1px solid var(--bd);cursor:pointer;position:relative;}
+.wd-hdr{padding:12px 10px 10px;text-align:center;border-bottom:1px solid var(--bd2);cursor:pointer;position:relative;}
 .week-day.is-today .wd-hdr{background:linear-gradient(160deg,#8b5010,#c9943a);}
-.week-day.is-weekend:not(.is-today) .wd-hdr{background:color-mix(in srgb,var(--bg-h) 80%,transparent);}
-.wd-name{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.08em;}
-.week-day.is-today .wd-name{color:rgba(255,255,255,0.75);}
+.week-day.is-weekend:not(.is-today) .wd-hdr{background:rgba(0,0,0,0.08);}
+.wd-name{font-size:11px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.08em;}
+.week-day.is-today .wd-name{color:rgba(255,255,255,0.8);}
 .week-day.is-weekend:not(.is-today) .wd-name{color:var(--th);}
-.wd-num{font-size:24px;font-weight:900;color:var(--t);line-height:1.1;margin-top:1px;letter-spacing:-0.03em;}
+.wd-num{font-size:28px;font-weight:900;color:var(--t);line-height:1.1;margin-top:2px;letter-spacing:-0.03em;}
 .week-day.is-today .wd-num{color:#fff;}
-.wd-today-pill{display:inline-block;font-size:8px;font-weight:800;background:rgba(255,255,255,0.25);color:#fff;padding:1px 6px;border-radius:10px;letter-spacing:0.06em;text-transform:uppercase;margin-top:3px;}
+.wd-today-pill{display:inline-block;font-size:9px;font-weight:800;background:rgba(255,255,255,0.25);color:#fff;padding:2px 8px;border-radius:10px;letter-spacing:0.06em;text-transform:uppercase;margin-top:4px;}
 /* Day body */
-.wd-body{padding:8px;min-height:120px;overflow:hidden;}
+.wd-body{padding:10px;min-height:210px;overflow:hidden;display:flex;flex-direction:column;gap:2px;}
 /* Habit bar */
 .wd-habit-bar{margin-bottom:6px;}
 .wd-habit-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
-.wd-habit-lbl{font-size:8.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.06em;}
-.wd-habit-cnt{font-size:8.5px;font-weight:800;}
+.wd-habit-lbl{font-size:9px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.06em;}
+.wd-habit-cnt{font-size:9px;font-weight:800;}
 .wd-habit-track{height:5px;background:var(--bd);border-radius:3px;overflow:hidden;}
 .wd-habit-fill{height:100%;border-radius:3px;transition:width .3s;}
 /* Task pills */
-.wd-task{display:flex;align-items:center;gap:3px;margin-bottom:2px;overflow:hidden;}
-.wd-task-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.wd-task-txt{font-size:9px;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
-.wd-tag{display:inline-flex;align-items:center;font-size:8px;font-weight:700;padding:1.5px 5px;border-radius:6px;margin-bottom:2px;letter-spacing:0.02em;}
+.wd-task{display:flex;align-items:center;gap:4px;margin-bottom:3px;overflow:hidden;}
+.wd-task-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.wd-task-txt{font-size:11px;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;font-weight:500;}
+.wd-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;margin-bottom:3px;letter-spacing:0.02em;}
 .wd-tag.bill{background:var(--rbg);color:var(--red);}
 .wd-tag.done{background:var(--gbg);color:var(--green);}
-.wd-fin{border-top:1px solid var(--bd);margin-top:4px;padding-top:4px;display:flex;flex-direction:column;gap:2px;}
-.wd-fin-row{display:flex;align-items:center;justify-content:space-between;font-size:9px;font-weight:700;line-height:1.3;}
-.wd-fin-lbl{font-weight:600;color:var(--ts);font-size:8.5px;letter-spacing:0.02em;}
+.wd-fin{border-top:1px solid var(--bd2);margin-top:6px;padding-top:6px;display:flex;flex-direction:column;gap:3px;}
+.wd-fin-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:700;line-height:1.3;}
+.wd-fin-lbl{font-weight:600;color:var(--ts);font-size:10px;letter-spacing:0.02em;}
 .wd-fin-row.inc .wd-fin-amt{color:var(--green);}
 .wd-fin-row.exp .wd-fin-amt{color:var(--red);}
-.wd-net{display:flex;align-items:center;justify-content:space-between;font-size:9.5px;font-weight:800;padding-top:3px;margin-top:1px;border-top:1px solid var(--bd);}
-.wd-net-lbl{font-size:8px;font-weight:600;color:var(--ts);letter-spacing:0.02em;}
+.wd-net{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:800;padding-top:4px;margin-top:2px;border-top:1px solid var(--bd2);}
+.wd-net-lbl{font-size:9px;font-weight:600;color:var(--ts);letter-spacing:0.02em;}
 .wd-net.up .wd-net-amt{color:var(--green);}
 .wd-net.dn .wd-net-amt{color:var(--red);}
-.wd-empty{font-size:9px;color:var(--th);font-style:italic;margin-top:4px;}
+.wd-empty{font-size:10px;color:var(--th);font-style:italic;margin-top:6px;}
 /* Wizard badges */
-.wd-wiz{display:flex;justify-content:center;gap:3px;margin-top:3px;}
-.wd-wiz span{font-size:8px;}
+.wd-wiz{display:flex;justify-content:center;gap:4px;margin-top:4px;}
+.wd-wiz span{font-size:10px;}
 /* Weekly KPI summary */
 .week-summary{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:10px;}
 .ws-cell{background:var(--bg-card);border:1px solid var(--bd);border-radius:12px;padding:9px 8px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:box-shadow .15s,transform .15s,border-color .15s;}
@@ -762,67 +762,44 @@ textarea.fi{resize:vertical;min-height:52px;}
   .new-page-modal input{font-size:16px!important;}
 }
 
-/* PROJECT BUCKETS — home overview */
-.proj-buckets{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px;-webkit-overflow-scrolling:touch;}
+/* PROJECT FILES — home overview */
+.proj-buckets{display:flex;gap:14px;overflow-x:auto;padding:6px 0 14px;-webkit-overflow-scrolling:touch;}
 .proj-buckets::-webkit-scrollbar{height:3px;}
 .proj-buckets::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
-.proj-bucket{
-  flex-shrink:0;width:140px;
-  cursor:pointer;
-  position:relative;
-  transition:transform .15s;
+.proj-file{
+  flex-shrink:0;width:152px;
+  cursor:pointer;position:relative;
+  transition:transform .15s,box-shadow .15s;
 }
-.proj-bucket:hover{transform:translateY(-3px);}
-.proj-bucket:active{transform:translateY(0);}
-/* Bucket shape — trapezoid via clip-path */
-.proj-bucket-shape{
-  width:100%;height:110px;
-  border-radius:0 0 12px 12px;
-  position:relative;
-  overflow:visible;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:flex-end;
-  padding:0 10px 12px;
+.proj-file:hover{transform:translateY(-5px);box-shadow:var(--sh-md);}
+.proj-file:active{transform:translateY(0);}
+.proj-file-body{
+  width:100%;min-height:158px;
+  border:1.5px solid;
+  clip-path:polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+  border-radius:10px;
+  padding:14px 14px 13px;
+  display:flex;flex-direction:column;gap:7px;
+  box-shadow:var(--sh);
 }
-.proj-bucket-shape::before{
-  content:'';
-  position:absolute;inset:0;
-  background:inherit;
-  border-radius:0 0 12px 12px;
-  clip-path:polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+.proj-file-fold{
+  position:absolute;top:0;right:0;
+  width:24px;height:24px;
+  clip-path:polygon(0 0,100% 100%,100% 0);
 }
-.proj-bucket-fill{
-  position:absolute;bottom:0;left:0;right:0;
-  border-radius:0 0 12px 12px;
-  transition:height .5s ease;
-  opacity:0.35;
-  clip-path:polygon(8% 0%, 92% 0%, 100% 100%, 0% 100%);
+.proj-file-name{
+  font-size:13px;font-weight:800;
+  color:var(--t);line-height:1.3;
+  word-break:break-word;
 }
-.proj-bucket-pct{
-  position:relative;z-index:1;
-  font-size:22px;font-weight:700;color:#fff;
-  text-shadow:0 1px 3px rgba(0,0,0,0.3);
-  line-height:1;
-  margin-bottom:2px;
+.proj-file-pct{
+  font-size:30px;font-weight:900;
+  letter-spacing:-0.04em;line-height:1;
+  margin-top:2px;
 }
-.proj-bucket-name{
-  position:relative;z-index:1;
-  font-size:10px;font-weight:600;color:rgba(255,255,255,0.9);
-  text-align:center;line-height:1.3;
-  overflow:hidden;text-overflow:ellipsis;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-}
-.proj-bucket-rim{
-  width:100%;height:10px;
-  border-radius:4px 4px 0 0;
-  margin-bottom:0;
-  position:relative;
-}
-.proj-bucket-meta{
-  text-align:center;margin-top:6px;
-  font-size:10px;color:var(--ts);
-  font-weight:500;
-}
+.proj-file-tasks{font-size:10px;color:var(--ts);font-weight:500;}
+.proj-file-bar-wrap{height:4px;background:var(--bd);border-radius:2px;overflow:hidden;margin-top:auto;}
+.proj-file-bar-fill{height:100%;border-radius:2px;transition:width .4s ease;}
 .proj-bucket-status{
   display:inline-block;margin-top:2px;
   font-size:9px;padding:1px 6px;border-radius:10px;
@@ -5959,26 +5936,24 @@ function renderProjectOverview(){
     const pct=tasks.length?Math.round(done/tasks.length*100):0;
     const sm={active:'ps-active',planning:'ps-planning',review:'ps-review',paused:'ps-paused',blocked:'ps-blocked',done:'ps-done'};
     const statusLabel={active:'Active',planning:'Planning',review:'Review',paused:'Paused',blocked:'Blocked',done:'Done'};
-    // Fill height: map pct to 10%–90% of bucket height
-    const fillH=pct===0?4:Math.max(10,Math.round(pct*0.82))+4;
-    // Lighten bucket color for fill
-    return`<div class="proj-bucket" onclick="openProjectDrawer('${p.id}')">
-      <div class="proj-bucket-rim" style="background:${p.color};"></div>
-      <div class="proj-bucket-shape" style="background:${p.color}cc;">
-        <div class="proj-bucket-fill" style="height:${fillH}%;background:${p.color};"></div>
-        <div class="proj-bucket-pct">${pct}<span style="font-size:12px;">%</span></div>
-        <div class="proj-bucket-name">${p.name}</div>
-      </div>
-      <div class="proj-bucket-meta">
-        <div>${done}/${tasks.length} tasks</div>
+    const c=p.color||'#888';
+    return`<div class="proj-file" onclick="openProjectDrawer('${p.id}')">
+      <div class="proj-file-body" style="border-color:${c}55;background:${c}14;">
+        <div class="proj-file-name">${p.name}</div>
+        <div class="proj-file-pct" style="color:${c};">${pct}<span style="font-size:14px;font-weight:600">%</span></div>
+        <div class="proj-file-tasks">${done}/${tasks.length} tasks</div>
+        <div class="proj-file-bar-wrap"><div class="proj-file-bar-fill" style="width:${pct}%;background:${c};"></div></div>
         <span class="proj-bucket-status ${sm[p.status]||'ps-active'}">${statusLabel[p.status]||p.status}</span>
       </div>
+      <div class="proj-file-fold" style="background:${c}55;"></div>
     </div>`;
   }).join('');
 
-  el.innerHTML=`<div class="proj-buckets">${buckets}<div class="proj-bucket" onclick="navToPage('projects')" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0.5;">
-    <div style="width:50px;height:50px;border-radius:50%;border:2px dashed var(--bd2);display:flex;align-items:center;justify-content:center;font-size:22px;">＋</div>
-    <div style="font-size:10px;color:var(--ts);text-align:center;">New project</div>
+  el.innerHTML=`<div class="proj-buckets">${buckets}<div class="proj-file" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)" style="opacity:0.5;">
+    <div class="proj-file-body" style="border-color:var(--bd2);background:transparent;align-items:center;justify-content:center;display:flex;flex-direction:column;gap:8px;">
+      <div style="width:44px;height:44px;border-radius:50%;border:2px dashed var(--bd2);display:flex;align-items:center;justify-content:center;font-size:22px;">＋</div>
+      <div style="font-size:11px;color:var(--ts);text-align:center;">New project</div>
+    </div>
   </div></div>`;
 }
 
