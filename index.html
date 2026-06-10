@@ -4162,90 +4162,6 @@ html,body{background:var(--bg);}
 .modal-overlay { display: none !important; }
 .modal-overlay.open { display: flex !important; }
 
-
-/* ══ HOME PAGE 3-COLUMN LAYOUT ══ */
-.home-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 20px 10px;
-  border-bottom: 1px solid var(--bd);
-  flex-shrink: 0;
-}
-.home-topbar-sub { font-size: 13px; color: var(--ts); margin-top: 2px; }
-.home-topbar-streak { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-.home-streak-ring {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--amber), var(--gold, #f59e0b));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px; font-weight: 800; color: #fff;
-  box-shadow: 0 2px 8px rgba(245,158,11,0.35);
-}
-.home-streak-label { font-size: 10px; color: var(--ts); font-weight: 600; letter-spacing: 0.5px; }
-.home-workspace { height: calc(100vh - 130px); min-height: 400px; }
-.home-center-section {}
-.home-section-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 8px; padding: 0 2px;
-}
-.home-bottom-section {
-  padding: 16px 20px 32px;
-  border-top: 1px solid var(--bd);
-}
-/* Life Areas Nav — vertical list in left panel */
-.home-nav-list { display: flex; flex-direction: column; gap: 2px; }
-.home-nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 10px; border-radius: var(--r);
-  cursor: pointer; font-size: 13px; font-weight: 500; color: var(--t);
-  transition: background 0.15s;
-}
-.home-nav-item:hover { background: var(--bg-in); }
-.home-nav-item .hni-ic { font-size: 16px; flex-shrink: 0; }
-.home-nav-item .hni-meta { font-size: 11px; color: var(--ts); margin-left: auto; }
-/* Stats in left panel */
-.home-stats-grid { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-.hsg-card {
-  background: var(--bg-card); border: 1px solid var(--bd); border-radius: var(--r);
-  padding: 8px 10px; cursor: pointer; transition: background 0.15s;
-}
-.hsg-card:hover { background: var(--bg-in); }
-.hsg-lb { font-size: 10px; color: var(--ts); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-.hsg-vl { font-size: 16px; font-weight: 700; }
-.hsg-vl.up { color: var(--green); }
-.hsg-vl.dn { color: var(--red); }
-.hsg-vl.amb { color: var(--amber); }
-.hsg-sub { font-size: 10px; color: var(--ts); margin-top: 1px; }
-/* Today panel (right column) */
-.home-today-stat {
-  background: var(--bg-card); border: 1px solid var(--bd);
-  border-radius: var(--r); padding: 8px 10px; margin-bottom: 10px;
-}
-.home-today-section { margin-bottom: 12px; }
-.hts-hdr {
-  font-size: 10px; font-weight: 700; color: var(--ts);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  margin-bottom: 5px; padding-bottom: 4px; border-bottom: 1px solid var(--bd);
-}
-.hts-habit-row, .hts-task-row {
-  display: flex; align-items: center; gap: 7px;
-  padding: 4px 0; font-size: 12px; color: var(--t);
-}
-.hts-habit-row.done { color: var(--ts); text-decoration: line-through; }
-.hts-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: var(--bd); flex-shrink: 0;
-}
-.hts-dot.done { background: var(--green); }
-.hts-dot.urgent { background: var(--red); }
-.hts-empty { font-size: 11px; color: var(--ts); padding: 3px 0; }
-@media (max-width: 900px) {
-  .home-workspace { height: auto; flex-direction: column; }
-  .home-workspace .pw-left, .home-workspace .pw-right { display: none; }
-  .home-workspace .pw-center { border: none; width: 100%; padding: 12px; }
-}
-
 </style>
 </head>
 <body>
@@ -4262,6 +4178,7 @@ html,body{background:var(--bg);}
   <div class="sb-sec">My Workspaces</div>
   <div class="ni on" id="ni-home" onclick="go('home',this)"><span class="ni-ic">∞</span><span class="ni-lb">Life Home</span></div>
   <div class="ni draggable-ni" id="ni-trading" draggable="true" onclick="go('trading',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📈</span><span class="ni-lb">Trading</span></div>
+  <div class="ni draggable-ni" id="ni-credit" draggable="true" onclick="go('credit',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">💳</span><span class="ni-lb">Credit</span></div>
   <div class="sb-gear-wrap">
     <button class="sb-gear-btn" onclick="toggleSbGear()" id="sb-gear-btn">
       <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">⚙️</span><span>Settings</span></span>
@@ -4292,77 +4209,45 @@ html,body{background:var(--bg);}
 
     <!-- HOME -->
     <div class="panel on" id="p-home">
-      <button class="mob-menu-float" onclick="openSB()">&#9776;</button>
+      <button class="mob-menu-pill" onclick="openSB()">&#9776; Menu</button>
 
-      <!-- TOP HEADER BAR -->
-      <div class="home-topbar">
-        <div>
-          <div class="home-weekly-greeting" id="home-greeting">Good morning</div>
-          <div class="home-topbar-sub" id="home-date"></div>
-        </div>
-        <div class="home-topbar-streak">
-          <div class="home-streak-ring" id="home-streak-num">—</div>
-          <div class="home-streak-label">day streak</div>
-        </div>
+      <!-- HEADER + LIFE DIRECTORY (merged) -->
+      <div class="home-weekly-card">
+        <div class="home-weekly-greeting" id="home-greeting">Good morning</div>
+        <div class="home-weekly-title">My Life OS</div>
+        <div class="home-weekly-date" id="home-date"></div>
+        <div class="home-dir-divider"></div>
+        <div id="home-dir-tiles" class="home-dir-tiles-grid"></div>
       </div>
 
-      <!-- 3-COLUMN WORKSPACE (reuses planning layout CSS) -->
-      <div class="plan-workspace home-workspace">
+      <!-- WEEKLY CALENDAR (full width) -->
+      <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:20px;margin-bottom:8px;">&#128197; This Week</div>
+      <div id="home-weekly"></div>
 
-        <!-- LEFT: Life Areas Nav + Stats -->
-        <div class="pw-left">
-          <div class="pw-left-title">Life Areas</div>
-          <div id="home-dir-tiles" class="home-nav-list"></div>
-          <div class="pw-section-divider"></div>
-          <div class="pw-left-title" style="margin-top:8px;">This Month</div>
-          <div id="home-stats-quad"></div>
-        </div>
-
-        <!-- CENTER: Projects + Weekly Calendar -->
-        <div class="pw-center">
-          <div class="home-center-section">
-            <div class="home-section-hdr">
-              <span class="bh2" style="margin:0;">&#128640; Projects</span>
-              <button class="btn sml" onclick="go('planning',G('ni-planning'))">View all</button>
-            </div>
-            <div id="home-proj-overview"></div>
-          </div>
-          <div class="home-center-section" style="margin-top:16px;">
-            <div class="home-section-hdr">
-              <span class="bh2" style="margin:0;">&#128197; This Week</span>
-            </div>
-            <div id="home-weekly"></div>
-          </div>
-        </div>
-
-        <!-- RIGHT: Today at-a-glance -->
-        <div class="pw-right">
-          <div class="pw-left-title">Today</div>
-          <div id="home-today-panel">
-            <!-- Rendered by renderHomeTodayPanel() -->
-          </div>
-        </div>
-
-      </div><!-- end .plan-workspace -->
-
-      <!-- BOTTOM: Eisenhower Matrix + Personal To-Dos -->
-      <div class="home-bottom-section">
-        <div class="home-section-hdr" style="margin-bottom:8px;">
-          <span class="bh2" style="margin:0;">&#127919; Eisenhower Matrix</span>
-          <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>showPlanSection('matrix',null),80)">All tasks</button>
-        </div>
-        <div id="home-eis-matrix"></div>
-
-        <div class="bh2" style="margin-top:22px;margin-bottom:8px;">&#9989; Personal To&#8209;Dos</div>
-        <div class="home-ptodos-card">
-          <div class="home-ptodos-inp-row">
-            <input class="fi" type="text" id="ptodo-inp" placeholder="Add a personal to-do..." onkeydown="if(event.key==='Enter')addPersonalTodo()">
-            <button class="btn pri" onclick="addPersonalTodo()">Add</button>
-          </div>
-          <div id="home-personal-todos"></div>
-        </div>
+      <!-- PROJECT BUCKETS (full width, below calendar) -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:0;">
+        <div class="bh2" style="margin:0;">&#128640; Projects</div>
+        <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)">View all</button>
       </div>
+      <div id="home-proj-overview"></div>
 
+
+      <!-- EISENHOWER MATRIX -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:22px;margin-bottom:0;">
+        <div class="bh2" style="margin:0;">&#127919; Eisenhower Matrix</div>
+        <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('todos',G('ptab-todos')),80)">All tasks</button>
+      </div>
+      <div id="home-eis-matrix"></div>
+
+      <!-- PERSONAL TO-DOS -->
+      <div class="bh2" style="margin-top:22px;margin-bottom:8px;">&#9989; Personal To&#8209;Dos</div>
+      <div class="home-ptodos-card">
+        <div class="home-ptodos-inp-row">
+          <input class="fi" type="text" id="ptodo-inp" placeholder="Add a personal to-do..." onkeydown="if(event.key==='Enter')addPersonalTodo()">
+          <button class="btn pri" onclick="addPersonalTodo()">Add</button>
+        </div>
+        <div id="home-personal-todos"></div>
+      </div>
     </div>
 
     <!-- FINANCE DASHBOARD -->
@@ -5462,7 +5347,7 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
-    <div class="panel" id="p-credit" style="display:none!important;">
+    <div class="panel" id="p-credit">
       <button class="mob-menu-float" onclick="openSB()">&#9776;</button>
       <div class="fin-page-header">
         <div class="fin-page-header-left">
@@ -8373,9 +8258,9 @@ function renderHomeProjPanel(){
 }
 
 window._eisFocused=null;
-function eisFocus(id){window._eisFocused=(window._eisFocused===id?null:id);renderHomeEis();}
-function eisMove(todoId,q){const t=S.todos.find(t=>t.id===todoId);if(t){t.eis=q;save();}window._eisFocused=null;renderHomeEis();renderTodos&&renderTodos();}
-function eisClear(todoId){const t=S.todos.find(t=>t.id===todoId);if(t){delete t.eis;save();}window._eisFocused=null;renderHomeEis();}
+function eisFocus(id){window._eisFocused=(window._eisFocused===id?null:id);renderEisenhowerMatrix();}
+function eisMove(todoId,q){const t=S.todos.find(t=>t.id===todoId);if(t){t.eis=q;save();}window._eisFocused=null;renderEisenhowerMatrix();renderTodos&&renderTodos();}
+function eisClear(todoId){const t=S.todos.find(t=>t.id===todoId);if(t){delete t.eis;save();}window._eisFocused=null;renderEisenhowerMatrix();}
 function eisAddTask(q){
   const inp=G('eis-add-'+q);
   const text=(inp&&inp.value||'').trim();
@@ -8384,9 +8269,9 @@ function eisAddTask(q){
   const d=(q===1||q===3)?today:null;
   S.todos.push({id:Date.now(),t:text,p:priority,done:false,d,eis:q});
   if(inp)inp.value='';
-  save();renderHomeEis();if(typeof renderTodos==='function')renderTodos();
+  save();renderEisenhowerMatrix();if(typeof renderTodos==='function')renderTodos();
 }
-function renderHomeEis(){
+function renderEisenhowerMatrix(){
   const el=G('home-eis-matrix');
   if(!el)return;
   const focused=window._eisFocused||null;
@@ -8517,15 +8402,12 @@ function renderHome(){
     </div>`;
   }
   renderProjectOverview();
-  renderHomeEis();
+  renderEisenhowerMatrix();
   renderPersonalTodos();
   renderLifeDir();
   renderHomeProjPanel();
 
   renderWeekly();
-  renderHomeTodayPanel();
-  renderLifeDir();
-  renderHomeStatsQuad();
   const finEl=G('home-fin-snapshot');
   if(finEl){
     const now=new Date();
@@ -14149,105 +14031,6 @@ if (document.getElementById('p-planning') &&
 }
 
 
-
-// ══ HOME TODAY PANEL ══
-function renderHomeTodayPanel() {
-  const el = G('home-today-panel');
-  if (!el) return;
-  // Streak calc
-  let streak = 0;
-  for (let i = 0; i < 365; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const dk = localDate(d);
-    const habitsDone = S.habits.some(h => S.hlog && S.hlog[dk + '-' + h.id]);
-    const tasksDone = S.todos.some(t => t.done && t.dd === dk);
-    if (habitsDone || tasksDone) streak++;
-    else if (i > 0) break;
-  }
-  const sEl = G('home-streak-num');
-  if (sEl) sEl.textContent = streak || '—';
-  // Habits today
-  const habitsDoneToday = S.habits.filter(h => S.hlog && S.hlog[today + '-' + h.id]);
-  const habitsHtml = S.habits.length
-    ? S.habits.map(h => {
-        const done = S.hlog && S.hlog[today + '-' + h.id];
-        return '<div class="hts-habit-row' + (done ? ' done' : '') + '"><div class="hts-dot' + (done ? ' done' : '') + '"></div><span>' + (h.n || h.name || '') + '</span></div>';
-      }).join('')
-    : '<div class="hts-empty">No habits yet</div>';
-  // Tasks due today
-  const tasksDueToday = S.todos.filter(t => !t.done && t.d === today);
-  const tasksHtml = tasksDueToday.length
-    ? tasksDueToday.slice(0, 6).map(t => '<div class="hts-task-row"><div class="hts-dot' + (t.p === 'high' ? ' urgent' : '') + '"></div><span>' + (t.t || '') + '</span></div>').join('')
-    : '<div class="hts-empty">Nothing due today ✓</div>';
-  el.innerHTML =
-    '<div class="home-today-section">' +
-      '<div class="hts-hdr">Habits (' + habitsDoneToday.length + '/' + S.habits.length + ')</div>' +
-      habitsHtml +
-    '</div>' +
-    '<div class="home-today-section">' +
-      '<div class="hts-hdr">Due Today (' + tasksDueToday.length + ')</div>' +
-      tasksHtml +
-    '</div>';
-}
-
-// ══ HOME LIFE AREAS NAV — override renderLifeDir to use nav-list style ══
-function renderLifeDir() {
-  const el = G('home-dir-tiles');
-  if (!el) return;
-  const areas = [
-    { ic: '📅', lb: 'Schedule', page: 'planning', ni: 'ni-planning' },
-    { ic: '🧾', lb: 'Finance',  page: 'finance',  ni: 'ni-finance' },
-    { ic: '📓', lb: 'Journal',  page: 'journal',  ni: 'ni-journal' },
-    { ic: '📈', lb: 'Trading',  page: 'trading',  ni: 'ni-trading' },
-  ];
-  el.innerHTML = areas.map(a => {
-    const todayStr = '';
-    return '<div class="home-nav-item" onclick="go('' + a.page + '',G('' + a.ni + ''))">' +
-      '<span class="hni-ic">' + a.ic + '</span>' +
-      '<span>' + a.lb + '</span>' +
-      '</div>';
-  }).join('');
-}
-
-// ══ HOME STATS QUAD — renders into #home-stats-quad as vertical card list ══
-function renderHomeStatsQuad() {
-  const el = G('home-stats-quad');
-  if (!el) return;
-  const now = new Date();
-  const mPrefix = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-  const mFin = S.finance.filter(f => f.dt && f.dt.startsWith(mPrefix));
-  const mInc = mFin.filter(f => f.t === 'income').reduce((s, f) => s + f.a, 0);
-  const mExp = mFin.filter(f => f.t === 'expense').reduce((s, f) => s + f.a, 0);
-  const mNet = mInc - mExp;
-  const todayTasks = S.todos.filter(t => !t.done && t.d === today);
-  const openProjects = (S.projects || []).filter(p => p.st !== 'done').length;
-  const habitsDoneToday = S.habits.filter(h => S.hlog && S.hlog[today + '-' + h.id]).length;
-  const totalHabits = S.habits.length;
-  el.innerHTML = '<div class="home-stats-grid">' +
-    '<div class="hsg-card" onclick="go('finance',G('ni-finance'))">' +
-      '<div class="hsg-lb">Net this month</div>' +
-      '<div class="hsg-vl ' + (mNet >= 0 ? 'up' : 'dn') + '">' + (typeof fmt === 'function' ? fmt(Math.abs(mNet)) : '$' + Math.abs(mNet).toFixed(0)) + (mNet < 0 ? ' deficit' : '') + '</div>' +
-      '<div class="hsg-sub">' + (typeof fmt === 'function' ? fmt(mInc) : '') + ' in · ' + (typeof fmt === 'function' ? fmt(mExp) : '') + ' out</div>' +
-    '</div>' +
-    '<div class="hsg-card" onclick="go('planning',G('ni-planning'))">' +
-      '<div class="hsg-lb">Open projects</div>' +
-      '<div class="hsg-vl ' + (openProjects === 0 ? 'up' : 'amb') + '">' + openProjects + '</div>' +
-      '<div class="hsg-sub">' + (S.projects || []).length + ' total</div>' +
-    '</div>' +
-    '<div class="hsg-card" onclick="go('planning',G('ni-planning'))">' +
-      '<div class="hsg-lb">Tasks today</div>' +
-      '<div class="hsg-vl ' + (todayTasks.length === 0 ? 'up' : 'amb') + '">' + todayTasks.length + '</div>' +
-      '<div class="hsg-sub">' + (todayTasks.length === 0 ? 'All clear ✓' : 'remaining') + '</div>' +
-    '</div>' +
-    '<div class="hsg-card">' +
-      '<div class="hsg-lb">Habits today</div>' +
-      '<div class="hsg-vl ' + (totalHabits && habitsDoneToday === totalHabits ? 'up' : totalHabits ? 'amb' : '') + '">' + (totalHabits ? habitsDoneToday + '/' + totalHabits : '—') + '</div>' +
-      '<div class="hsg-sub">' + (totalHabits ? Math.round(habitsDoneToday / totalHabits * 100) + '% done' : 'no habits set') + '</div>' +
-    '</div>' +
-  '</div>';
-}
-
-
 </script>
 
 
@@ -14270,7 +14053,10 @@ function renderHomeStatsQuad() {
     <span class="bn-icon">📈</span>
     <span class="bn-label">Trading</span>
   </button>
-
+  <button class="bn-item" id="bn-credit" onclick="go('credit',document.getElementById('ni-credit'));updateBN('credit');setTimeout(renderCredit,50)">
+    <span class="bn-icon">💳</span>
+    <span class="bn-label">Credit</span>
+  </button>
   <button class="bn-item" id="bn-settings" onclick="go('settings',document.getElementById('ni-settings'));updateBN('settings')">
     <span class="bn-icon">⚙️</span>
     <span class="bn-label">Settings</span>
