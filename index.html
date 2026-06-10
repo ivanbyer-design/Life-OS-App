@@ -11,7 +11,186 @@
 <title>Life OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">// ── CREDIT DASHBOARD ──
+function switchCreditTab(tab,el){
+  ['overview','cards','payments'].forEach(t=>{
+    const body=G('crtab-'+t+'-body');
+    const btn=G('crtab-'+t);
+    if(body)body.style.display=t===tab?'':'none';
+    if(btn)btn.classList.toggle('on',t===tab);
+  });
+  if(tab==='cards')renderCreditCards();
+  if(tab==='payments')renderCreditPayments();
+}
+function crScoreColor(s){if(!s)return'var(--ts)';if(s>=800)return'var(--green)';if(s>=740)return'var(--blue)';if(s>=670)return'var(--amber)';if(s>=580)return'var(--amber)';return'var(--red)';}
+function crScoreLabel(s){if(!s)return'No score yet';if(s>=800)return'Exceptional';if(s>=740)return'Very Good';if(s>=670)return'Good';if(s>=580)return'Fair';return'Poor';}
+function saveCreditScore(){
+  const score=parseInt((G('cr-score-input')||{}).value);
+  if(!score||score<300||score>850){alert('Enter a valid score between 300 and 850');return;}
+  if(!S.credit)S.credit={score:null,scoreHistory:[],cards:[]};
+  S.credit.score=score;
+  S.credit.scoreHistory=S.credit.scoreHistory||[];
+  S.credit.scoreHistory.unshift({date:today,score});
+  if(S.credit.scoreHistory.length>24)S.credit.scoreHistory=S.credit.scoreHistory.slice(0,24);
+  if(G('cr-score-input'))G('cr-score-input').value='';
+  save();renderCredit();
+}
+function addCreditCard(){
+  const name=(G('cr-card-name')||{}).value&&G('cr-card-name').value.trim();
+  if(!name){alert('Enter a card name');return;}
+  if(!S.credit)S.credit={score:null,scoreHistory:[],cards:[]};
+  S.credit.cards=S.credit.cards||[];
+  S.credit.cards.push({
+    id:Date.now(),name,
+    last4:(G('cr-card-last4')||{}).value||'',
+    limit:parseFloat((G('cr-card-limit')||{}).value)||0,
+    balance:parseFloat((G('cr-card-balance')||{}).value)||0,
+    apr:parseFloat((G('cr-card-apr')||{}).value)||0,
+    minPayment:parseFloat((G('cr-card-minpay')||{}).value)||0,
+    dueDay:parseInt((G('cr-card-dueday')||{}).value)||1,
+    color:(G('cr-card-color')||{}).value||'#4a90d9',
+    payments:[]
+  });
+  ['cr-card-name','cr-card-last4','cr-card-limit','cr-card-balance','cr-card-apr','cr-card-minpay','cr-card-dueday'].forEach(id=>{if(G(id))G(id).value='';});
+  save();renderCredit();
+}
+function delCreditCard(id){
+  if(!confirm('Remove this card?'))return;
+  if(!S.credit||!S.credit.cards)return;
+  S.credit.cards=S.credit.cards.filter(c=>c.id!==id);
+  save();renderCredit();
+}
+function updateCreditCardBalance(id,val){
+  const c=(S.credit&&S.credit.cards||[]).find(c=>c.id===id);
+  if(c){c.balance=Math.max(0,parseFloat(val)||0);save();renderCreditOverview();renderCreditCards();}
+}
+function logCreditPayment(){
+  const cardId=parseInt((G('cr-pay-card')||{}).value);
+  const amount=parseFloat((G('cr-pay-amount')||{}).value);
+  const date=(G('cr-pay-date')||{}).value;
+  if(!cardId||!amount||!date){alert('Select a card, enter amount and date');return;}
+  const card=(S.credit&&S.credit.cards||[]).find(c=>c.id===cardId);
+  if(!card)return;
+  card.payments=card.payments||[];
+  card.payments.unshift({id:Date.now(),amount,date});
+  if(card.payments.length>12)card.payments=card.payments.slice(0,12);
+  card.balance=Math.max(0,(card.balance||0)-amount);
+  if(G('cr-pay-amount'))G('cr-pay-amount').value='';
+  save();renderCredit();
+}
+function renderCreditOverview(){
+  const cr=S.credit||{};
+  const score=cr.score;
+  const cards=cr.cards||[];
+  const gaugeEl=G('cr-gauge-fill');
+  const scoreTxt=G('cr-gauge-score-text');
+  const lblEl=G('cr-score-label');
+  if(scoreTxt){scoreTxt.textContent=score||'—';scoreTxt.setAttribute('style','font-size:38px;font-weight:900;font-family:var(--font);fill:'+crScoreColor(score)+';');}
+  if(lblEl){lblEl.textContent=crScoreLabel(score);lblEl.style.color=crScoreColor(score);}
+  if(gaugeEl&&score){
+    const arcLen=276;const pct=(score-300)/550;
+    gaugeEl.setAttribute('stroke-dasharray',Math.round(pct*arcLen)+' '+(arcLen-Math.round(pct*arcLen)));
+    gaugeEl.setAttribute('stroke',crScoreColor(score));
+  }
+  const totalBal=cards.reduce((s,c)=>s+(c.balance||0),0);
+  const totalLim=cards.reduce((s,c)=>s+(c.limit||0),0);
+  const utilPct=totalLim>0?Math.round(totalBal/totalLim*100):0;
+  const pctEl=G('cr-util-pct'),barEl=G('cr-util-bar'),statusEl=G('cr-util-status'),balEl=G('cr-util-balance'),limEl=G('cr-util-limit');
+  const uColor=utilPct>50?'var(--red)':(utilPct>30?'var(--amber)':'var(--green)');
+  if(pctEl){pctEl.textContent=totalLim?utilPct+'%':'—';pctEl.style.color=totalLim?uColor:'var(--ts)';}
+  if(barEl){barEl.style.width=Math.min(utilPct,100)+'%';barEl.style.background=uColor;}
+  if(statusEl){
+    const labels=['No cards added','Excellent','Excellent','Fair — consider paying down','High — reduce balances'];
+    const idx=!totalLim?0:(utilPct<=10?1:(utilPct<=30?2:(utilPct<=50?3:4)));
+    statusEl.textContent=[' ','Excellent','Good','Fair','High'][idx]||'';
+    statusEl.style.color=uColor;
+  }
+  if(balEl)balEl.textContent=totalLim?'Balance: '+fmt(totalBal):'';
+  if(limEl)limEl.textContent=totalLim?'Limit: '+fmt(totalLim):'';
+  const histEl=G('cr-score-history');
+  if(histEl){
+    const history=cr.scoreHistory||[];
+    if(!history.length){histEl.innerHTML='<div style="color:var(--ts);font-size:13px;padding:8px 0;">No history yet — update your score above.</div>';return;}
+    histEl.innerHTML='<table class="cr-history-table"><thead><tr><th>Date</th><th>Score</th><th>Rating</th><th>Change</th></tr></thead><tbody>'+
+      history.map((h,i)=>{const prev=history[i+1];const chg=prev?h.score-prev.score:null;const chStr=chg===null?'—':(chg>=0?'▲ +'+chg:'▼ '+chg);const cc=chg===null?'var(--ts)':(chg>0?'var(--green)':'var(--red)');
+        return`<tr><td>${h.date}</td><td style="font-weight:800;color:${crScoreColor(h.score)};">${h.score}</td><td>${crScoreLabel(h.score)}</td><td style="font-weight:700;color:${cc};">${chStr}</td></tr>`;
+      }).join('')+'</tbody></table>';
+  }
+}
+function renderCreditCards(){
+  const cards=(S.credit&&S.credit.cards)||[];
+  const listEl=G('cr-card-list');
+  if(!listEl)return;
+  const paySelect=G('cr-pay-card');
+  if(paySelect)paySelect.innerHTML='<option value="">— Select card —</option>'+cards.map(c=>`<option value="${c.id}">${c.name}${c.last4?' ····'+c.last4:''}</option>`).join('');
+  if(!cards.length){listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--ts);">No cards added yet.</div>';return;}
+  const sorted=[...cards].sort((a,b)=>{const ua=a.limit?a.balance/a.limit:0,ub=b.limit?b.balance/b.limit:0;return ub-ua;});
+  const now=new Date();
+  listEl.innerHTML=sorted.map(c=>{
+    const util=c.limit?Math.round((c.balance||0)/c.limit*100):0;
+    const uColor=util>50?'var(--red)':(util>30?'var(--amber)':'var(--green)');
+    let dueStr='',dueClass='ok';
+    if(c.dueDay){
+      let due=new Date(now.getFullYear(),now.getMonth(),c.dueDay);
+      if(due<now)due=new Date(now.getFullYear(),now.getMonth()+1,c.dueDay);
+      const days=Math.round((due-now)/(864e5));
+      if(days<0){dueStr='Overdue';dueClass='overdue';}
+      else if(days===0){dueStr='Due today';dueClass='overdue';}
+      else if(days<=7){dueStr='Due in '+days+'d';dueClass='soon';}
+      else{dueStr='Due '+days+'d';dueClass='ok';}
+    }
+    return`<div class="cr-card-item">
+      <div class="cr-card-header">
+        <div class="cr-card-chip" style="background:linear-gradient(135deg,${c.color},${c.color}88);"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="cr-card-name">${c.name}</div>
+          ${c.last4?`<div class="cr-card-last4">···· ···· ···· ${c.last4}</div>`:''}
+        </div>
+        ${dueStr?`<div class="cr-card-due ${dueClass}">${dueStr}</div>`:''}
+      </div>
+      <div class="cr-card-body">
+        <div class="cr-card-util-row">
+          <div class="cr-card-util-bar-track"><div class="cr-card-util-bar-fill" style="width:${Math.min(util,100)}%;background:${uColor};"></div></div>
+          <div class="cr-card-util-pct" style="color:${uColor};">${util}%</div>
+        </div>
+        <div class="cr-card-details">
+          <div class="cr-card-detail"><div class="cr-card-detail-lbl">Balance</div><div class="cr-card-detail-val" style="color:var(--red);">${fmt(c.balance||0)}</div></div>
+          <div class="cr-card-detail"><div class="cr-card-detail-lbl">Limit</div><div class="cr-card-detail-val">${fmt(c.limit||0)}</div></div>
+          <div class="cr-card-detail"><div class="cr-card-detail-lbl">APR</div><div class="cr-card-detail-val">${c.apr||0}%</div></div>
+          <div class="cr-card-detail"><div class="cr-card-detail-lbl">Min Pay</div><div class="cr-card-detail-val">${fmt(c.minPayment||0)}</div></div>
+          <div class="cr-card-detail" style="grid-column:span 2;"><div class="cr-card-detail-lbl">Available</div><div class="cr-card-detail-val" style="color:var(--green);">${fmt(Math.max(0,(c.limit||0)-(c.balance||0)))}</div></div>
+        </div>
+      </div>
+      <div class="cr-card-acts">
+        <input class="fi" type="number" placeholder="Update balance $" step="0.01" style="flex:1;font-size:12px;" onchange="updateCreditCardBalance(${c.id},this.value)" onblur="updateCreditCardBalance(${c.id},this.value)">
+        <button class="btn xs" onclick="delCreditCard(${c.id})" style="color:var(--red);">✕ Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderCreditPayments(){
+  const cards=(S.credit&&S.credit.cards)||[];
+  const logEl=G('cr-payment-log');if(!logEl)return;
+  const paySelect=G('cr-pay-card');
+  if(paySelect)paySelect.innerHTML='<option value="">— Select card —</option>'+cards.map(c=>`<option value="${c.id}">${c.name}${c.last4?' ····'+c.last4:''}</option>`).join('');
+  const all=[];cards.forEach(c=>(c.payments||[]).forEach(p=>all.push({...p,cardName:c.name,cardColor:c.color})));
+  all.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!all.length){logEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--ts);font-size:13px;">No payments logged yet.</div>';return;}
+  logEl.innerHTML='<div style="background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 16px;box-shadow:var(--sh);">'+
+    all.slice(0,20).map(p=>`<div class="cr-payment-row"><div><div style="font-size:12px;font-weight:600;color:var(--t);">\u{1F4B3} ${p.cardName}</div><div style="font-size:11px;color:var(--ts);">${p.date}</div></div><div class="cr-payment-amount">-${fmt(p.amount)}</div></div>`).join('')+'</div>';
+}
+function renderCredit(){
+  if(!S.credit)S.credit={score:null,scoreHistory:[],cards:[]};
+  renderCreditOverview();
+  const cardsBody=G('crtab-cards-body');
+  if(cardsBody&&cardsBody.style.display!=='none')renderCreditCards();
+  const payBody=G('crtab-payments-body');
+  if(payBody&&payBody.style.display!=='none')renderCreditPayments();
+}
+
+
+
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -78,6 +257,15 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);bac
 .ni-lb{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .sb-div{height:1px;background:var(--bd);margin:6px 10px;}
 .sb-ft{margin-top:auto;padding:10px;border-top:1px solid var(--bd);}
+.sb-gear-wrap{margin-top:auto;border-top:1px solid var(--bd);padding:6px 8px 8px;}
+.sb-gear-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:var(--r);border:none;background:transparent;cursor:pointer;color:var(--ts);font-size:13px;font-weight:600;font-family:var(--font);transition:background .15s,color .15s;}
+.sb-gear-btn:hover{background:var(--bg-a);color:var(--t);}
+.sb-gear-arrow{font-size:11px;transition:transform .2s ease;display:inline-block;}
+.sb-gear-sub{display:none;flex-direction:column;gap:1px;margin-top:2px;}
+.sb-gear-sub.open{display:flex;}
+.sb-gear-sub-btn{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:var(--r);border:none;background:transparent;cursor:pointer;color:var(--ts);font-size:13px;font-weight:500;font-family:var(--font);transition:background .15s,color .15s;width:100%;text-align:left;}
+.sb-gear-sub-btn:hover{background:var(--bg-a);color:var(--t);}
+.sb-gear-sub-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0;}
 
 
 /* SIDEBAR COLLAPSE */
@@ -136,6 +324,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);bac
 .tb-btn:hover{background:var(--bg-h);color:var(--t);}
 .tb-btn.pri{background:var(--t);color:var(--ti);padding:6px 16px;border-radius:20px;font-weight:600;font-size:13px;letter-spacing:-0.01em;box-shadow:var(--sh);}
 .tb-btn.pri:hover{opacity:0.88;transform:translateY(-1px);box-shadow:var(--sh-md);}
+.tb-back-btn{display:none;align-items:center;gap:4px;padding:5px 10px;border-radius:var(--r);border:none;background:var(--bg-h);cursor:pointer;font-size:13px;font-weight:600;color:var(--ts);font-family:var(--font);transition:background .12s,color .12s;flex-shrink:0;}
+.tb-back-btn:hover{background:var(--bg-a);color:var(--t);}
 
 /* MOBILE FAB — replaces the topbar New button on small screens */
 .mob-fab{
@@ -2271,15 +2461,9 @@ html,body{font-feature-settings:"tnum" 1,"lnum" 1;-webkit-font-smoothing:antiali
 }
 /* Sticky section headers as you scroll */
 .bh3{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:var(--bg);
   padding-top:6px;
   padding-bottom:4px;
   margin-top:20px;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
 }
 /* Card hover float */
 .nf:hover,.chart-box:hover,.bq-card:hover,.fd-kpi:hover,.hero-stat:hover{
@@ -2473,16 +2657,34 @@ html,body{background:var(--bg);}
 /* ── HOME DIRECTORY LAYOUT ── */
 .home-dir-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-top:16px;align-items:start;}
 @media(max-width:768px){.home-dir-grid{grid-template-columns:1fr;}}
-.home-dir-tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
-.home-dir-tile{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:28px 12px 24px;cursor:pointer;transition:transform .3s var(--spring),box-shadow .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;min-height:140px;}
-.home-dir-tile:hover{transform:translateY(-7px) scale(1.03);box-shadow:var(--sh-md);}
-.home-dir-tile:active{transform:scale(0.95)!important;}
-.home-dir-tile-icon{font-size:48px;line-height:1;}
-.home-dir-tile-name{font-size:13px;font-weight:700;color:var(--t);letter-spacing:.01em;}
-.home-dir-tile-stat{font-size:11px;color:var(--ts);}
+.home-dir-tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+.home-dir-tile{
+  position:relative;overflow:hidden;--ta:var(--gold);
+  background:var(--bg-card);
+  border:1.5px solid color-mix(in srgb,var(--ta) 18%,var(--bd));
+  border-radius:20px;padding:18px 16px 16px;cursor:pointer;
+  transition:transform .3s var(--spring),box-shadow .25s,border-color .25s;
+  display:flex;flex-direction:column;gap:14px;min-height:152px;
+}
+.home-dir-tile::before{content:'';position:absolute;top:0;left:0;right:0;height:90px;background:radial-gradient(ellipse at top left,color-mix(in srgb,var(--ta) 13%,transparent) 0%,transparent 72%);pointer-events:none;z-index:0;}
+.home-dir-tile::after{content:'';position:absolute;bottom:-18px;left:10%;right:10%;height:34px;background:var(--ta);opacity:0;filter:blur(20px);transition:opacity .3s;pointer-events:none;border-radius:50%;}
+.home-dir-tile:hover{transform:translateY(-6px) scale(1.018);border-color:color-mix(in srgb,var(--ta) 55%,var(--bd));box-shadow:0 14px 44px color-mix(in srgb,var(--ta) 16%,transparent),0 2px 8px rgba(0,0,0,0.18);}
+.home-dir-tile:hover::after{opacity:0.38;}
+.home-dir-tile:active{transform:scale(0.96)!important;}
+.home-dir-tile-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1;}
+.home-dir-tile-icon-chip{width:44px;height:44px;border-radius:13px;background:color-mix(in srgb,var(--ta) 16%,var(--bg-a));border:1px solid color-mix(in srgb,var(--ta) 30%,transparent);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 2px 10px color-mix(in srgb,var(--ta) 22%,transparent);}
+.home-dir-tile-arr{font-size:14px;color:var(--th);opacity:0;transform:translateX(-6px);transition:opacity .22s,transform .22s,color .18s;}
+.home-dir-tile:hover .home-dir-tile-arr{opacity:1;transform:translateX(0);color:var(--ta);}
+.home-dir-tile-body{display:flex;flex-direction:column;gap:5px;margin-top:auto;position:relative;z-index:1;}
+.home-dir-tile-name{font-size:13.5px;font-weight:700;color:var(--t);letter-spacing:-0.01em;line-height:1.25;}
+.home-dir-tile-stat{font-size:11px;font-weight:500;color:var(--ts);display:flex;align-items:center;gap:5px;}
+.home-dir-tile-stat::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--ta);flex-shrink:0;}
 .home-dir-tile-stat.good{color:var(--green);}
+.home-dir-tile-stat.good::before{background:var(--green);}
 .home-dir-tile-stat.warn{color:var(--amber);}
+.home-dir-tile-stat.warn::before{background:var(--amber);}
 .home-dir-tile-stat.bad{color:var(--red);}
+.home-dir-tile-stat.bad::before{background:var(--red);}
 .home-proj-panel-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;max-height:340px;overflow-y:auto;}
 .home-proj-panel-list::-webkit-scrollbar{width:3px;}
 .home-proj-panel-list::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
@@ -2491,7 +2693,7 @@ html,body{background:var(--bg);}
 .ni{transition:background .15s,color .15s,transform .25s var(--spring),box-shadow .15s,border-color .15s;}
 .ni:hover{transform:translateX(4px)!important;}
 .ni:active{transform:scale(0.96)!important;}
-.home-dir-tile{transition:transform .3s var(--spring),box-shadow .2s!important;}
+.home-dir-tile{transition:transform .3s var(--spring),box-shadow .25s,border-color .25s!important;}
 .fi:focus{transform:scale(1.01);}
 .kanban-card{transition:border-color .15s,box-shadow .15s,transform .25s var(--spring)!important;}
 .kanban-card:hover{transform:translateY(-3px) scale(1.01)!important;box-shadow:var(--sh-md)!important;}
@@ -2564,6 +2766,158 @@ html,body{background:var(--bg);}
 .ptodo-item:hover .ptodo-del{opacity:1;}
 .ptodo-del:hover{background:var(--rbg);color:var(--red);}
 .ptodos-empty{font-size:13px;color:var(--th);padding:8px 0;text-align:center;}
+
+/* ═══════════════ BLOOMBERG TRADING TERMINAL ═══════════════ */
+.content.blm-active{padding:0!important;background:#020202!important;}
+#p-trading{
+  --blm-bg:#020202;--blm-bg2:#0c0c0c;--blm-bg3:#141414;
+  --blm-orange:#ff6200;--blm-orange-dim:rgba(255,98,0,0.14);
+  --blm-green:#00d964;--blm-red:#ff3b3b;
+  --blm-text:#d0d0d0;--blm-bright:#ffffff;
+  --blm-dim:#555;--blm-dimmer:#2e2e2e;
+  --blm-border:#1a1a1a;--blm-border2:#252525;
+  --blm-mono:'JetBrains Mono','Fira Code',monospace;
+  background:var(--blm-bg)!important;
+  padding:0!important;color:var(--blm-text);
+  font-family:var(--blm-mono)!important;
+}
+.blm-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--blm-bg2);border-bottom:2px solid var(--blm-orange);gap:12px;}#p-trading.on .blm-hdr{position:sticky;top:0;z-index:10;}
+.blm-hdr-left{display:flex;align-items:center;gap:10px;}
+.blm-dot{width:8px;height:8px;border-radius:50%;background:var(--blm-orange);box-shadow:0 0 8px var(--blm-orange);animation:blmPulse 2.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes blmPulse{0%,100%{opacity:1;box-shadow:0 0 6px var(--blm-orange);}50%{opacity:0.55;box-shadow:0 0 18px var(--blm-orange);}}
+.blm-hdr-title{font-family:var(--blm-mono);font-size:12px;font-weight:700;letter-spacing:0.16em;color:var(--blm-bright);text-transform:uppercase;}
+.blm-hdr-badge{font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--blm-orange);background:var(--blm-orange-dim);border:1px solid var(--blm-orange);padding:2px 7px;border-radius:2px;}
+.blm-hdr-time{font-family:var(--blm-mono);font-size:11px;color:var(--blm-dim);letter-spacing:0.06em;margin-left:auto;}
+.blm-stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--blm-border2);}
+.blm-stat{padding:14px 16px;border-right:1px solid var(--blm-border2);display:flex;flex-direction:column;gap:5px;}
+.blm-stat:last-child{border-right:none;}
+.blm-stat-lb{font-size:9px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blm-dim);}
+.blm-stat-vl{font-size:24px;font-weight:700;letter-spacing:-0.02em;color:var(--blm-bright);line-height:1;font-family:var(--blm-mono);}
+.blm-stat-vl.up{color:var(--blm-green);}
+.blm-stat-vl.dn{color:var(--blm-red);}
+.blm-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 16px;border-bottom:1px solid var(--blm-border);background:var(--blm-bg);}
+.blm-sec-title{font-size:9px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:var(--blm-dim);}
+.blm-sec-badge{font-size:10px;color:var(--blm-orange);font-weight:600;letter-spacing:0.04em;}
+.blm-chart-wrap{padding:14px 16px 10px;background:var(--blm-bg2);border-bottom:1px solid var(--blm-border2);}
+.blm-chart-inner{height:190px;}
+.blm-tabs{display:flex;border-bottom:1px solid var(--blm-border2);background:var(--blm-bg2);}
+.blm-tab{font-family:var(--blm-mono);font-size:10px;font-weight:700;letter-spacing:0.12em;padding:10px 20px;border:none;background:transparent;color:var(--blm-dim);cursor:pointer;text-transform:uppercase;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;}
+.blm-tab:hover{color:var(--blm-text);}
+.blm-tab.on{color:var(--blm-orange);border-bottom-color:var(--blm-orange);}
+.blm-form{padding:12px 16px;background:var(--blm-bg2);border-bottom:1px solid var(--blm-border2);display:none;}
+.blm-form.on{display:block;}
+.blm-form-grid{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end;}
+.blm-field{display:flex;flex-direction:column;gap:3px;}
+.blm-lbl{font-size:8px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blm-dim);}
+.blm-inp{font-family:var(--blm-mono);font-size:12px;background:#000;border:1px solid var(--blm-border2);color:var(--blm-text);padding:6px 8px;border-radius:2px;outline:none;transition:border-color .15s,color .15s;height:32px;-webkit-appearance:none;}
+.blm-inp:focus{border-color:var(--blm-orange);color:var(--blm-bright);}
+.blm-inp::placeholder{color:#2a2a2a;}
+.blm-add-btn{font-family:var(--blm-mono);font-size:10px;font-weight:700;letter-spacing:0.14em;padding:0 20px;height:32px;background:var(--blm-orange);color:#000;border:none;border-radius:2px;cursor:pointer;text-transform:uppercase;transition:opacity .15s;flex-shrink:0;}
+.blm-add-btn:hover{opacity:0.85;}
+.blm-table-wrap{overflow-x:auto;}
+.blm-tbl{width:100%;border-collapse:collapse;font-family:var(--blm-mono);font-size:11.5px;}
+.blm-tbl th{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--blm-dim);padding:8px 12px;text-align:left;border-bottom:1px solid var(--blm-border2);white-space:nowrap;background:var(--blm-bg2);}
+.blm-tbl td{padding:9px 12px;border-bottom:1px solid var(--blm-border);color:var(--blm-text);white-space:nowrap;vertical-align:middle;}
+.blm-tbl tr:hover td{background:rgba(255,98,0,0.04);}
+.blm-tbl tr:last-child td{border-bottom:none;}
+.blm-sym{color:var(--blm-bright);font-weight:700;letter-spacing:0.06em;}
+.blm-pnl-pos{color:var(--blm-green);font-weight:700;}
+.blm-pnl-neg{color:var(--blm-red);font-weight:700;}
+.blm-pnl-open{color:var(--blm-dim);}
+.blm-dir-l{color:var(--blm-green);font-size:9px;font-weight:700;letter-spacing:0.1em;}
+.blm-dir-s{color:var(--blm-red);font-size:9px;font-weight:700;letter-spacing:0.1em;}
+.blm-st-o{color:var(--blm-orange);font-size:9px;font-weight:700;letter-spacing:0.08em;}
+.blm-st-c{color:var(--blm-dim);font-size:9px;font-weight:600;letter-spacing:0.08em;}
+.blm-wr-good{color:var(--blm-green);font-weight:700;}
+.blm-wr-bad{color:var(--blm-red);font-weight:700;}
+.blm-del{background:none;border:1px solid var(--blm-border2);color:var(--blm-dimmer);font-size:10px;padding:2px 7px;border-radius:2px;cursor:pointer;font-family:var(--blm-mono);transition:border-color .12s,color .12s;}
+.blm-del:hover{border-color:var(--blm-red);color:var(--blm-red);}
+.blm-empty-row td{padding:28px 16px;text-align:center;color:var(--blm-dimmer);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;}
+@media(max-width:768px){
+  .blm-stats-row{grid-template-columns:repeat(2,1fr);}
+  .blm-stat-vl{font-size:18px;}
+  .blm-stat{padding:10px 12px;}
+  .blm-form-grid{gap:6px;}
+  .blm-tbl th,.blm-tbl td{padding:7px 8px;font-size:10.5px;}
+}
+
+/* ── CREDIT DASHBOARD ── */
+.cr-tabs{display:flex;gap:5px;padding:5px;background:var(--bg-in);border-radius:16px;border:1px solid var(--bd);margin:12px 0 10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.cr-tabs::-webkit-scrollbar{display:none;}
+.cr-tab{font-family:var(--font);font-size:12.5px;font-weight:700;padding:8px 15px;border:none;background:transparent;color:var(--ts);cursor:pointer;white-space:nowrap;border-radius:11px;transition:all .18s ease;-webkit-tap-highlight-color:transparent;}
+.cr-tab:hover{color:var(--t);background:var(--bg-h);}
+.cr-tab.on{background:var(--blue);color:var(--ti);box-shadow:0 2px 12px rgba(0,0,0,.22);}
+[data-dark] .cr-tab.on{color:#0d0906;}
+.cr-score-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 16px 16px;background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--sh);margin-bottom:14px;}
+.cr-gauge-svg{overflow:visible;}
+.cr-score-label{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;margin-top:8px;}
+.cr-score-range{font-size:10.5px;color:var(--th);margin-top:3px;}
+.cr-score-inp-row{display:flex;gap:8px;margin-top:14px;width:100%;max-width:340px;}
+.cr-util-wrap{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;box-shadow:var(--sh);margin-bottom:14px;}
+.cr-util-lbl{font-size:10.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.cr-util-bar-track{height:14px;background:var(--bg-h);border-radius:7px;overflow:hidden;}
+.cr-util-bar-fill{height:100%;border-radius:7px;transition:width .6s ease,background .4s ease;}
+.cr-util-meta{display:flex;justify-content:space-between;margin-top:6px;}
+.cr-util-pct{font-size:28px;font-weight:900;letter-spacing:-0.04em;color:var(--t);}
+.cr-card-grid{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+.cr-card-item{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);}
+.cr-card-header{padding:14px 16px 10px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:12px;}
+.cr-card-chip{width:44px;height:28px;border-radius:6px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+.cr-card-name{font-size:14px;font-weight:700;color:var(--t);}
+.cr-card-last4{font-size:11px;color:var(--ts);letter-spacing:0.06em;}
+.cr-card-body{padding:12px 16px;}
+.cr-card-util-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.cr-card-util-bar-track{flex:1;height:8px;background:var(--bg-h);border-radius:4px;overflow:hidden;}
+.cr-card-util-bar-fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.cr-card-util-pct{font-size:13px;font-weight:800;min-width:38px;text-align:right;}
+.cr-card-details{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.cr-card-detail{background:var(--bg-h);border-radius:var(--r);padding:8px 10px;}
+.cr-card-detail-lbl{font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.cr-card-detail-val{font-size:13px;font-weight:700;color:var(--t);}
+.cr-card-due{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block;margin-top:8px;}
+.cr-card-due.soon{background:var(--abg);color:var(--amber);}
+.cr-card-due.ok{background:var(--gbg);color:var(--green);}
+.cr-card-due.overdue{background:var(--rbg);color:var(--red);}
+.cr-card-acts{display:flex;gap:6px;padding:10px 16px;border-top:1px solid var(--bd);}
+.cr-history-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px;}
+.cr-history-table th{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.06em;padding:6px 8px;text-align:left;border-bottom:1px solid var(--bd);}
+.cr-history-table td{padding:8px 8px;border-bottom:1px solid var(--bd);color:var(--t);}
+.cr-history-table tr:last-child td{border-bottom:none;}
+.cr-payment-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);}
+.cr-payment-row:last-child{border-bottom:none;}
+.cr-payment-amount{font-size:14px;font-weight:800;color:var(--green);}
+@media(max-width:768px){.cr-card-details{grid-template-columns:1fr 1fr;}}
+
+
+/* GOALS ROADMAP VIEW */
+.gp-filter-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin:10px 0 4px;}
+.gp-view-toggle{display:flex;gap:4px;background:var(--bg-in);border:1px solid var(--bd);border-radius:10px;padding:3px;}
+.gp-vt-btn{font-family:var(--font);font-size:11.5px;font-weight:700;padding:5px 12px;border:none;background:transparent;color:var(--ts);cursor:pointer;border-radius:7px;transition:all .15s;white-space:nowrap;}
+.gp-vt-btn:hover{color:var(--t);background:var(--bg-h);}
+.gp-vt-btn.on{background:var(--gold);color:var(--ti);box-shadow:0 1px 6px rgba(0,0,0,.15);}
+[data-dark] .gp-vt-btn.on{color:#0d0906;}
+.gp-roadmap-wrap{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh);margin-top:8px;}
+.gp-rm-axis{display:flex;border-bottom:1px solid var(--bd);background:var(--bg-h);}
+.gp-rm-axis-pad{width:180px;flex-shrink:0;padding:6px 10px;font-size:10px;font-weight:700;color:var(--th);text-transform:uppercase;letter-spacing:0.06em;}
+.gp-rm-axis-months{flex:1;height:28px;overflow:hidden;}
+.gp-rm-month{position:absolute;font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.04em;transform:translateX(-50%);white-space:nowrap;top:6px;}
+.gp-rm-rows{display:flex;flex-direction:column;}
+.gp-rm-row{display:flex;align-items:center;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .12s;}
+.gp-rm-row:last-child{border-bottom:none;}
+.gp-rm-row:hover{background:var(--bg-h);}
+.gp-rm-name{width:180px;flex-shrink:0;padding:10px 10px;font-size:12px;font-weight:600;color:var(--t);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gp-rm-track{flex:1;padding:8px 12px;position:relative;}
+.gp-rm-bar{position:relative;height:26px;border-radius:6px;overflow:hidden;display:flex;align-items:center;}
+.gp-rm-bar-prog{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,0.25);border-radius:6px;}
+.gp-rm-bar-txt{position:relative;font-size:10.5px;font-weight:700;color:rgba(255,255,255,0.95);padding:0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gp-rm-nodl-section{border-top:1px solid var(--bd);padding:10px 14px;}
+.gp-rm-nodl-hdr{font-size:10px;font-weight:700;color:var(--th);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;}
+.gp-rm-nodl-item{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:4px;border-radius:var(--r);cursor:pointer;transition:background .12s;}
+.gp-rm-nodl-item:hover{background:var(--bg-h);}
+@media(max-width:768px){.gp-rm-name{width:100px;}.gp-rm-axis-pad{width:100px;}}
+
+
+
 </style>
 </head>
 <body>
@@ -2577,25 +2931,19 @@ html,body{background:var(--bg);}
       <div class="ws-nm">Life OS</div>
     </div>
   </div>
-  <div class="sb-sec">Workspace</div>
-  <div class="ni on" id="ni-home" onclick="go('home',this)"><span class="ni-ic">∞</span><span class="ni-lb">Home</span></div>
-  <div class="sb-div"></div>
-  <div class="sb-sec">Life Sectors</div>
-  <div class="ni draggable-ni" id="ni-finance" draggable="true" onclick="go('finance',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🧾</span><span class="ni-lb" id="sbl-finance">Bills &amp; Budgets</span></div>
-  <div class="ni draggable-ni" id="ni-planning" draggable="true" onclick="go('planning',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🗓️</span><span class="ni-lb" id="sbl-planning">Planning</span></div>
-  <div class="ni draggable-ni" id="ni-journal" draggable="true" onclick="go('journal',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📓</span><span class="ni-lb">Journal</span></div>
-  <div class="sb-div" id="sb-custom-div"></div>
-  <div id="sb-custom-pages"></div>
-  <div style="padding:4px 8px 2px;">
-    <div class="ni" onclick="openNewPageModal()" style="color:var(--ts);font-size:13px;border:1px dashed var(--bd2);margin:2px 6px;justify-content:center;gap:6px;">
-      <span>＋</span><span class="ni-lb" style="flex:0;">New page</span>
+  <div class="sb-sec">My Workspaces</div>
+  <div class="ni on" id="ni-home" onclick="go('home',this)"><span class="ni-ic">∞</span><span class="ni-lb">Life Home</span></div>
+  <div class="ni draggable-ni" id="ni-trading" draggable="true" onclick="go('trading',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📈</span><span class="ni-lb">Trading</span></div>
+  <div class="ni draggable-ni" id="ni-credit" draggable="true" onclick="go('credit',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">💳</span><span class="ni-lb">Credit</span></div>
+  <div class="sb-gear-wrap">
+    <button class="sb-gear-btn" onclick="toggleSbGear()" id="sb-gear-btn">
+      <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">⚙️</span><span>Settings</span></span>
+      <span class="sb-gear-arrow" id="sb-gear-arrow">▾</span>
+    </button>
+    <div class="sb-gear-sub" id="sb-gear-sub">
+      <button class="sb-gear-sub-btn" onclick="exportData()"><span class="sb-gear-sub-icon">⬇</span>Export backup</button>
+      <button class="sb-gear-sub-btn" onclick="importData()"><span class="sb-gear-sub-icon">⬆</span>Import backup</button>
     </div>
-  </div>
-  <div class="sb-div"></div>
-  <div class="sb-ft">
-    <div class="ni" onclick="go('settings',this)" id="ni-settings"><span class="ni-ic">⚙️</span><span class="ni-lb">Settings</span></div>
-    <div class="ni" style="color:var(--th);font-size:13px;" onclick="exportData()"><span class="ni-ic">⬇️</span><span class="ni-lb">Export backup</span></div>
-    <div class="ni" style="color:var(--th);font-size:13px;" onclick="importData()"><span class="ni-ic">⬆️</span><span class="ni-lb">Import backup</span></div>
   </div>
 </div>
 <div class="sb-overlay" id="sb-overlay" onclick="closeSB()"></div>
@@ -2604,7 +2952,8 @@ html,body{background:var(--bg);}
 <div class="main">
   <div class="topbar">
     <button class="sb-toggle-btn" id="sb-toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar" style="font-size:14px;color:var(--ts);">◀</button>
-    <div class="bc"><span id="bc-ic">∞</span><span class="bc-sep"> / </span><span class="bc-cur" id="bc-ttl">Home</span></div>
+    <button class="tb-back-btn" id="tb-back-btn" onclick="go('home',document.getElementById('ni-home'))" title="Back to Life Home">← Home</button>
+    <div class="bc"><span id="bc-ic">∞</span><span class="bc-sep"> / </span><span class="bc-cur" id="bc-ttl">Life Home</span></div>
     <div class="tb-acts">
       <button class="tb-cmd-btn" onclick="openCmdPalette()" title="Command palette (⌘K)" aria-label="Open command palette">🔍 <span class="cmd-kbd" style="font-size:10px;">⌘K</span></button>
       <button class="ic-btn" onclick="toggleDark()" title="Toggle dark mode" style="font-size:16px;">◑</button>
@@ -3022,7 +3371,6 @@ html,body{background:var(--bg);}
     <!-- PLANNING — Daily Command Center (multi-tab hub) -->
     <div class="panel" id="p-planning">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
-      <div class="page-cover cto"></div>
       <span class="page-icon">🗓️</span>
       <div class="page-title editable-hdr" data-hdr="planning-title" id="hdr-planning-title">Daily Command Center</div>
       <div class="page-sub">Plan · Execute · Reflect</div>
@@ -3267,12 +3615,18 @@ html,body{background:var(--bg);}
             <button class="btn pri" onclick="addGoal()">Add</button>
           </div>
         </div>
-        <div class="gp-filter">
-          <button class="gp-filter-btn on" onclick="setGPFilter('all',this)">All</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('Goal',this)">🎯 Goals</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('Project',this)">📁 Projects</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('active',this)">In Progress</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('done',this)">Completed</button>
+        <div class="gp-filter-row">
+          <div class="gp-filter">
+            <button class="gp-filter-btn on" onclick="setGPFilter('all',this)">All</button>
+            <button class="gp-filter-btn" onclick="setGPFilter('Goal',this)">🎯 Goals</button>
+            <button class="gp-filter-btn" onclick="setGPFilter('Project',this)">📁 Projects</button>
+            <button class="gp-filter-btn" onclick="setGPFilter('active',this)">In Progress</button>
+            <button class="gp-filter-btn" onclick="setGPFilter('done',this)">Completed</button>
+          </div>
+          <div class="gp-view-toggle">
+            <button class="gp-vt-btn on" id="gpv-list" onclick="setGoalsView('list',this)">📋 List</button>
+            <button class="gp-vt-btn" id="gpv-roadmap" onclick="setGoalsView('roadmap',this)">🗺 Roadmap</button>
+          </div>
         </div>
         <div id="g-list"></div>
       </div>
@@ -3355,7 +3709,6 @@ html,body{background:var(--bg);}
     <!-- JOURNAL PANEL -->
     <div class="panel" id="p-journal">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
-      <div class="page-cover ch"></div>
       <span class="page-icon">📓</span>
       <div class="page-title">Daily Journal</div>
       <div class="page-sub">Log · Reflect · Grow</div>
@@ -3410,6 +3763,209 @@ html,body{background:var(--bg);}
       <div id="routinizer-summary"></div>
       <div id="routines-container"></div>
       <div id="routines-custom-container"></div>
+    </div>
+
+    <div class="panel" id="p-trading">
+      <button class="mob-menu-float" onclick="openSB()" style="background:#111;color:#ff6200;border:1px solid #ff6200;">☰</button>
+
+      <!-- BLOOMBERG HEADER -->
+      <div class="blm-hdr">
+        <div class="blm-hdr-left">
+          <div class="blm-dot"></div>
+          <span class="blm-hdr-title">Trading Terminal</span>
+          <span class="blm-hdr-badge">LIVE</span>
+        </div>
+        <span class="blm-hdr-time" id="blm-time"></span>
+      </div>
+
+      <!-- STATS (rendered by renderTrades into t-sum) -->
+      <div class="blm-stats-row" id="t-sum"></div>
+
+      <!-- EQUITY CURVE -->
+      <div class="blm-sec-hdr">
+        <span class="blm-sec-title">Equity Curve</span>
+        <span class="blm-sec-badge">CUMULATIVE P&amp;L</span>
+      </div>
+      <div class="blm-chart-wrap">
+        <div class="blm-chart-inner"><canvas id="tc"></canvas></div>
+      </div>
+
+      <!-- TABS -->
+      <div class="blm-tabs">
+        <button class="blm-tab on" id="blm-tab-log" onclick="blmTab('log',this)">Log Trade</button>
+        <button class="blm-tab" id="blm-tab-bt" onclick="blmTab('bt',this)">Backtests</button>
+      </div>
+
+      <!-- LOG TRADE FORM -->
+      <div class="blm-form on" id="blm-form-log">
+        <div class="blm-form-grid">
+          <div class="blm-field" style="flex:2;min-width:110px;"><label class="blm-lbl">Symbol</label><input class="blm-inp" id="tr-s" placeholder="AAPL"></div>
+          <div class="blm-field" style="min-width:90px;"><label class="blm-lbl">Direction</label><select class="blm-inp" id="tr-d"><option value="Long">LONG</option><option value="Short">SHORT</option></select></div>
+          <div class="blm-field" style="min-width:80px;"><label class="blm-lbl">Entry</label><input class="blm-inp" id="tr-e" type="number" step="any" placeholder="0.00"></div>
+          <div class="blm-field" style="min-width:80px;"><label class="blm-lbl">Exit</label><input class="blm-inp" id="tr-x" type="number" step="any" placeholder="0.00"></div>
+          <div class="blm-field" style="min-width:62px;"><label class="blm-lbl">Size</label><input class="blm-inp" id="tr-sz" type="number" step="any" placeholder="1" value="1"></div>
+          <div class="blm-field" style="min-width:90px;"><label class="blm-lbl">Status</label><select class="blm-inp" id="tr-st"><option value="Open">OPEN</option><option value="Closed">CLOSED</option></select></div>
+          <div class="blm-field" style="min-width:130px;"><label class="blm-lbl">Date</label><input class="blm-inp" id="tr-dt" type="date"></div>
+          <div class="blm-field" style="flex:3;min-width:130px;"><label class="blm-lbl">Notes</label><input class="blm-inp" id="tr-n" placeholder="Strategy / setup..."></div>
+          <button class="blm-add-btn" onclick="addTrade()">ADD</button>
+        </div>
+      </div>
+
+      <!-- BACKTEST FORM -->
+      <div class="blm-form" id="blm-form-bt">
+        <div class="blm-form-grid">
+          <div class="blm-field" style="flex:2;min-width:130px;"><label class="blm-lbl">Strategy</label><input class="blm-inp" id="bt-n" placeholder="EMA Crossover"></div>
+          <div class="blm-field" style="min-width:110px;"><label class="blm-lbl">Market</label><input class="blm-inp" id="bt-m" placeholder="NYSE / Crypto"></div>
+          <div class="blm-field" style="min-width:80px;"><label class="blm-lbl">Win %</label><input class="blm-inp" id="bt-w" type="number" step="any" placeholder="0–100"></div>
+          <div class="blm-field" style="min-width:70px;"><label class="blm-lbl">R/R</label><input class="blm-inp" id="bt-r" type="number" step="any" placeholder="2.0"></div>
+          <div class="blm-field" style="min-width:80px;"><label class="blm-lbl">Profit %</label><input class="blm-inp" id="bt-p" type="number" step="any" placeholder="±%"></div>
+          <div class="blm-field" style="min-width:130px;"><label class="blm-lbl">Date</label><input class="blm-inp" id="bt-dt" type="date"></div>
+          <div class="blm-field" style="flex:3;min-width:130px;"><label class="blm-lbl">Notes</label><input class="blm-inp" id="bt-no" placeholder="Results / observations..."></div>
+          <button class="blm-add-btn" onclick="addBt()">ADD</button>
+        </div>
+      </div>
+
+      <!-- TRADE LOG TABLE -->
+      <div id="blm-log-section">
+        <div class="blm-sec-hdr">
+          <span class="blm-sec-title">Trade Log</span>
+          <span class="blm-sec-badge" id="blm-trade-cnt"></span>
+        </div>
+        <div class="blm-table-wrap">
+          <table class="blm-tbl">
+            <thead><tr><th>Symbol</th><th>Dir</th><th>Entry</th><th>Exit</th><th>Size</th><th>P&amp;L</th><th>Status</th><th>Date</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="t-tb"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BACKTESTS TABLE -->
+      <div id="blm-bt-section" style="display:none;">
+        <div class="blm-sec-hdr">
+          <span class="blm-sec-title">Backtests</span>
+          <span class="blm-sec-badge" id="blm-bt-cnt"></span>
+        </div>
+        <div class="blm-table-wrap">
+          <table class="blm-tbl">
+            <thead><tr><th>Strategy</th><th>Market</th><th>Win %</th><th>R/R</th><th>Profit %</th><th>Date</th><th>Notes</th><th></th></tr></thead>
+            <tbody id="bt-tb"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-credit">
+      <button class="mob-menu-float" onclick="openSB()">&#9776;</button>
+      <div class="fin-page-header">
+        <div class="fin-page-header-left">
+          <div class="fin-page-icon">&#x1F4B3;</div>
+          <div>
+            <div class="fin-page-title">Credit</div>
+            <div class="fin-page-sub">Score &middot; Utilization &middot; Cards</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CREDIT TABS -->
+      <div class="cr-tabs">
+        <button class="cr-tab on" id="crtab-overview" onclick="switchCreditTab('overview',this)">&#x1F4CA; Overview</button>
+        <button class="cr-tab" id="crtab-cards" onclick="switchCreditTab('cards',this)">&#x1F4B3; Cards</button>
+        <button class="cr-tab" id="crtab-payments" onclick="switchCreditTab('payments',this)">&#x1F4CB; Payments</button>
+      </div>
+
+      <!-- TAB: OVERVIEW -->
+      <div id="crtab-overview-body">
+        <!-- Score gauge -->
+        <div class="cr-score-wrap">
+          <svg class="cr-gauge-svg" width="220" height="130" viewBox="0 0 220 130">
+            <path d="M 22 118 A 88 88 0 0 1 198 118" fill="none" stroke="var(--bd)" stroke-width="16" stroke-linecap="round"/>
+            <path id="cr-gauge-fill" d="M 22 118 A 88 88 0 0 1 198 118" fill="none" stroke="var(--gold)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 276" style="transition:stroke-dasharray 0.9s ease,stroke 0.5s ease;"/>
+            <text x="110" y="108" text-anchor="middle" id="cr-gauge-score-text" style="font-size:38px;font-weight:900;fill:var(--t);font-family:var(--font);">&#8212;</text>
+          </svg>
+          <div id="cr-score-label" class="cr-score-label" style="color:var(--ts);">No score yet</div>
+          <div class="cr-score-range">300 (Poor) &rarr; 850 (Exceptional)</div>
+          <div class="cr-score-inp-row">
+            <input class="fi" type="number" id="cr-score-input" placeholder="Enter score (300&#x2013;850)" min="300" max="850" style="flex:1;" onkeydown="if(event.key==='Enter')saveCreditScore()">
+            <button class="btn pri" onclick="saveCreditScore()">Update Score</button>
+          </div>
+        </div>
+
+        <!-- Overall utilization -->
+        <div class="cr-util-wrap">
+          <div class="cr-util-lbl">Overall Credit Utilization</div>
+          <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">
+            <div class="cr-util-pct" id="cr-util-pct">&#8212;</div>
+            <div id="cr-util-status" style="font-size:11px;font-weight:700;"></div>
+          </div>
+          <div class="cr-util-bar-track">
+            <div class="cr-util-bar-fill" id="cr-util-bar" style="width:0%;background:var(--green);"></div>
+          </div>
+          <div class="cr-util-meta">
+            <span id="cr-util-balance" style="color:var(--ts);font-size:11px;"></span>
+            <span id="cr-util-limit" style="color:var(--ts);font-size:11px;"></span>
+          </div>
+        </div>
+
+        <!-- Score history -->
+        <div class="nf" style="margin-bottom:14px;">
+          <div class="nf-ttl">&#x1F4C8; Score History</div>
+          <div id="cr-score-history"></div>
+        </div>
+      </div>
+
+      <!-- TAB: CARDS -->
+      <div id="crtab-cards-body" style="display:none;">
+        <div class="nf" style="margin-top:12px;">
+          <div class="nf-ttl">&#xFF0B; Add Credit Card</div>
+          <div class="fr">
+            <input class="fi" type="text" id="cr-card-name" placeholder="Card name (e.g. Chase Sapphire)">
+            <input class="fi" type="text" id="cr-card-last4" placeholder="Last 4" maxlength="4" style="max-width:90px;">
+          </div>
+          <div class="fr" style="margin-top:6px;">
+            <input class="fi" type="number" id="cr-card-limit" placeholder="Credit limit $" step="0.01">
+            <input class="fi" type="number" id="cr-card-balance" placeholder="Current balance $" step="0.01">
+            <input class="fi" type="number" id="cr-card-apr" placeholder="APR %" step="0.01" style="max-width:100px;">
+          </div>
+          <div class="fr" style="margin-top:6px;">
+            <input class="fi" type="number" id="cr-card-minpay" placeholder="Min payment $" step="0.01">
+            <input class="fi" type="number" id="cr-card-dueday" placeholder="Due day (1&#x2013;31)" min="1" max="31" style="max-width:130px;">
+            <select class="fi" id="cr-card-color" style="max-width:130px;">
+              <option value="#4a90d9">&#x1F535; Blue</option>
+              <option value="#e74c3c">&#x1F534; Red</option>
+              <option value="#2ecc71">&#x1F7E2; Green</option>
+              <option value="#f39c12">&#x1F7E0; Orange</option>
+              <option value="#9b59b6">&#x1F7E3; Purple</option>
+              <option value="#1abc9c">&#x1FA75; Teal</option>
+            </select>
+            <button class="btn pri" onclick="addCreditCard()">Add Card</button>
+          </div>
+        </div>
+        <div class="cr-card-grid" id="cr-card-list"></div>
+      </div>
+
+      <!-- TAB: PAYMENTS -->
+      <div id="crtab-payments-body" style="display:none;">
+        <div class="nf" style="margin-top:12px;">
+          <div class="nf-ttl">&#xFF0B; Log a Payment</div>
+          <div class="fr">
+            <select class="fi" id="cr-pay-card"><option value="">&#x2014; Select card &#x2014;</option></select>
+            <input class="fi" type="number" id="cr-pay-amount" placeholder="Amount paid $" step="0.01">
+            <input class="fi" type="date" id="cr-pay-date">
+            <button class="btn pri" onclick="logCreditPayment()">Log Payment</button>
+          </div>
+        </div>
+        <div id="cr-payment-log" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+        </div>
+      </div>
+      <div class="nf" style="margin-top:16px;text-align:center;padding:40px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">💳</div>
+        <div style="font-size:18px;font-weight:700;color:var(--t);margin-bottom:6px;">Credit Management</div>
+        <div style="font-size:14px;color:var(--ts);">Track your credit score, card utilization, and payment due dates.</div>
+        <div style="margin-top:20px;font-size:13px;color:var(--th);">Coming soon — credit tracking features will be added here.</div>
+      </div>
     </div>
 
     <div class="panel" id="p-settings">
@@ -3605,7 +4161,7 @@ G('h-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',mo
 document.querySelectorAll('input[type=date]').forEach(el=>{if(!el.value)el.value=today;});
 
 // STATE
-let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[],personalTodos:[]};
+let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[],personalTodos:[],credit:{score:null,scoreHistory:[],cards:[]}};
 try{const d=localStorage.getItem('lifeOS_v3');if(d)S=Object.assign(S,JSON.parse(d));}catch(e){}
 if(!S.otherPayments)S.otherPayments=[];
 if(!S.customCategories)S.customCategories=[];
@@ -3649,6 +4205,7 @@ const currentMonth=today.slice(0,7);
 let blCalYear=new Date().getFullYear(),blCalMon=new Date().getMonth();
 let blCatFilter='all';
 let gpFilter='all';
+let goalsView='list';
 
 // DARK MODE
 let dark=localStorage.getItem('lifeOS_dark')!=='0';
@@ -3669,20 +4226,20 @@ function openSB(){G('sb').classList.add('open');G('sb-overlay').classList.add('o
 function closeSB(){G('sb').classList.remove('open');G('sb-overlay').classList.remove('open');}
 
 // NAV
-const PM={home:{ic:'∞',ttl:'Home'},finance:{ic:'🧾',ttl:'Bills & Budgets'},trades:{ic:'📈',ttl:'Trades & Backtests'},goals:{ic:'🎯',ttl:'Goals & Projects'},planning:{ic:'🗓️',ttl:'Daily Command Center'},todos:{ic:'✅',ttl:'Admin & Todos'},habits:{ic:'🔄',ttl:'Habits'},projects:{ic:'🚀',ttl:'Projects'},routinizer:{ic:'🔁',ttl:'Routinizer'},settings:{ic:'⚙️',ttl:'Settings'},journal:{ic:'📓',ttl:'Daily Journal'}};
+const PM={home:{ic:'∞',ttl:'Life Home'},finance:{ic:'🧾',ttl:'Bills & Budgets'},trades:{ic:'📈',ttl:'Trades & Backtests'},trading:{ic:'📈',ttl:'Trading'},credit:{ic:'💳',ttl:'Credit'},goals:{ic:'🎯',ttl:'Goals & Projects'},planning:{ic:'🗓️',ttl:'Daily Command Center'},todos:{ic:'✅',ttl:'Admin & Todos'},habits:{ic:'🔄',ttl:'Habits'},projects:{ic:'🚀',ttl:'Projects'},routinizer:{ic:'🔁',ttl:'Routinizer'},settings:{ic:'⚙️',ttl:'Settings'},journal:{ic:'📓',ttl:'Daily Journal'}};
 function go(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
-  G('p-'+id).classList.add('on');
+  const tp=G('p-'+id);if(tp)tp.classList.add('on');else return;
   if(el)el.classList.add('on');
   G('bc-ic').textContent=PM[id]?PM[id].ic:'📝';
   G('bc-ttl').textContent=PM[id]?PM[id].ttl:id;
   G('new-btn').style.display=(id==='home'||id==='settings')?'none':'flex';
+  const backBtn=G('tb-back-btn');if(backBtn)backBtn.style.display=(id==='home'||id==='settings')?'none':'flex';
   const fab=G('mob-fab');if(fab)fab.style.display=(id==='home'||id==='settings')?'none':'flex';
+  const contentEl=G('content');if(contentEl){contentEl.classList.toggle('blm-active',id==='trading');const prevBehavior=contentEl.style.scrollBehavior;contentEl.style.scrollBehavior='auto';contentEl.scrollTop=0;contentEl.style.scrollBehavior=prevBehavior;}
   closeSB();
   updateBN(id);
-  // Defer heavy rendering until after the browser paints the panel switch
-  // and the sidebar close animation can run (transition is 220ms)
   setTimeout(()=>{
     renderAll();
     if(id==='journal')renderJournal();
@@ -3705,7 +4262,7 @@ function triggerAdd(){
   const a=document.querySelector('.panel.on');if(!a)return;
   const id=a.id.replace('p-','');
   if(id==='finance'){openFinQuickAdd();return;}
-  const m={trades:'tr-s',goals:'gl-t',todos:'td-t',habits:'h-new',planning:'td-t'};
+  const m={trades:'tr-s',trading:'tr-s',goals:'gl-t',todos:'td-t',habits:'h-new',planning:'td-t'};
   if(m[id]){G(m[id]).focus();G(m[id]).scrollIntoView({behavior:'smooth',block:'center'});}
 }
 
@@ -4932,21 +5489,59 @@ function addBt(){
 }
 function delBt(id){S.backtests=S.backtests.filter(b=>b.id!==id);save();renderTrades();}
 function renderTrades(){
-  if(!G('t-sum'))return; // panel removed
+  if(!G('t-sum'))return;
   const cl=S.trades.filter(t=>t.st==='Closed'&&tPnl(t)!==null);
   const wins=cl.filter(t=>tPnl(t)>0);
   const tp=cl.reduce((s,t)=>s+tPnl(t),0);
   const wr=cl.length?Math.round(wins.length/cl.length*100):null;
-  G('t-sum').innerHTML=`<div class="sum-item"><div class="sum-lb">Total trades</div><div class="sum-vl">${S.trades.length}</div></div><div class="sum-item"><div class="sum-lb">Win rate</div><div class="sum-vl ${wr!==null?(wr>=50?'up':'dn'):''}">${wr!==null?wr+'%':'—'}</div></div><div class="sum-item"><div class="sum-lb">Total P&amp;L</div><div class="sum-vl ${tp>=0?'up':'dn'}">${fmtS(tp)}</div></div><div class="sum-item"><div class="sum-lb">Open</div><div class="sum-vl">${S.trades.filter(t=>t.st==='Open').length}</div></div>`;
+  const openCt=S.trades.filter(t=>t.st==='Open').length;
+  // Bloomberg stats bar
+  G('t-sum').innerHTML=
+    `<div class="blm-stat"><div class="blm-stat-lb">Total Trades</div><div class="blm-stat-vl">${S.trades.length}</div></div>`+
+    `<div class="blm-stat"><div class="blm-stat-lb">Win Rate</div><div class="blm-stat-vl ${wr!==null?(wr>=50?'up':'dn'):''}">${wr!==null?wr+'%':'—'}</div></div>`+
+    `<div class="blm-stat"><div class="blm-stat-lb">Total P&L</div><div class="blm-stat-vl ${tp>=0?'up':'dn'}">${fmtS(tp)}</div></div>`+
+    `<div class="blm-stat"><div class="blm-stat-lb">Open Positions</div><div class="blm-stat-vl ${openCt>0?'':'dn'}">${openCt}</div></div>`;
+  // Update counts
+  const tc=G('blm-trade-cnt');if(tc)tc.textContent=S.trades.length+' RECORDS';
+  const btc=G('blm-bt-cnt');if(btc)btc.textContent=S.backtests.length+' RECORDS';
+  // Chart — Bloomberg orange/green
   const srt=[...S.trades].sort((a,b)=>a.dt.localeCompare(b.dt));
   let cum=0;const cd=srt.map(t=>{cum+=tPnl(t)||0;return parseFloat(cum.toFixed(2));});
-  if(srt.length)mkChart('tc',{type:'line',data:{labels:srt.map(t=>t.s),datasets:[{data:cd,borderColor:'#337ea9',backgroundColor:'rgba(51,126,169,0.06)',fill:true,tension:0.35,pointRadius:3,pointBackgroundColor:'#337ea9'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:GC},ticks:{callback:v=>fmtS(v),font:{size:10}}}}}});
-  const tb=G('t-tb');
-  if(!S.trades.length){tb.innerHTML=`<tr><td colspan="10"><div class="empty">No trades logged</div></td></tr>`;}
-  else tb.innerHTML=[...S.trades].reverse().map(t=>{const p=tPnl(t);const acts=`<td style="display:flex;gap:4px;"><button class="edit-ic" onclick="openEM('trade',${t.id})" title="Edit">✎</button><button class="del" onclick="delTrade(${t.id})">✕</button></td>`;return`<tr><td><strong>${t.s}</strong></td><td>${tag(t.dir,t.dir==='Long'?'green':'red')}</td><td style="font-family:monospace;">${t.e}</td><td style="font-family:monospace;">${t.x||'—'}</td><td style="font-family:monospace;">${t.sz}</td><td style="font-weight:600;color:${p===null?'var(--ts)':p>=0?'var(--green)':'var(--red)'};">${p===null?'open':fmtS(p)}</td><td>${tag(t.st,t.st==='Open'?'amber':'gray')}</td><td style="font-size:12px;color:var(--ts);">${t.dt}</td><td style="font-size:12px;color:var(--ts);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${t.n||''}</td><td><button class="del" onclick="delTrade(${t.id})">✕</button></td></tr>`;}).join('');
-  const btb=G('bt-tb');
-  if(!S.backtests.length){btb.innerHTML=`<tr><td colspan="8"><div class="empty">No backtests yet</div></td></tr>`;}
-  else btb.innerHTML=[...S.backtests].reverse().map(b=>`<tr><td><strong>${b.n}</strong></td><td>${tag(b.m,'blue')}</td><td style="font-weight:600;color:${b.w>=50?'var(--green)':'var(--red)'};">${b.w}%</td><td style="font-family:monospace;">${b.r}</td><td style="font-weight:600;color:${b.p>=0?'var(--green)':'var(--red)'};">${b.p>=0?'+':''}${b.p}%</td><td style="font-size:12px;color:var(--ts);">${b.dt}</td><td style="font-size:12px;color:var(--ts);">${b.no||''}</td><td><button class="del" onclick="delBt(${b.id})">✕</button></td></tr>`).join('');
+  const chartColor=tp>=0?'#00d964':'#ff3b3b';
+  const chartFill=tp>=0?'rgba(0,217,100,0.06)':'rgba(255,59,59,0.06)';
+  if(srt.length)mkChart('tc',{type:'line',data:{labels:srt.map(t=>t.s),datasets:[{data:cd,borderColor:chartColor,backgroundColor:chartFill,fill:true,tension:0.35,pointRadius:3,pointBackgroundColor:chartColor,pointBorderColor:'transparent'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1a1a1a'},ticks:{color:'#555',font:{size:9,family:"'JetBrains Mono',monospace"}}},y:{grid:{color:'#1a1a1a'},ticks:{color:'#555',callback:v=>fmtS(v),font:{size:9,family:"'JetBrains Mono',monospace"}}}},backgroundColor:'#0c0c0c'}});
+  // Trade log rows
+  const tb=G('t-tb');if(!tb)return;
+  if(!S.trades.length){tb.innerHTML=`<tr class="blm-empty-row"><td colspan="10">NO TRADES LOGGED — USE THE FORM ABOVE</td></tr>`;}
+  else tb.innerHTML=[...S.trades].reverse().map(t=>{
+    const p=tPnl(t);
+    const pnlClass=p===null?'blm-pnl-open':p>=0?'blm-pnl-pos':'blm-pnl-neg';
+    const pnlTxt=p===null?'OPEN':fmtS(p);
+    return`<tr>
+      <td><span class="blm-sym">${t.s}</span></td>
+      <td><span class="${t.dir==='Long'?'blm-dir-l':'blm-dir-s'}">${t.dir==='Long'?'▲ LONG':'▼ SHORT'}</span></td>
+      <td>${t.e}</td>
+      <td>${t.x||'—'}</td>
+      <td>${t.sz}</td>
+      <td class="${pnlClass}">${pnlTxt}</td>
+      <td><span class="${t.st==='Open'?'blm-st-o':'blm-st-c'}">${t.st.toUpperCase()}</span></td>
+      <td>${t.dt||'—'}</td>
+      <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:#555;">${t.n||''}</td>
+      <td><button class="blm-del" onclick="delTrade(${t.id})">✕</button></td>
+    </tr>`;}).join('');
+  // Backtest rows
+  const btb=G('bt-tb');if(!btb)return;
+  if(!S.backtests.length){btb.innerHTML=`<tr class="blm-empty-row"><td colspan="8">NO BACKTESTS LOGGED — SWITCH TO BACKTEST TAB</td></tr>`;}
+  else btb.innerHTML=[...S.backtests].reverse().map(b=>`<tr>
+    <td><span class="blm-sym">${b.n}</span></td>
+    <td style="color:#888;">${b.m||'—'}</td>
+    <td class="${b.w>=50?'blm-wr-good':'blm-wr-bad'}">${b.w}%</td>
+    <td>${b.r||'—'}</td>
+    <td class="${b.p>=0?'blm-pnl-pos':'blm-pnl-neg'}">${b.p>=0?'+':''}${b.p}%</td>
+    <td style="color:#555;">${b.dt||'—'}</td>
+    <td style="color:#555;max-width:120px;overflow:hidden;text-overflow:ellipsis;">${b.no||''}</td>
+    <td><button class="blm-del" onclick="delBt(${b.id})">✕</button></td>
+  </tr>`).join('');
 }
 
 // ── GOALS & PROJECTS ──
@@ -4955,6 +5550,71 @@ function setGPFilter(f,el){
   document.querySelectorAll('.gp-filter-btn').forEach(b=>b.classList.remove('on'));
   if(el)el.classList.add('on');
   renderGoals();
+}
+function setGoalsView(v,el){
+  goalsView=v;
+  document.querySelectorAll('.gp-vt-btn').forEach(b=>b.classList.remove('on'));
+  if(el)el.classList.add('on');
+  renderGoals();
+}
+function renderGoalsRoadmap(){
+  const listEl=G('g-list');if(!listEl)return;
+  const all=S.goals;
+  let filtered=all;
+  if(gpFilter==='Goal')filtered=all.filter(g=>g.type==='Goal');
+  else if(gpFilter==='Project')filtered=all.filter(g=>g.type==='Project');
+  else if(gpFilter==='active')filtered=all.filter(g=>g.status!=='done'&&!(g.todos.length&&g.todos.every(t=>t.done)));
+  else if(gpFilter==='done')filtered=all.filter(g=>g.status==='done'||(g.todos.length&&g.todos.every(t=>t.done)));
+  if(!filtered.length){listEl.innerHTML=`<div class="empty">No goals match this filter</div>`;return;}
+  const catColors={Financial:'#4a90d9',Health:'#2ecc71',Career:'#e8a020',Personal:'#9b59b6',Learning:'#1abc9c',Business:'#d4943a',Creative:'#e91e63',Other:'#888'};
+  const todayMs=new Date(today).getTime();
+  const endMs=todayMs+365*864e5;
+  const span=endMs-todayMs;
+  // Build month axis
+  const months=[];
+  const md=new Date(today);md.setDate(1);
+  for(let i=0;i<=12;i++){const pct=Math.max(0,Math.min(100,(md.getTime()-todayMs)/span*100));months.push({label:md.toLocaleDateString('en-US',{month:'short',year:'2-digit'}),pct});md.setMonth(md.getMonth()+1);}
+  const axisHtml=months.map(m=>`<div class="gp-rm-month" style="left:${m.pct.toFixed(1)}%">${m.label}</div>`).join('');
+  // Sort by deadline (earliest first)
+  const withDL=[...filtered.filter(g=>g.dl)].sort((a,b)=>a.dl.localeCompare(b.dl));
+  const noDL=filtered.filter(g=>!g.dl);
+  const rowsHtml=withDL.map(g=>{
+    const dlMs=new Date(g.dl).getTime();
+    const startPct=0;
+    const endPct=Math.max(1,Math.min(100,(dlMs-todayMs)/span*100));
+    const color=catColors[g.c]||'#888';
+    const todos=g.todos||[];
+    const doneTodos=todos.filter(t=>t.done).length;
+    const pct=todos.length?Math.round(doneTodos/todos.length*100):0;
+    const isDone=g.status==='done'||(todos.length&&pct===100);
+    const isPast=dlMs<todayMs;
+    const daysLeft=Math.round((dlMs-todayMs)/864e5);
+    const daysStr=isPast?`${Math.abs(daysLeft)}d overdue`:`${daysLeft}d left`;
+    return`<div class="gp-rm-row" onclick="openEM('goal',${g.id})">
+      <div class="gp-rm-name">${isDone?'<span style="color:var(--green);">&#x2713;</span> ':''}<span style="${isDone?'text-decoration:line-through;color:var(--ts);':''}">${g.t}</span></div>
+      <div class="gp-rm-track">
+        <div class="gp-rm-bar" style="left:${startPct}%;width:${endPct}%;background:${isPast?'var(--red)':color};opacity:${isDone?0.55:1};">
+          <div class="gp-rm-bar-prog" style="width:${pct}%;"></div>
+          <div class="gp-rm-bar-txt">${pct?pct+'% · ':''}<span style="font-size:9px;opacity:0.85;">${daysStr}</span></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  const noDlHtml=noDL.map(g=>{
+    const color=catColors[g.c]||'#888';
+    const todos=g.todos||[];const done=todos.filter(t=>t.done).length;
+    const pct=todos.length?Math.round(done/todos.length*100):0;
+    return`<div class="gp-rm-nodl-item" onclick="openEM('goal',${g.id})" style="border-left:3px solid ${color};">
+      <span style="flex:1;font-size:13px;font-weight:600;">${g.t}</span>
+      ${pct?`<span style="font-size:11px;color:var(--ts);">${pct}%</span>`:''}
+      <span style="font-size:10px;color:var(--th);margin-left:8px;">No deadline</span>
+    </div>`;
+  }).join('');
+  listEl.innerHTML=`<div class="gp-roadmap-wrap">
+    <div class="gp-rm-axis"><div class="gp-rm-axis-pad"></div><div class="gp-rm-axis-months" style="position:relative;">${axisHtml}</div></div>
+    <div class="gp-rm-rows">${rowsHtml||'<div class="empty" style="padding:16px;">No goals with deadlines in this filter.</div>'}</div>
+    ${noDL.length?`<div class="gp-rm-nodl-section"><div class="gp-rm-nodl-hdr">No Deadline</div>${noDlHtml}</div>`:''}
+  </div>`;
 }
 function addGoal(){
   const t=G('gl-t').value.trim();if(!t)return;
@@ -4970,6 +5630,7 @@ function delGoal(id){S.goals=S.goals.filter(g=>g.id!==id);save();renderGoals();}
 function delGT(gid,tid){const g=S.goals.find(g=>g.id===gid);if(g){g.todos=g.todos.filter(t=>t.id!==tid);save();renderGoals();}}
 function markGPDone(id){const g=S.goals.find(g=>g.id===id);if(g){g.status=g.status==='done'?'active':'done';g.todos.forEach(t=>t.done=g.status==='done');save();renderGoals();}}
 function renderGoals(){
+  if(goalsView==='roadmap'){renderGoalsRoadmap();const gsum=G('g-sum');const all=S.goals;const tot=all.length,comp=all.filter(g=>g.status==='done'||(g.todos.length&&g.todos.every(t=>t.done))).length,goals=all.filter(g=>g.type==='Goal').length,projs=all.filter(g=>g.type==='Project').length;if(gsum)gsum.innerHTML=`<div class="sum-item"><div class="sum-lb">Total</div><div class="sum-vl">${tot}</div></div><div class="sum-item"><div class="sum-lb">Goals</div><div class="sum-vl">${goals}</div></div><div class="sum-item"><div class="sum-lb">Projects</div><div class="sum-vl">${projs}</div></div><div class="sum-item"><div class="sum-lb">Completed</div><div class="sum-vl up">${comp}</div></div>`;return;}
   const all=S.goals;
   const tot=all.length;
   const comp=all.filter(g=>g.status==='done'||( g.todos.length&&g.todos.every(t=>t.done))).length;
@@ -6073,12 +6734,12 @@ function renderLifeDir(){
   const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
   const activeProjects=(S.projects||[]).filter(p=>p.status!=='done').length;
   const tiles=[
-    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('goals',G('ptab-goals')),80)"},
-    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))"},
-    {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))"},
-    {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))"},
+    {icon:'&#127775;',name:'Goals & Plans',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',accent:'#8b5cf6',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('goals',G('ptab-goals')),80)"},
+    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',accent:'#d4a050',action:"go('finance',G('ni-finance'))"},
+    {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',accent:'#38bdf8',action:"go('planning',G('ni-planning'))"},
+    {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',accent:'#34d399',action:"go('journal',G('ni-journal'))"},
   ];
-  el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
+  el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" onclick="${t.action}" style="--ta:${t.accent||'var(--gold)'}"><div class="home-dir-tile-top"><div class="home-dir-tile-icon-chip">${t.icon}</div><div class="home-dir-tile-arr">→</div></div><div class="home-dir-tile-body"><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div></div>`).join('');
 }
 
 function renderHomeProjPanel(){
@@ -6364,7 +7025,7 @@ function renderHome(){
           <div class="mc-sub">${goalsComplete}/${S.goals.length} complete</div>
           <div class="mc-arr">→</div>
         </div>
-        <div class="mc mc-link" onclick="navToPage('trades')" title="Go to Trades">
+        <div class="mc mc-link" onclick="navToPage('trading')" title="Go to Trades">
           <div class="mc-lb">Trades P&amp;L — month</div>
           <div class="mc-vl ${mTradePnl>0?'green':mTradePnl<0?'red':''}">${mClosedTrades.length?fmtS(mTradePnl):'—'}</div>
           <div class="mc-sub">${mTrades.length} trades this month</div>
@@ -6495,6 +7156,31 @@ function toggleDailyTask(id,isRecurring,checked){
 }
 
 // ── EXPORT / IMPORT ──
+function blmTab(tab,el){
+  document.querySelectorAll('.blm-tab').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  G('blm-form-log').classList.toggle('on',tab==='log');
+  G('blm-form-bt').classList.toggle('on',tab==='bt');
+  const ls=G('blm-log-section'),bs=G('blm-bt-section');
+  if(ls)ls.style.display=tab==='log'?'':'none';
+  if(bs)bs.style.display=tab==='bt'?'':'none';
+}
+function blmClock(){
+  const el=G('blm-time');if(!el)return;
+  const now=new Date();
+  const h=String(now.getHours()).padStart(2,'0');
+  const m=String(now.getMinutes()).padStart(2,'0');
+  const s=String(now.getSeconds()).padStart(2,'0');
+  el.textContent=h+':'+m+':'+s+' LOCAL';
+}
+setInterval(blmClock,1000);
+blmClock();
+function toggleSbGear(){
+  const sub=G('sb-gear-sub');
+  const arrow=G('sb-gear-arrow');
+  sub.classList.toggle('open');
+  arrow.style.transform=sub.classList.contains('open')?'rotate(180deg)':'';
+}
 function exportData(){
   const backup={
     _meta:{
@@ -7784,7 +8470,7 @@ const CMD_PAGES=[
   {ic:'∞', name:'Home',              sub:'Dashboard & overview',       action:()=>navToPage('home')},
   {ic:'🧾',name:'Bills & Budgets',    sub:'Bills, subscriptions, living expenses', action:()=>navToPage('finance')},
   {ic:'🗓️',name:'Planning',          sub:'Tasks & habits',             action:()=>navToPage('planning')},
-  {ic:'📈',name:'Trades',            sub:'Trade journal & backtests',  action:()=>navToPage('trades')},
+  {ic:'📈',name:'Trades',            sub:'Trade journal & backtests',  action:()=>navToPage('trading')},
   {ic:'🎯',name:'Goals',             sub:'Objectives & action steps',  action:()=>navToPage('goals')},
   {ic:'🚀',name:'Projects',          sub:'Track & ship projects',      action:()=>navToPage('projects')},
   {ic:'⚙️',name:'Settings',          sub:'Preferences & data',         action:()=>navToPage('settings')},
@@ -8347,7 +9033,7 @@ function saveEM(){
 }
 
 // ── RENDER ALL ──
-function renderAll(){renderFinance();renderTrades();renderGoals();renderTodos();renderHabits();renderHabitStacks();renderHome();updateSidebarStats();renderRecurring();renderProjects();renderSettings();renderRoutines();renderMilestones();renderWantsNeeds();renderSavingsAccounts();renderPlanInlineTodos();renderPlanInlineProjects();}
+function renderAll(){renderFinance();renderTrades();renderGoals();renderTodos();renderHabits();renderHabitStacks();renderHome();updateSidebarStats();renderRecurring();renderProjects();renderSettings();renderRoutines();renderMilestones();renderWantsNeeds();renderSavingsAccounts();renderPlanInlineTodos();renderPlanInlineProjects();renderCredit();}
 renderAll();
 // Init QA money category dropdown
 setTimeout(()=>{if(typeof buildCatSelect==='function')buildCatSelect('qa-money-cat','expense');},80);
@@ -8843,8 +9529,8 @@ function applySidebarOrder(){
   ['finance','trades','goals','bills','todos','habits'].forEach(id=>{
     navItems[id]=document.getElementById('ni-'+id);
   });
-  // Find insertion point (after the Life Sectors label)
-  const secLabel=Array.from(document.querySelectorAll('.sb-sec')).find(el=>el.textContent.includes('Life'));
+  // Find insertion point (after the My Workspaces label)
+  const secLabel=Array.from(document.querySelectorAll('.sb-sec')).find(el=>el.textContent.includes('My Workspaces'));
   if(!secLabel) return;
   let after=secLabel;
   EC.order.forEach(id=>{
@@ -10236,7 +10922,7 @@ function fixWeeklyColors(){
   renderHome();showBackupToast('✓ Weekly calendar refreshed');runDiagnostics();
 }
 function resetAllData(){
-  S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},projects:[],otherPayments:[],customCategories:[],journal:[],timeBlocks:[]};
+  S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},projects:[],otherPayments:[],customCategories:[],journal:[],timeBlocks:[],credit:{score:null,scoreHistory:[],cards:[]}};
   save();renderAll();showBackupToast('All data cleared');
 }
 
@@ -10699,11 +11385,31 @@ function quickJournalNote(){
 // GOOGLE CALENDAR — via n8n webhook
 // ══════════════════════════════════════════
 const GCAL_WEBHOOK = 'https://n8n.lifemeos.xyz/webhook/gcal-events';
+const GCAL_CACHE_KEY = 'gcal_events_cache';
+const GCAL_CACHE_TTL = 30 * 60 * 1000; // 30 min
 let gcalEvents = [];
+let gcalRetryTimer = null;
+let gcalRetryCount = 0;
 
-async function gcalFetchEvents(){
-  const statusEl = G('gcal-status-text');
-  if(statusEl) statusEl.innerHTML = '<span style="color:var(--ts);">⏳ Loading calendar…</span>';
+function gcalLoadCache(){
+  try {
+    const raw = localStorage.getItem(GCAL_CACHE_KEY);
+    if(!raw) return false;
+    const {events, ts} = JSON.parse(raw);
+    if(Date.now() - ts > GCAL_CACHE_TTL * 4) return false; // stale after 2h
+    gcalEvents = events;
+    return true;
+  } catch(e){ return false; }
+}
+
+function gcalSaveCache(events){
+  try { localStorage.setItem(GCAL_CACHE_KEY, JSON.stringify({events, ts: Date.now()})); } catch(e){}
+}
+
+function gcalStatus(html){ const el=G('gcal-status-text'); if(el) el.innerHTML=html; }
+
+async function gcalFetchEvents(silent){
+  if(!silent) gcalStatus('<span style="color:var(--ts);">⏳ Loading calendar…</span>');
   const now = new Date();
   const tmin = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
   const tmax = new Date(now.getFullYear(), now.getMonth() + 3, 0, 23, 59, 59).toISOString();
@@ -10713,11 +11419,27 @@ async function gcalFetchEvents(){
     const raw = await r.json();
     const items = Array.isArray(raw) ? raw : (raw.data || []);
     gcalEvents = items.map(i => i.json || i).filter(e => e && e.start && (e.start.dateTime || e.start.date));
-    if(statusEl) statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — ' + gcalEvents.length + ' events loaded.';
+    gcalSaveCache(gcalEvents);
+    gcalRetryCount = 0;
+    if(gcalRetryTimer){ clearTimeout(gcalRetryTimer); gcalRetryTimer=null; }
+    const ago = new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    gcalStatus('<span style="color:var(--green);font-weight:700;">● Connected</span> — ' + gcalEvents.length + ' events · synced ' + ago);
     wcalRender(); renderMcal();
+    // Schedule next auto-refresh
+    setTimeout(()=>gcalFetchEvents(true), GCAL_CACHE_TTL);
   } catch(e){
     console.error('gcalFetchEvents', e);
-    if(statusEl) statusEl.innerHTML = '<span style="color:var(--red);">⚠ Could not reach n8n.</span> Make sure the workflow is published.';
+    const hasCached = gcalEvents.length > 0;
+    const retryDelays = [30, 60, 120, 300]; // seconds
+    const delay = (retryDelays[Math.min(gcalRetryCount, retryDelays.length-1)]) * 1000;
+    gcalRetryCount++;
+    if(hasCached){
+      gcalStatus('<span style="color:#f59e0b;font-weight:700;">● Cached</span> — showing last sync · retrying in ' + (delay/1000) + 's');
+    } else {
+      gcalStatus('<span style="color:var(--red);">⚠ Could not reach n8n.</span> Retrying in ' + (delay/1000) + 's… <button onclick="gcalFetchEvents()" style="margin-left:8px;font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--bd);background:var(--bg-in);color:var(--t);cursor:pointer;">Retry now</button>');
+    }
+    if(gcalRetryTimer) clearTimeout(gcalRetryTimer);
+    gcalRetryTimer = setTimeout(()=>gcalFetchEvents(true), delay);
     renderMcal();
   }
 }
@@ -10729,8 +11451,9 @@ function gcalEventsForDate(dateStr){
   });
 }
 
-// Fetch on load
-setTimeout(gcalFetchEvents, 300);
+// Boot: load cache instantly, then fetch fresh in background
+if(gcalLoadCache()){ wcalRender(); renderMcal(); gcalFetchEvents(true); }
+else { setTimeout(gcalFetchEvents, 300); }
 
 // ══════════════════════════════════════════
 // MONTH CALENDAR VIEW
@@ -11049,19 +11772,15 @@ if (_origTaskCheck) {
 <nav class="bottom-nav" id="bottom-nav">
   <button class="bn-item on" id="bn-home" onclick="go('home',this);updateBN('home')">
     <span class="bn-icon">∞</span>
-    <span class="bn-label">Home</span>
+    <span class="bn-label">Life Home</span>
   </button>
-  <button class="bn-item" id="bn-finance" onclick="go('finance',document.getElementById('ni-finance'));updateBN('finance')">
-    <span class="bn-icon">🧾</span>
-    <span class="bn-label">Bills</span>
+  <button class="bn-item" id="bn-trading" onclick="go('trading',document.getElementById('ni-trading'));updateBN('trading')">
+    <span class="bn-icon">📈</span>
+    <span class="bn-label">Trading</span>
   </button>
-  <button class="bn-item" id="bn-planning" onclick="go('planning',document.getElementById('ni-planning'));updateBN('planning')">
-    <span class="bn-icon">🗓️</span>
-    <span class="bn-label">Plan</span>
-  </button>
-  <button class="bn-item" id="bn-journal" onclick="go('journal',document.getElementById('ni-journal'));updateBN('journal')">
-    <span class="bn-icon">📓</span>
-    <span class="bn-label">Journal</span>
+  <button class="bn-item" id="bn-credit" onclick="go('credit',document.getElementById('ni-credit'));updateBN('credit');setTimeout(renderCredit,50)">
+    <span class="bn-icon">💳</span>
+    <span class="bn-label">Credit</span>
   </button>
   <button class="bn-item" id="bn-settings" onclick="go('settings',document.getElementById('ni-settings'));updateBN('settings')">
     <span class="bn-icon">⚙️</span>
