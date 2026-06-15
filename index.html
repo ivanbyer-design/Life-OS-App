@@ -2836,7 +2836,7 @@ html,body{background:var(--bg);}
               <input class="fi" type="text" id="bl-n" placeholder="Bill name (e.g. Rent, Netflix)">
               <input class="fi" type="number" id="bl-a" placeholder="Amount $" step="0.01" style="max-width:120px;">
               <select class="fi" id="bl-cat" style="max-width:130px;"><option>Housing</option><option>Utilities</option><option>Insurance</option><option>Subscriptions</option><option>Debt</option><option>Phone</option><option>Internet</option><option>Transport</option><option>Healthcare</option><option>Other</option></select>
-              <select class="fi" id="bl-f" style="max-width:120px;"><option>Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option></select>
+              <select class="fi" id="bl-f" style="max-width:120px;"><option>Monthly</option><option>Bi-Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option></select>
               <input class="fi" type="date" id="bl-d" style="max-width:150px;">
               <select class="fi" id="bl-ds" style="max-width:130px;"><option value="Unpaid">Manual Pay</option><option value="Auto-pay">Auto-pay</option></select>
               <button class="btn pri" onclick="addBill()">Save</button>
@@ -5293,6 +5293,7 @@ function getBillStatus(b,month,dateKey){
 // Returns true monthly cost for a bill — weekly/bi-weekly multiplied by actual occurrences in month
 function billMonthlyAmount(b,month){
   const m=month||currentMonth;
+  if(b.f==='Bi-Monthly')return b.a/2;
   if(b.f!=='Weekly'&&b.f!=='Bi-weekly')return b.a;
   const [yr,mo]=m.split('-').map(Number);
   const dim=new Date(yr,mo,0).getDate();
@@ -5386,6 +5387,13 @@ function billsDueOn(dk){
       case'Weekly':{
         const diff=Math.round((target-orig)/(1000*60*60*24));
         return diff>=0&&diff%7===0;
+      }
+      case'Bi-Monthly':{
+        const monthDiff=(target.getFullYear()-orig.getFullYear())*12+(target.getMonth()-orig.getMonth());
+        return monthDiff>=0&&monthDiff%2===0&&(
+          orig.getDate()===target.getDate()||
+          (target.getDate()===new Date(target.getFullYear(),target.getMonth()+1,0).getDate()&&
+           orig.getDate()>new Date(target.getFullYear(),target.getMonth()+1,0).getDate()));
       }
       case'Annual':
         return orig.getMonth()===target.getMonth()&&orig.getDate()===target.getDate();
@@ -8656,7 +8664,7 @@ function openEM(type,id,extra){
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <label style="font-size:11px;font-weight:700;color:var(--ts);display:flex;flex-direction:column;gap:4px;">Due Date<input class="fi" type="date" id="em-f-d" value="${b.d||''}" style="font-size:14px;"></label>
-      <label style="font-size:11px;font-weight:700;color:var(--ts);display:flex;flex-direction:column;gap:4px;">Frequency<select class="fi" id="em-f-f" style="font-size:14px;"><option${b.f==='Monthly'?' selected':''}>Monthly</option><option${b.f==='Bi-weekly'?' selected':''}>Bi-weekly</option><option${b.f==='Weekly'?' selected':''}>Weekly</option><option${b.f==='Annual'?' selected':''}>Annual</option><option${b.f==='One-time'?' selected':''}>One-time</option></select></label>
+      <label style="font-size:11px;font-weight:700;color:var(--ts);display:flex;flex-direction:column;gap:4px;">Frequency<select class="fi" id="em-f-f" style="font-size:14px;"><option${b.f==='Monthly'?' selected':''}>Monthly</option><option${b.f==='Bi-Monthly'?' selected':''}>Bi-Monthly</option><option${b.f==='Bi-weekly'?' selected':''}>Bi-weekly</option><option${b.f==='Weekly'?' selected':''}>Weekly</option><option${b.f==='Annual'?' selected':''}>Annual</option><option${b.f==='One-time'?' selected':''}>One-time</option></select></label>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <label style="font-size:11px;font-weight:700;color:var(--ts);display:flex;flex-direction:column;gap:4px;">Bill Name<input class="fi" id="em-f-n" value="${b.n}" style="font-size:14px;"></label>
@@ -11643,7 +11651,7 @@ if (_origTaskCheck) {
           <input class="fqa-fi" id="hqab-name" type="text" placeholder="Bill name (e.g. Rent, Netflix…)" onkeydown="if(event.key==='Enter')hqaFinSaveBill()">
           <div class="fqa-row">
             <select class="fqa-fi" id="hqab-freq" style="flex:1;">
-              <option>Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option>
+              <option>Monthly</option><option>Bi-Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option>
             </select>
             <select class="fqa-fi" id="hqab-cat" style="flex:1;">
               <option>Housing</option><option>Utilities</option><option>Insurance</option><option>Subscriptions</option><option>Transport</option><option>Healthcare</option><option>Other</option>
@@ -11806,7 +11814,7 @@ if (_origTaskCheck) {
         <input class="fqa-fi" id="fqab-name" type="text" placeholder="Bill name (e.g. Rent, Netflix…)" onkeydown="if(event.key==='Enter')fqaSaveBill()">
         <div class="fqa-row">
           <select class="fqa-fi" id="fqab-freq" style="flex:1;">
-            <option>Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option>
+            <option>Monthly</option><option>Bi-Monthly</option><option>Bi-weekly</option><option>Weekly</option><option>Annual</option><option>One-time</option>
           </select>
           <select class="fqa-fi" id="fqab-cat" style="flex:1;">
             <option>Housing</option><option>Utilities</option><option>Insurance</option><option>Subscriptions</option><option>Transport</option><option>Healthcare</option><option>Other</option>
