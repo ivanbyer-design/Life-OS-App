@@ -4251,16 +4251,26 @@ function renderBillDetailPage(){
     }
   });
   const sortByAmt=(a,b)=>b.a-a.a;
-  const unpaidBills=expandedBills.filter(b=>{const st=getBillStatus(b,dispMonth,b._dateKey);return st==='Unpaid'&&b.ds!=='Auto-pay';}).sort((a,b)=>{const da=a._dateKey||a.d||'9999';const db=b._dateKey||b.d||'9999';return da.localeCompare(db);});
-  const paidBills=expandedBills.filter(b=>getBillStatus(b,dispMonth,b._dateKey)==='Paid').sort(sortByAmt);
-  const autoBills=[...S.bills.filter(b=>b.ds==='Auto-pay')].sort(sortByAmt);
+  // Check if a (non-weekly) bill has any occurrence in the displayed month
+  const hasOccInMonth=(b)=>{
+    if(b._dateKey)return true;
+    for(let d=1;d<=_dim;d++){const dk=dispMonth+'-'+String(d).padStart(2,'0');if(billsDueOn(dk).find(x=>x.id===b.id))return true;}
+    return false;
+  };
+  const unpaidBills=expandedBills.filter(b=>{
+    if(!hasOccInMonth(b))return false;
+    const st=getBillStatus(b,dispMonth,b._dateKey);
+    return st==='Unpaid'||st==='Auto-pay';
+  }).sort((a,b)=>{const da=a._dateKey||a.d||'9999';const db=b._dateKey||b.d||'9999';return da.localeCompare(db);});
+  const paidBills=expandedBills.filter(b=>{
+    const st=getBillStatus(b,dispMonth,b._dateKey);
+    return st==='Paid'||st==='Logged';
+  }).sort(sortByAmt);
 
   const unpaidAmt=unpaidBills.reduce((s,b)=>s+b.a,0);
   const paidAmt=paidBills.reduce((s,b)=>s+b.a,0);
-  const autoAmt=autoBills.reduce((s,b)=>s+billMonthlyAmount(b,dispMonth),0);
-  const autoLoggedAmt=autoBills.filter(b=>getBillStatus(b,dispMonth)==='Logged').reduce((s,b)=>s+billMonthlyAmount(b,dispMonth),0);
   const totalAll=S.bills.reduce((s,b)=>s+billMonthlyAmount(b,dispMonth),0);
-  const pct=totalAll?Math.round((paidAmt+autoLoggedAmt)/totalAll*100):0;
+  const pct=totalAll?Math.round(paidAmt/totalAll*100):0;
 
   const sub=G('bdet-sub');
   if(sub)sub.textContent=`${S.bills.length} bills · ${fmt(totalAll)} total`;
@@ -4299,26 +4309,32 @@ function renderBillDetailPage(){
     const st=getBillStatus(b,dispMonth,dk);
     const isPaid=sectionType==='paid';
     const isUnpaid=sectionType==='unpaid';
-    const isAuto=sectionType==='auto';
-    const isLogged=isAuto&&st==='Logged';
+    const isAutoPay=b.ds==='Auto-pay';
+    const isLogged=st==='Logged';
     const nextDue=dk||nextBillDue(b)||b.d||'—';
-    const paidEntry=(isPaid||isLogged)?S.finance.filter(f=>f.d===b.n&&f.t==='expense').slice(-1)[0]:null;
-    const paidStr=paidEntry?` · Logged ${paidEntry.dt}`:'';
+    const paidEntry=isPaid?S.finance.filter(f=>f.d===b.n&&f.t==='expense').slice(-1)[0]:null;
+    const paidStr=paidEntry?` · Paid ${paidEntry.dt}`:'';
     const dkArg=dk?`,'${dk}'`:'';
     let checkbox='',action='';
     if(isUnpaid){
-      checkbox=`<input type="checkbox" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--green);cursor:pointer;" onchange="openBillPayModal(${b.id},'${dispMonth}'${dkArg});this.checked=false;">`;
-      action=`<button class="bdet-act-btn pay" onclick="openBillPayModal(${b.id},'${dispMonth}'${dkArg})">✓ Pay</button>`;
+      if(isAutoPay){
+        checkbox=`<input type="checkbox" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--blue);cursor:pointer;" onchange="markAutoPayLogged(${b.id},'${dispMonth}');this.checked=false;">`;
+        action=`<button class="bdet-act-btn" style="background:var(--bbg);color:var(--blue);border:1px solid color-mix(in srgb,var(--blue) 30%,transparent);" onclick="markAutoPayLogged(${b.id},'${dispMonth}')">Log Payment</button>`;
+      } else {
+        checkbox=`<input type="checkbox" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--green);cursor:pointer;" onchange="openBillPayModal(${b.id},'${dispMonth}'${dkArg});this.checked=false;">`;
+        action=`<button class="bdet-act-btn pay" onclick="openBillPayModal(${b.id},'${dispMonth}'${dkArg})">✓ Pay</button>`;
+      }
     } else if(isPaid){
-      checkbox=`<input type="checkbox" checked style="width:18px;height:18px;flex-shrink:0;accent-color:var(--green);cursor:pointer;" onchange="cycleBill(${b.id},'${dispMonth}'${dkArg});setTimeout(renderBillDetailPage,30);setTimeout(renderBudgetQuadrant,30);">`;
-    } else if(isAuto){
-      checkbox=`<input type="checkbox" ${isLogged?'checked':''} style="width:18px;height:18px;flex-shrink:0;accent-color:var(--blue);cursor:pointer;" onchange="markAutoPayLogged(${b.id},'${dispMonth}')">`;
-      if(!isLogged)action=`<button class="bdet-act-btn" style="background:var(--bbg);color:var(--blue);border:1px solid var(--blue)30;" onclick="markAutoPayLogged(${b.id},'${dispMonth}')">Log Expense</button>`;
+      if(isLogged){
+        checkbox=`<input type="checkbox" checked style="width:18px;height:18px;flex-shrink:0;accent-color:var(--blue);cursor:pointer;" onchange="markAutoPayLogged(${b.id},'${dispMonth}')">`;
+      } else {
+        checkbox=`<input type="checkbox" checked style="width:18px;height:18px;flex-shrink:0;accent-color:var(--green);cursor:pointer;" onchange="cycleBill(${b.id},'${dispMonth}'${dkArg});setTimeout(renderBillDetailPage,30);setTimeout(renderBudgetQuadrant,30);">`;
+      }
     }
     return`<div class="bdet-bill-row">
       ${checkbox}
       <div class="bdet-bill-info">
-        <div class="bdet-bill-name" style="${isPaid||isLogged?'opacity:0.6;':''}">${b.n}</div>
+        <div class="bdet-bill-name" style="${isPaid?'opacity:0.6;':''}">${b.n}${isAutoPay?` <span style="font-size:10px;color:var(--blue);font-weight:600;">Auto-pay</span>`:''}</div>
         <div class="bdet-bill-meta">${b.cat||'Other'} · ${b.f||'Monthly'} · Due ${nextDue}${paidStr}</div>
       </div>
       <div class="bdet-bill-amt">${fmt(b.a)}</div>
@@ -5420,7 +5436,7 @@ function nextBillDue(b){
       const mk=dk.slice(0,7);
       const key=isWeekly?dk:mk;
       const st=b.payments&&b.payments[key];
-      if(st!=='Paid'&&st!=='Dismissed')return dk;
+      if(st!=='Paid'&&st!=='Logged'&&st!=='Dismissed')return dk;
     }
   }
   return null;
@@ -5521,14 +5537,13 @@ function renderBills(){
   tb.innerHTML=srt.map(b=>{
     const nxt=nextBillDue(b);
     const isOverdue=nxt&&nxt<today;
-    const st=getBillStatus(b,blDispMonth);
-    const stClass=SC[st]||'gray';
-    const isPaid=st==='Paid';
-    const isLogged=st==='Logged';
-    const isAuto=b.ds==='Auto-pay';
-    const displaySt=isLogged?'Logged':st;
+    const st=getBillStatus(b,currentMonth);
+    const isPaid=st==='Paid'||st==='Logged';
+    const isUnpaid=st==='Unpaid'||st==='Auto-pay';
+    const displaySt=isPaid?'Paid':'Unpaid';
+    const stClass=isPaid?'green':'red';
     return`<tr>
-      <td><strong style="${isPaid||isLogged?'text-decoration:line-through;color:var(--ts);':''}">${b.n}</strong></td>
+      <td><strong style="${isPaid?'text-decoration:line-through;color:var(--ts);':''}">${b.n}</strong></td>
       <td>${tag(b.cat||'Other','gray')}</td>
       <td style="font-weight:700;">${fmt(b.a)}</td>
       <td>${tag(b.f,'gray')}</td>
@@ -5618,15 +5633,15 @@ function openBillPayModal(id,month,dateKey){
   const st=getBillStatus(b,m,dateKey);
   if(st==='Paid'){cycleBill(id,m,dateKey);renderBudgetQuadrant();renderBillDetailPage();return;}
   _bpId=id;_bpMonth=m;_bpIsAuto=false;_bpDateKey=(isWeekly&&dateKey)?dateKey:null;
-  let defaultDate=today;
-  if(b.d){const dueDay=b.d.slice(8,10);const candidate=m+'-'+dueDay;if(!isNaN(new Date(candidate).getTime()))defaultDate=candidate;}
+  let defaultDate=dateKey||today;
+  if(!dateKey&&b.d){const dueDay=b.d.slice(8,10);const candidate=m+'-'+dueDay;if(!isNaN(new Date(candidate).getTime()))defaultDate=candidate;}
   const titleEl=G('bill-pay-modal-title'),subEl=G('bill-pay-modal-sub'),dateEl=G('bill-pay-date'),amtEl=G('bill-pay-amount');
   if(titleEl)titleEl.textContent='Pay — '+b.n;
   if(subEl)subEl.textContent='Enter the amount paid and date.';
   if(amtEl)amtEl.value=b.a.toFixed(2);
   if(dateEl)dateEl.value=defaultDate;
   G('bill-pay-overlay').classList.remove('hidden');
-  if(b.d&&_bpDateKey)G('bill-pay-date').value=_bpDateKey;
+  if(_bpDateKey)G('bill-pay-date').value=_bpDateKey;
   setTimeout(()=>{if(amtEl)amtEl.select();},80);
 }
 function openBillPayModalForAuto(id,month){
@@ -5654,17 +5669,7 @@ function markAutoPayLogged(id,month){
   openBillPayModalForAuto(id,m);
 }
 function markBillPaidFromDay(id,month,dk){
-  const b=S.bills.find(b=>b.id===id);if(!b)return;
-  const isWeekly=(b.f==='Weekly'||b.f==='Bi-weekly');
-  const payKey=isWeekly?dk:month;
-  if(!b.payments)b.payments={};
-  b.payments[payKey]='Paid';
-  addFinancialPoints(20,'Paid a bill');
-  const _wasOnetime=b.f==='One-time';
-  const _bName=b.n;
-  if(_wasOnetime)S.bills=S.bills.filter(x=>x.id!==id);
-  save();renderBills();renderFinance();renderHome();renderFdDayBody(dk);
-  showBackupToast('✓ '+_bName+' marked paid'+(_wasOnetime?' · removed':''));
+  openBillPayModal(id,month,dk);
 }
 function closeBillPayModal(){
   G('bill-pay-overlay').classList.add('hidden');
@@ -5693,6 +5698,7 @@ function confirmBillPay(){
   renderBudgetQuadrant();
   renderBillDetailPage();
   if(!G('bills-chip-overlay').classList.contains('hidden'))renderBillsChipModal();
+  if(currentDayKey&&!G('fd-day-modal-wrap').classList.contains('hidden'))renderFdDayBody(currentDayKey);
 }
 // ── BILLS CHIP DETAIL MODAL ──
 let _bcdFilter='all';
