@@ -2935,8 +2935,8 @@ html,body{background:var(--bg);}
       <div id="ftab-entries-body" style="display:none;">
         <!-- Period filter row -->
         <div style="margin-top:16px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <button class="fft-period-btn on" id="fft-month"   onclick="filtFPeriod('month',this)">Month</button>
-          <button class="fft-period-btn"    id="fft-week"    onclick="filtFPeriod('week',this)">Week</button>
+          <button class="fft-period-btn on" id="fft-week"    onclick="filtFPeriod('week',this)">Week</button>
+          <button class="fft-period-btn"    id="fft-month"   onclick="filtFPeriod('month',this)">Month</button>
           <button class="fft-period-btn"    id="fft-quarter" onclick="filtFPeriod('quarter',this)">Quarter</button>
           <button class="fft-period-btn"    id="fft-year"    onclick="filtFPeriod('year',this)">Year</button>
           <button class="fft-period-btn"    id="fft-all"     onclick="filtFPeriod('all',this)">All Time</button>
@@ -4040,7 +4040,7 @@ function handleCatChange(selectId,type){
 
 // ── FINANCE ──
 let ff='all';
-let ffPeriod='month';
+let ffPeriod='week';
 let ffTransYear=new Date().getFullYear();
 let ffTransMonth=new Date().getMonth();
 let ffTransWeekOffset=0;
@@ -4251,7 +4251,7 @@ function renderBillDetailPage(){
     }
   });
   const sortByAmt=(a,b)=>b.a-a.a;
-  const unpaidBills=expandedBills.filter(b=>getBillStatus(b,dispMonth,b._dateKey)==='Unpaid'&&b.ds!=='Auto-pay').sort(sortByAmt);
+  const unpaidBills=expandedBills.filter(b=>{const st=getBillStatus(b,dispMonth,b._dateKey);return st==='Unpaid'&&b.ds!=='Auto-pay';}).sort((a,b)=>{const da=a._dateKey||a.d||'9999';const db=b._dateKey||b.d||'9999';return da.localeCompare(db);});
   const paidBills=expandedBills.filter(b=>getBillStatus(b,dispMonth,b._dateKey)==='Paid').sort(sortByAmt);
   const autoBills=[...S.bills.filter(b=>b.ds==='Auto-pay')].sort(sortByAmt);
 
@@ -4268,7 +4268,7 @@ function renderBillDetailPage(){
   // Summary cards + progress
   const summary=G('bdet-summary');
   if(summary)summary.innerHTML=`
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
       <div style="background:var(--bg-card);border:2px solid var(--neon);border-radius:var(--r);padding:10px 12px;">
         <div style="font-size:10px;font-weight:700;color:var(--neon);text-transform:uppercase;letter-spacing:0.05em;">Total Bills</div>
         <div style="font-size:18px;font-weight:800;color:var(--neon);margin-top:2px;">${fmt(totalAll)}</div>
@@ -4284,11 +4284,7 @@ function renderBillDetailPage(){
         <div style="font-size:18px;font-weight:800;color:var(--green);margin-top:2px;">${fmt(paidAmt)}</div>
         <div style="font-size:10px;color:var(--ts);margin-top:2px;">${paidBills.length} bill${paidBills.length!==1?'s':''}</div>
       </div>
-      <div style="background:var(--bbg);border-radius:var(--r);padding:10px 12px;">
-        <div style="font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:0.05em;">Auto-pay</div>
-        <div style="font-size:18px;font-weight:800;color:var(--blue);margin-top:2px;">${fmt(autoAmt)}</div>
-        <div style="font-size:10px;color:var(--ts);margin-top:2px;">${autoBills.length} bill${autoBills.length!==1?'s':''}</div>
-      </div>
+
     </div>
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
       <div class="prog" style="flex:1;"><div class="pf" style="width:${pct}%;background:var(--green);"></div></div>
@@ -4305,7 +4301,7 @@ function renderBillDetailPage(){
     const isUnpaid=sectionType==='unpaid';
     const isAuto=sectionType==='auto';
     const isLogged=isAuto&&st==='Logged';
-    const nextDue=dk||b.d||'—';
+    const nextDue=dk||nextBillDue(b)||b.d||'—';
     const paidEntry=(isPaid||isLogged)?S.finance.filter(f=>f.d===b.n&&f.t==='expense').slice(-1)[0]:null;
     const paidStr=paidEntry?` · Logged ${paidEntry.dt}`:'';
     const dkArg=dk?`,'${dk}'`:'';
@@ -4328,7 +4324,7 @@ function renderBillDetailPage(){
       <div class="bdet-bill-amt">${fmt(b.a)}</div>
       ${action}
       <button onclick="openEM('bill',${b.id})" style="font-family:var(--font);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);background:var(--bg-h);color:var(--t);cursor:pointer;">Edit</button>
-      <button class="del" onclick="delBill(${b.id})" title="Delete bill">✕</button>
+      <button class="del" onclick="${isUnpaid?`dismissBillMonth(${b.id},'${dispMonth}')`:`delBill(${b.id})`}" title="${isUnpaid?'Skip this month':'Delete bill'}">✕</button>
     </div>`;
   };
 
@@ -4349,8 +4345,7 @@ function renderBillDetailPage(){
 
   list.innerHTML=
     section('unpaid','🔴','Unpaid','var(--red)',unpaidBills,'unpaid')+
-    section('paid','✓','Paid','var(--green)',paidBills,'paid')+
-    section('auto','🔄','Auto-pay','var(--blue)',autoBills,'auto');
+    section('paid','✓','Paid','var(--green)',paidBills,'paid');
 
   // Scroll to section if opened with a filter
   if(billDetailFilter&&billDetailFilter!=='all'){
@@ -5314,7 +5309,7 @@ function billsMonthSummary(bills,month){
     if(!isW){
       total+=b.a;
       if(b.ds==='Auto-pay')auto+=b.a;
-      else{const st=getBillStatus(b,m);if(st==='Paid')paid+=b.a;else unpaid+=b.a;}
+      else{const st=getBillStatus(b,m);if(st==='Paid'||st==='Dismissed')paid+=b.a;else unpaid+=b.a;}
       return;
     }
     const [yr,mo]=m.split('-').map(Number);
@@ -5324,7 +5319,7 @@ function billsMonthSummary(bills,month){
       if(billsDueOn(dk).find(bill=>bill.id===b.id)){
         total+=b.a;
         if(b.ds==='Auto-pay')auto+=b.a;
-        else{const st=getBillStatus(b,m,dk);if(st==='Paid')paid+=b.a;else unpaid+=b.a;}
+        else{const st=getBillStatus(b,m,dk);if(st==='Paid'||st==='Dismissed')paid+=b.a;else unpaid+=b.a;}
       }
     }
   });
@@ -5338,6 +5333,13 @@ function addBill(){
   G('bl-n').value='';G('bl-a').value='';if(G('bl-notes'))G('bl-notes').value='';save();renderFinance();renderHome();
 }
 function delBill(id){S.bills=S.bills.filter(b=>b.id!==id);save();renderFinance();renderBillDetailPage();renderHome();}
+function dismissBillMonth(id,month){
+  const b=S.bills.find(b=>b.id===id);if(!b)return;
+  if(!b.payments)b.payments={};
+  b.payments[month]='Dismissed';
+  save();renderBillDetailPage();renderBills();
+  showBackupToast('Skipped for '+month);
+}
 function cycleBill(id,month,dateKey){
   const b=S.bills.find(b=>b.id===id);if(!b)return;
   if(b.ds==='Auto-pay')return;
@@ -5397,18 +5399,23 @@ function billsDueOn(dk){
 // Returns the next upcoming due date string for a bill from today onwards
 function nextBillDue(b){
   if(!b.d)return null;
-  const orig=new Date(b.d+'T12:00:00');
-  if(isNaN(orig))return null;
+  if(isNaN(new Date(b.d+'T12:00:00')))return null;
   if(b.f==='One-time')return b.d;
-  // Scan forward up to 400 days from today to find next occurrence
-  const base=new Date(today+'T12:00:00');
+  // Start from first of current month — overdue tracking begins this month only
+  const isWeekly=(b.f==='Weekly'||b.f==='Bi-weekly');
+  const start=new Date(currentMonth+'-01T12:00:00');
   for(let i=0;i<=400;i++){
-    const d=new Date(base);
-    d.setDate(base.getDate()+i);
+    const d=new Date(start);
+    d.setDate(start.getDate()+i);
     const dk=localDate(d);
-    if(billsDueOn(dk).find(bill=>bill.id===b.id))return dk;
+    if(billsDueOn(dk).find(bill=>bill.id===b.id)){
+      const mk=dk.slice(0,7);
+      const key=isWeekly?dk:mk;
+      const st=b.payments&&b.payments[key];
+      if(st!=='Paid'&&st!=='Dismissed')return dk;
+    }
   }
-  return b.d;
+  return null;
 }
 
 // ── BILLS SUMMARY BAR — always keyed to calendar month, independent of period filter ──
@@ -5461,7 +5468,7 @@ function renderBills(){
     const _livPct=_livBudget?Math.min(100,Math.round(_livSpent/_livBudget*100)):0;
     const _livClr=_livPct>=90?'var(--red)':_livPct>=70?'var(--amber)':'var(--green)';
     const _livManual=_livSpend.filter(s=>s.note!=='auto'&&s.date&&s.date.startsWith(blDispMonth)).reduce((t,s)=>t+s.amt,0);
-    const _totalExp=grand+_livManual;
+    const _totalExp=grand+_livBudget;
     catTotEl.innerHTML=tiles.map(c=>{
       const catBills=S.bills.filter(b=>(b.cat||'Other')===c.k);
       const catAmt=catBills.reduce((s,b)=>s+billMonthlyAmount(b,blDispMonth),0);
@@ -5474,15 +5481,15 @@ function renderBills(){
       </div>`;
     }).join('')+(tiles.length?`<div class="bl-cat-tile" style="border-color:var(--neon);background:color-mix(in srgb,var(--neon-glow) 60%,var(--bg-card));">
         <div class="bl-cat-tile-ic">🧾</div>
-        <div class="bl-cat-tile-lbl">Total / mo</div>
+        <div class="bl-cat-tile-lbl">Total Bills</div>
         <div class="bl-cat-tile-amt" style="color:var(--neon);">${fmt(grand)}</div>
         <div class="bl-cat-tile-cnt">${S.bills.length} bill${S.bills.length!==1?'s':''}</div>
       </div>
       <div class="bl-cat-tile" style="border-color:var(--purple);background:color-mix(in srgb,var(--purple) 8%,var(--bg-card));">
         <div class="bl-cat-tile-ic">🛒</div>
         <div class="bl-cat-tile-lbl">Living Budget</div>
-        <div class="bl-cat-tile-amt" style="color:var(--purple);">${fmt(_livSpent)}</div>
-        <div class="bl-cat-tile-cnt">${_livCats.length} categor${_livCats.length!==1?'ies':'y'} · <span style="color:${_livClr};">${fmt(_livBudget)} budget</span></div>
+        <div class="bl-cat-tile-amt" style="color:var(--purple);">${fmt(_livBudget)}</div>
+        <div class="bl-cat-tile-cnt">${_livCats.length} categor${_livCats.length!==1?'ies':'y'} · <span style="color:${_livClr};">${fmt(_livSpent)} spent</span></div>
       </div>
       <div class="bl-cat-tile" style="border-color:var(--amber);background:color-mix(in srgb,var(--amber) 8%,var(--bg-card));">
         <div class="bl-cat-tile-ic">💸</div>
@@ -5605,12 +5612,14 @@ function openBillPayModal(id,month,dateKey){
   _bpId=id;_bpMonth=m;_bpIsAuto=false;_bpDateKey=(isWeekly&&dateKey)?dateKey:null;
   let defaultDate=today;
   if(b.d){const dueDay=b.d.slice(8,10);const candidate=m+'-'+dueDay;if(!isNaN(new Date(candidate).getTime()))defaultDate=candidate;}
-  const titleEl=G('bill-pay-modal-title'),subEl=G('bill-pay-modal-sub'),dateEl=G('bill-pay-date');
+  const titleEl=G('bill-pay-modal-title'),subEl=G('bill-pay-modal-sub'),dateEl=G('bill-pay-date'),amtEl=G('bill-pay-amount');
   if(titleEl)titleEl.textContent='Pay — '+b.n;
-  if(subEl)subEl.textContent=fmt(b.a)+' · What date did you pay this bill?';
+  if(subEl)subEl.textContent='Enter the amount paid and date.';
+  if(amtEl)amtEl.value=b.a.toFixed(2);
   if(dateEl)dateEl.value=defaultDate;
   G('bill-pay-overlay').classList.remove('hidden');
   if(b.d&&_bpDateKey)G('bill-pay-date').value=_bpDateKey;
+  setTimeout(()=>{if(amtEl)amtEl.select();},80);
 }
 function openBillPayModalForAuto(id,month){
   const b=S.bills.find(b=>b.id===id);if(!b)return;
@@ -5643,8 +5652,11 @@ function markBillPaidFromDay(id,month,dk){
   if(!b.payments)b.payments={};
   b.payments[payKey]='Paid';
   addFinancialPoints(20,'Paid a bill');
+  const _wasOnetime=b.f==='One-time';
+  const _bName=b.n;
+  if(_wasOnetime)S.bills=S.bills.filter(x=>x.id!==id);
   save();renderBills();renderFinance();renderHome();renderFdDayBody(dk);
-  showBackupToast('✓ '+b.n+' marked paid');
+  showBackupToast('✓ '+_bName+' marked paid'+(_wasOnetime?' · removed':''));
 }
 function closeBillPayModal(){
   G('bill-pay-overlay').classList.add('hidden');
@@ -5658,13 +5670,17 @@ function confirmBillPay(){
   const m=_bpMonth||currentMonth;
   const isWeekly=(b.f==='Weekly'||b.f==='Bi-weekly');
   const payKey=(isWeekly&&_bpDateKey)?_bpDateKey:m;
+  const paidAmt=parseFloat(G('bill-pay-amount').value)||b.a;
   if(!b.payments)b.payments={};
   b.payments[payKey]=_bpIsAuto?'Logged':'Paid';
-  S.finance.push({d:b.n,a:b.a,t:'expense',c:b.cat||'Bills',biz:'personal',dt:dateVal,billMonth:m,id:Date.now()});
+  S.finance.push({d:b.n,a:paidAmt,t:'expense',c:b.cat||'Bills',biz:'personal',dt:dateVal,billMonth:m,id:Date.now()});
   autoLinkToLivingBudget(b.cat,b.a,dateVal);
   addFinancialPoints(20,'Paid a bill');
+  const _wasOnetime=b.f==='One-time';
+  const _bName=b.n, _bAmt=b.a;
+  if(_wasOnetime)S.bills=S.bills.filter(x=>x.id!==_bpId);
   save();renderBills();renderFinance();renderHome();
-  showBackupToast('✓ '+b.n+' '+(b.ds==='Auto-pay'?'logged':'paid')+' · '+fmt(b.a)+' on '+dateVal);
+  showBackupToast('✓ '+_bName+' paid · '+fmt(paidAmt)+' on '+dateVal+(_wasOnetime?' · removed':''));
   closeBillPayModal();
   renderBudgetQuadrant();
   renderBillDetailPage();
@@ -5717,7 +5733,7 @@ function renderBillsChipModal(){
       const isPaid=st==='Paid',isAuto=st==='Auto-pay',isUnpaid=st==='Unpaid';
       const stColor=isPaid?'var(--green)':isAuto?'var(--blue)':'var(--red)';
       const stLabel=isPaid?'✓ Paid':isAuto?'🔄 Auto-pay':'⚠ Unpaid';
-      const nextDue=b.d||'—';
+      const nextDue=nextBillDue(b)||b.d||'—';
       return`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--bd);">
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;">
@@ -11934,6 +11950,8 @@ if (_origTaskCheck) {
     </div>
     <div class="em-body" style="padding:20px;">
       <div style="font-size:13px;color:var(--ts);margin-bottom:16px;" id="bill-pay-modal-sub">What date did you pay this bill?</div>
+      <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:var(--ts);">Amount Paid</label>
+      <input class="fi" type="number" id="bill-pay-amount" step="0.01" min="0" style="width:100%;box-sizing:border-box;font-size:18px;font-weight:700;margin-bottom:14px;">
       <label style="display:block;margin-bottom:6px;font-size:12px;font-weight:600;color:var(--ts);">Payment Date</label>
       <input class="fi" type="date" id="bill-pay-date" style="width:100%;box-sizing:border-box;font-size:15px;">
       <div style="display:flex;gap:8px;margin-top:18px;">
