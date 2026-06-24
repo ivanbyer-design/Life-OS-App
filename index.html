@@ -2818,7 +2818,9 @@ html,body{background:var(--bg);}
 .eis-wrap{margin-top:6px;}
 .eis-axis-row{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;margin-bottom:4px;align-items:flex-end;}
 .eis-axis-top{font-size:13px;font-weight:600;color:var(--t);text-align:center;padding-bottom:6px;}
-.eis-main-grid{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;align-items:start;}
+.eis-main-grid{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;}
+.eis-task-list{flex:1;overflow:hidden;}
+.eis-task-list.eis-scroll{max-height:190px;overflow-y:auto;}
 .eis-side-lbl{display:flex;align-items:center;justify-content:center;}
 .eis-axis-label{font-size:12px;font-weight:600;color:var(--t);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;}
 .eis-q{border-radius:var(--r);padding:12px 12px 10px;margin:3px;display:flex;flex-direction:column;border:1px solid;position:relative;}
@@ -7110,18 +7112,22 @@ function renderEisenhowerMatrix(){
     {arr:q3,q:3,cls:'q3',name:'Delegate',sub:'Who can do it for you?'},
     {arr:q4,q:4,cls:'q4',name:'Delete',sub:'Eliminate it'}
   ];
-  const qCard=x=>`<div class="eis-q ${x.cls}">
-    <button class="eis-add-corner" onclick="event.stopPropagation();eisToggleAdd(${x.q})">+</button>
-    <div class="eis-add-pop" id="eis-add-pop-${x.q}">
-      <div class="eis-add-pop-row">
-        <input class="fi eis-add-inp" id="eis-add-${x.q}" placeholder="Task name..." onkeydown="if(event.key==='Enter')eisAddTask(${x.q});if(event.key==='Escape')eisCloseAdd();">
-        <button class="eis-add-pop-btn" onclick="eisAddTask(${x.q})">Add</button>
+  const qCard=x=>{
+    const validCount=x.arr.filter(t=>t.t&&t.t.trim()).length;
+    const scrollCls=validCount>5?' eis-scroll':'';
+    return`<div class="eis-q ${x.cls}">
+      <button class="eis-add-corner" onclick="event.stopPropagation();eisToggleAdd(${x.q})">+</button>
+      <div class="eis-add-pop" id="eis-add-pop-${x.q}">
+        <div class="eis-add-pop-row">
+          <input class="fi eis-add-inp" id="eis-add-${x.q}" placeholder="Task name..." onkeydown="if(event.key==='Enter')eisAddTask(${x.q});if(event.key==='Escape')eisCloseAdd();">
+          <button class="eis-add-pop-btn" onclick="eisAddTask(${x.q})">Add</button>
+        </div>
       </div>
-    </div>
-    <div class="eis-q-name">${x.name}</div>
-    <div class="eis-q-action">${x.sub}</div>
-    ${taskHtml(x.arr,x.q)}
-  </div>`;
+      <div class="eis-q-name">${x.name}</div>
+      <div class="eis-q-action">${x.sub}</div>
+      <div class="eis-task-list${scrollCls}">${taskHtml(x.arr,x.q)}</div>
+    </div>`;
+  };
   el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">Urgent</div><div class="eis-axis-top">Not Urgent</div></div><div class="eis-main-grid"><div class="eis-side-lbl"><span class="eis-axis-label">Important</span></div>${qCard(qs[0])}${qCard(qs[1])}<div class="eis-side-lbl"><span class="eis-axis-label">Not Important</span></div>${qCard(qs[2])}${qCard(qs[3])}</div></div>`;
 }
 
