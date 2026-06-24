@@ -11937,14 +11937,36 @@ function wcalOpenModal(date, hour, existingId){
     const banner=G('wcal-link-banner');if(banner)banner.style.display='none';
   }
   if(addTaskEl)addTaskEl.value='';
-  if(recurEl)recurEl.value='none';
-  if(recurDaysWrap)recurDaysWrap.style.display='none';
-  if(recurWeeksWrap)recurWeeksWrap.style.display='none';
-  document.querySelectorAll('.wcal-recur-day').forEach(d=>d.classList.remove('on'));
+
+  // Restore or reset recurrence fields
   const foreverCb=G('wcal-m-recur-forever');
-  if(foreverCb){foreverCb.checked=false;wcalToggleForever(foreverCb);}
   const weeksInp=G('wcal-m-recur-weeks');
-  if(weeksInp)weeksInp.value='4';
+  if(block&&block.recur&&block.recur!=='none'){
+    if(recurEl)recurEl.value=block.recur;
+    // Show/hide day picker
+    const isWeekly=block.recur==='weekly';
+    if(recurDaysWrap)recurDaysWrap.style.display=isWeekly?'':'none';
+    if(recurWeeksWrap)recurWeeksWrap.style.display='';
+    // Pre-select days
+    document.querySelectorAll('.wcal-recur-day').forEach(d=>d.classList.remove('on'));
+    if(isWeekly&&block.recurDays){
+      block.recurDays.forEach(day=>{
+        const el=document.querySelector(`.wcal-recur-day[data-d="${day}"]`);
+        if(el)el.classList.add('on');
+      });
+    }
+    // Forever / weeks
+    const isForever=(block.recurWeeks||0)>=520;
+    if(foreverCb){foreverCb.checked=isForever;wcalToggleForever(foreverCb);}
+    if(weeksInp)weeksInp.value=isForever?'4':(block.recurWeeks||4);
+  } else {
+    if(recurEl)recurEl.value='none';
+    if(recurDaysWrap)recurDaysWrap.style.display='none';
+    if(recurWeeksWrap)recurWeeksWrap.style.display='none';
+    document.querySelectorAll('.wcal-recur-day').forEach(d=>d.classList.remove('on'));
+    if(foreverCb){foreverCb.checked=false;wcalToggleForever(foreverCb);}
+    if(weeksInp)weeksInp.value='4';
+  }
 
   overlay.classList.add('open');
 }
@@ -12132,12 +12154,12 @@ function wcalSaveBlock(){
             const prev=(b.tasks||[]).find(pt=>pt.text===t.text);
             return{...t,done:prev?prev.done:false};
           });
-          S.timeBlocks[i]={...b,title,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:mergedTasks,calendarId:calId};
+          S.timeBlocks[i]={...b,title,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:mergedTasks,calendarId:calId,recur,recurWeeks:recur!=='none'?weeks:null,recurDays:recur==='weekly'?pickedDays:null};
         }
       });
     } else {
       const idx=S.timeBlocks.indexOf(savedBlock);
-      S.timeBlocks[idx]={...savedBlock,title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,calendarId:calId};
+      S.timeBlocks[idx]={...savedBlock,title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,calendarId:calId,recur,recurWeeks:recur!=='none'?weeks:null,recurDays:recur==='weekly'?pickedDays:null};
     }
     if(recur!=='none'){
       const existingRecurId=savedBlock.recurId||('ri'+Date.now());
@@ -12147,17 +12169,17 @@ function wcalSaveBlock(){
       const existingDates=new Set(S.timeBlocks.filter(b=>b.recurId===existingRecurId).map(b=>b.date));
       wcalGetRecurDates(date,recur,weeks,pickedDays).forEach((rd,i)=>{
         if(!existingDates.has(rd)){
-          S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId:existingRecurId,linkId,calendarId:calId});
+          S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId:existingRecurId,linkId,calendarId:calId,recur,recurWeeks:weeks,recurDays:recur==='weekly'?pickedDays:null});
         }
       });
     }
   } else {
     const recurId=recur!=='none'?('ri'+Date.now()):null;
     const linkId=recurId;
-    S.timeBlocks.push({id:'tb'+Date.now(),title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,recurId,linkId,calendarId:blkCalId});
+    S.timeBlocks.push({id:'tb'+Date.now(),title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,recurId,linkId,calendarId:blkCalId,recur,recurWeeks:recur!=='none'?weeks:null,recurDays:recur==='weekly'?pickedDays:null});
     if(recur!=='none'){
       wcalGetRecurDates(date,recur,weeks,pickedDays).forEach((rd,i)=>{
-        S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId,linkId,calendarId:blkCalId});
+        S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId,linkId,calendarId:blkCalId,recur,recurWeeks:weeks,recurDays:recur==='weekly'?pickedDays:null});
       });
     }
   }
