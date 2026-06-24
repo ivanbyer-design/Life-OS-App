@@ -14056,15 +14056,13 @@ if (_origTaskCheck) {
 
 
 <script>
-// Move fixed overlays to document.body so position:fixed isn't trapped
-// inside a panel element whose animation leaves a transform containing block
-document.addEventListener('DOMContentLoaded',function(){
-  ['wcal-modal-overlay','wcal-detail-overlay','wcal-picker-overlay',
-   'wcal-event-overlay','wcal-task-overlay','day-view-overlay'].forEach(function(id){
-    var el=document.getElementById(id);
-    if(el&&el.parentNode!==document.body)document.body.appendChild(el);
-  });
-});
+// After each panel's slide-in animation ends, explicitly clear the transform
+// so it no longer acts as a containing block for position:fixed descendants.
+document.addEventListener('animationend',function(e){
+  if(e.animationName==='panelIn'||e.animationName==='panelFadeIn'){
+    e.target.style.transform='none';
+  }
+},true);
 </script>
 </body>
 </html>
