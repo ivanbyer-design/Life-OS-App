@@ -11941,24 +11941,49 @@ function wcalOpenModal(date, hour, existingId){
   // Restore or reset recurrence fields
   const foreverCb=G('wcal-m-recur-forever');
   const weeksInp=G('wcal-m-recur-weeks');
-  if(block&&block.recur&&block.recur!=='none'){
-    if(recurEl)recurEl.value=block.recur;
-    // Show/hide day picker
-    const isWeekly=block.recur==='weekly';
+
+  // Resolve recurrence — use saved field, fall back to sibling lookup, then auto-detect from dates
+  let resolvedRecur=block?block.recur:null;
+  let resolvedRecurDays=block?block.recurDays:null;
+  let resolvedRecurWeeks=block?block.recurWeeks:null;
+  if(block&&block.recurId&&(!resolvedRecur||resolvedRecur==='none')){
+    // Check siblings for saved recur field
+    const sibling=(S.timeBlocks||[]).find(b=>b.recurId===block.recurId&&b.recur&&b.recur!=='none');
+    if(sibling){
+      resolvedRecur=sibling.recur;
+      resolvedRecurDays=sibling.recurDays;
+      resolvedRecurWeeks=sibling.recurWeeks;
+    } else {
+      // Auto-detect from the set of dates sharing this recurId
+      const siblings=(S.timeBlocks||[]).filter(b=>b.recurId===block.recurId);
+      if(siblings.length>1){
+        const days=[...new Set(siblings.map(b=>new Date(b.date+'T12:00:00').getDay()))].sort((a,z)=>a-z);
+        const isWeekdays=days.every(d=>d>=1&&d<=5);
+        const isWeekends=days.every(d=>d===0||d===6);
+        if(days.length>=5&&!isWeekdays&&!isWeekends)resolvedRecur='daily';
+        else if(isWeekdays)resolvedRecur='weekdays';
+        else if(isWeekends)resolvedRecur='weekends';
+        else{resolvedRecur='weekly';resolvedRecurDays=days;}
+        resolvedRecurWeeks=siblings.length;
+      }
+    }
+  }
+
+  if(block&&resolvedRecur&&resolvedRecur!=='none'){
+    if(recurEl)recurEl.value=resolvedRecur;
+    const isWeekly=resolvedRecur==='weekly';
     if(recurDaysWrap)recurDaysWrap.style.display=isWeekly?'':'none';
     if(recurWeeksWrap)recurWeeksWrap.style.display='';
-    // Pre-select days
     document.querySelectorAll('.wcal-recur-day').forEach(d=>d.classList.remove('on'));
-    if(isWeekly&&block.recurDays){
-      block.recurDays.forEach(day=>{
+    if(isWeekly&&resolvedRecurDays){
+      resolvedRecurDays.forEach(day=>{
         const el=document.querySelector(`.wcal-recur-day[data-d="${day}"]`);
         if(el)el.classList.add('on');
       });
     }
-    // Forever / weeks
-    const isForever=(block.recurWeeks||0)>=520;
+    const isForever=(resolvedRecurWeeks||0)>=520;
     if(foreverCb){foreverCb.checked=isForever;wcalToggleForever(foreverCb);}
-    if(weeksInp)weeksInp.value=isForever?'4':(block.recurWeeks||4);
+    if(weeksInp)weeksInp.value=isForever?'4':(resolvedRecurWeeks||4);
   } else {
     if(recurEl)recurEl.value='none';
     if(recurDaysWrap)recurDaysWrap.style.display='none';
