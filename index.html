@@ -2815,43 +2815,53 @@ html,body{background:var(--bg);}
 .week-cal-day-btns .hero-day-btn{flex:1;font-size:12px;padding:9px 12px;}
 
 /* ── EISENHOWER MATRIX ── */
-.eis-wrap{margin-top:10px;}
-.eis-axis-row{display:grid;grid-template-columns:28px 1fr 1fr;gap:0;margin-bottom:2px;}
-.eis-axis-top{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--ts);text-align:center;padding-bottom:4px;}
-.eis-grid{display:grid;grid-template-columns:28px 1fr 1fr;gap:0;}
-.eis-axis-side{display:flex;align-items:center;justify-content:center;}
-.eis-axis-label{font-size:8.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:var(--ts);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);}
-.eis-col{display:flex;flex-direction:column;gap:2px;}
-.eis-q{border-radius:var(--r);padding:12px 12px 10px;min-height:110px;margin:2px;}
-.eis-q.q1{background:color-mix(in srgb,var(--red) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--red) 25%,transparent);}
-.eis-q.q2{background:color-mix(in srgb,var(--green) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--green) 25%,transparent);}
-.eis-q.q3{background:color-mix(in srgb,var(--amber) 10%,var(--bg-card));border:1px solid color-mix(in srgb,var(--amber) 25%,transparent);}
-.eis-q.q4{background:var(--bg-h);border:1px solid var(--bd);}
-.eis-q-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1px;}
-.eis-q.q1 .eis-q-label{color:var(--red);}
-.eis-q.q2 .eis-q-label{color:var(--green);}
-.eis-q.q3 .eis-q-label{color:var(--amber);}
-.eis-q.q4 .eis-q-label{color:var(--ts);}
-.eis-q-action{font-size:9px;color:var(--ts);margin-bottom:8px;font-style:italic;}
-.eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:2px;padding:5px 6px;border-radius:8px;cursor:pointer;transition:background .12s,transform .2s var(--spring);}
-.eis-task:hover{background:rgba(255,255,255,0.06);}
-.eis-task.focused{background:var(--bg-a);border-radius:8px;}
-.eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px;}
-.eis-task-txt{font-size:11px;color:var(--t);line-height:1.35;flex:1;}
-.eis-empty{font-size:10px;color:var(--th);font-style:italic;margin-top:2px;}
-.eis-more{font-size:10px;color:var(--ts);margin-top:3px;cursor:pointer;}
-.eis-task-arr{font-size:13px;color:var(--ts);flex-shrink:0;margin-left:2px;transition:transform .2s var(--spring);}
-.eis-task.focused .eis-task-arr{transform:rotate(90deg);color:var(--blue);}
-.eis-move-panel{display:flex;align-items:center;gap:5px;padding:5px 6px 8px;flex-wrap:wrap;animation:panelFadeIn .2s var(--spring);}
-.eis-move-lbl{font-size:9px;color:var(--ts);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;}
-.eis-move-btn{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;border:1.5px solid var(--bd2);background:var(--bg-h);color:var(--ts);cursor:pointer;transition:all .2s var(--spring);font-family:var(--font);}
-.eis-move-btn:hover{transform:scale(1.12);}
-.eis-move-btn.active{background:var(--blue);color:var(--ti);border-color:var(--blue);}
-.eis-move-btn.clr{background:transparent;color:var(--th);border-style:dashed;font-size:9px;}
-.eis-add-row{display:flex;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);}
-.eis-add-inp{font-size:11px!important;padding:5px 8px!important;}
-.eis-add-btn{flex-shrink:0;width:28px;height:28px;border-radius:10px;border:1.5px solid var(--bd2);background:var(--bg-h);color:var(--t);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s var(--spring);font-family:var(--font);}
-.eis-add-btn:hover{transform:scale(1.18);background:var(--blue);color:var(--ti);border-color:var(--blue);}
+.eis-wrap{margin-top:6px;}
+.eis-axis-row{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;margin-bottom:4px;align-items:flex-end;}
+.eis-axis-top{font-size:13px;font-weight:600;color:var(--t);text-align:center;padding-bottom:6px;}
+.eis-main-grid{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;}
+.eis-side-lbl{display:flex;align-items:center;justify-content:center;}
+.eis-axis-label{font-size:12px;font-weight:600;color:var(--t);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;}
+.eis-q{border-radius:16px;padding:14px 12px 10px;margin:3px;display:flex;flex-direction:column;}
+.eis-q.q1{background:#4CAF50;}
+.eis-q.q2{background:#26C6DA;}
+.eis-q.q3{background:#EF5350;}
+.eis-q.q4{background:#BDBDBD;}
+.eis-q-name{font-size:20px;font-weight:800;color:#fff;text-align:center;margin-bottom:3px;}
+.eis-q.q4 .eis-q-name{color:#333;}
+.eis-q-action{font-size:11px;color:rgba(255,255,255,0.92);font-style:italic;text-align:center;margin-bottom:8px;}
+.eis-q.q4 .eis-q-action{color:rgba(0,0,0,0.55);}
+.eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:2px;padding:4px 6px;border-radius:8px;cursor:pointer;transition:background .12s;}
+.eis-task:hover{background:rgba(255,255,255,0.18);}
+.eis-task.focused{background:rgba(255,255,255,0.25);border-radius:8px;}
+.eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;background:rgba(255,255,255,0.85);}
+.eis-q.q4 .eis-dot{background:rgba(0,0,0,0.35);}
+.eis-task-txt{font-size:11px;color:#fff;line-height:1.35;flex:1;}
+.eis-q.q4 .eis-task-txt{color:#333;}
+.eis-empty{font-size:10px;color:rgba(255,255,255,0.65);font-style:italic;margin-top:2px;}
+.eis-q.q4 .eis-empty{color:rgba(0,0,0,0.45);}
+.eis-more{font-size:10px;color:rgba(255,255,255,0.75);margin-top:3px;cursor:pointer;}
+.eis-q.q4 .eis-more{color:rgba(0,0,0,0.5);}
+.eis-task-arr{font-size:13px;color:rgba(255,255,255,0.7);flex-shrink:0;margin-left:2px;transition:transform .2s;}
+.eis-task.focused .eis-task-arr{transform:rotate(90deg);}
+.eis-q.q4 .eis-task-arr{color:rgba(0,0,0,0.4);}
+.eis-move-panel{display:flex;align-items:center;gap:5px;padding:5px 6px 6px;flex-wrap:wrap;}
+.eis-move-lbl{font-size:9px;color:rgba(255,255,255,0.8);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;}
+.eis-q.q4 .eis-move-lbl{color:rgba(0,0,0,0.5);}
+.eis-move-btn{font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.45);background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;font-family:var(--font);transition:background .15s;}
+.eis-move-btn:hover{background:rgba(255,255,255,0.3);}
+.eis-move-btn.active{background:rgba(255,255,255,0.45);}
+.eis-move-btn.clr{background:transparent;color:rgba(255,255,255,0.65);border-style:dashed;font-size:9px;}
+.eis-q.q4 .eis-move-btn{border-color:rgba(0,0,0,0.2);background:rgba(0,0,0,0.08);color:#333;}
+.eis-q.q4 .eis-move-btn.active{background:rgba(0,0,0,0.18);}
+.eis-add-row{display:flex;gap:5px;margin-top:auto;padding-top:8px;border-top:1px solid rgba(255,255,255,0.3);}
+.eis-q.q4 .eis-add-row{border-top:1px solid rgba(0,0,0,0.15);}
+.eis-add-inp{font-size:11px!important;padding:4px 8px!important;background:rgba(255,255,255,0.2)!important;border:1px solid rgba(255,255,255,0.35)!important;color:#fff!important;border-radius:8px!important;}
+.eis-add-inp::placeholder{color:rgba(255,255,255,0.6)!important;}
+.eis-q.q4 .eis-add-inp{background:rgba(0,0,0,0.08)!important;border-color:rgba(0,0,0,0.18)!important;color:#333!important;}
+.eis-q.q4 .eis-add-inp::placeholder{color:rgba(0,0,0,0.4)!important;}
+.eis-add-btn{flex-shrink:0;width:26px;height:26px;border-radius:8px;border:1.5px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.18);color:#fff;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:background .15s;}
+.eis-add-btn:hover{background:rgba(255,255,255,0.35);}
+.eis-q.q4 .eis-add-btn{border-color:rgba(0,0,0,0.2);background:rgba(0,0,0,0.08);color:#444;}
 
 /* ── PERSONAL TO-DOS ── */
 .home-ptodos-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 16px 12px;box-shadow:var(--sh);}
@@ -7087,12 +7097,18 @@ function renderEisenhowerMatrix(){
     if(!arr.length&&focused===null)return'<div class="eis-empty">None</div>';
     const shown=arr.slice(0,max);
     const more=arr.length>max?`<div class="eis-more">+${arr.length-max} more</div>`:'';
-    const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot" style="background:${dotColor(t)};margin-top:5px;"></div><div class="eis-task-txt">${t.t||''}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
+    const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot"></div><div class="eis-task-txt">${t.t||''}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
     return(rows||'<div class="eis-empty">None</div>')+more;
   };
   const addRow=q=>`<div class="eis-add-row"><input class="fi eis-add-inp" id="eis-add-${q}" placeholder="Add task..." onkeydown="if(event.key==='Enter')eisAddTask(${q})"><button class="eis-add-btn" onclick="eisAddTask(${q})">+</button></div>`;
-  const qs=[{arr:q1,q:1,cls:'q1',lbl:'Q1 — Do First',sub:'Urgent &amp; Important'},{arr:q2,q:2,cls:'q2',lbl:'Q2 — Schedule',sub:'Important, not urgent'},{arr:q3,q:3,cls:'q3',lbl:'Q3 — Delegate',sub:'Urgent, not important'},{arr:q4,q:4,cls:'q4',lbl:'Q4 — Eliminate',sub:'Neither urgent nor key'}];
-  el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">&#9889; Urgent</div><div class="eis-axis-top" style="color:var(--ts);">Not Urgent</div></div><div class="eis-grid"><div class="eis-axis-side" style="grid-row:span 2;"><div class="eis-axis-label">Important &uarr;</div></div>${qs.map(x=>`<div class="eis-q ${x.cls}"><div class="eis-q-label">${x.lbl}</div><div class="eis-q-action">${x.sub}</div>${taskHtml(x.arr,x.q)}${addRow(x.q)}</div>`).join('')}</div></div>`;
+  const qs=[
+    {arr:q1,q:1,cls:'q1',name:'Do',sub:'Do it now.'},
+    {arr:q2,q:2,cls:'q2',name:'Decide',sub:'Schedule a time to do it'},
+    {arr:q3,q:3,cls:'q3',name:'Delegate',sub:'Who can do it for you?'},
+    {arr:q4,q:4,cls:'q4',name:'Delete',sub:'Eliminate it'}
+  ];
+  const qCard=x=>`<div class="eis-q ${x.cls}"><div class="eis-q-name">${x.name}</div><div class="eis-q-action">${x.sub}</div>${taskHtml(x.arr,x.q)}${addRow(x.q)}</div>`;
+  el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">Urgent</div><div class="eis-axis-top">Not Urgent</div></div><div class="eis-main-grid"><div class="eis-side-lbl"><span class="eis-axis-label">Important</span></div>${qCard(qs[0])}${qCard(qs[1])}<div class="eis-side-lbl"><span class="eis-axis-label">Not Important</span></div>${qCard(qs[2])}${qCard(qs[3])}</div></div>`;
 }
 
 function renderPersonalTodos(){
