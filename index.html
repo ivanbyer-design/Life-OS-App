@@ -40,8 +40,8 @@
 }
 [data-dark]{
   /* Finance terminal dark — deep charcoal, ref-match */
-  --bg:#0d0906;--bg-h:#16100a;--bg-a:#1e1610;--bg-sb:#0a0705;
-  --bg-card:#130e08;--bg-in:#1e1610;--bg-tag:#241c12;
+  --bg:#0d0906;--bg-h:#201808;--bg-a:#2a2014;--bg-sb:#0a0705;
+  --bg-card:#231a0e;--bg-in:#281e0e;--bg-tag:#342618;
   --t:#f0e4cc;--ts:#a08060;--th:#5e4030;--ti:#0d0906;
   --bd:rgba(201,148,58,0.2);--bd2:rgba(201,148,58,0.4);
   --green:#68b878;--gbg:#0e1e10;
@@ -2564,6 +2564,216 @@ html,body{background:var(--bg);}
 .plan-proj-mini-prog{height:4px;background:var(--green);border-radius:2px;transition:width .3s;}
 .plan-projs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
 
+/* ── APPLE CALENDAR WEEK VIEW ── */
+.apcal{display:flex;height:760px;width:100%;background:var(--bg-card);border-radius:var(--rl);overflow:hidden;border:1px solid var(--bd);box-shadow:var(--sh-md);}
+.apcal-sb{width:196px;flex-shrink:0;background:color-mix(in srgb,var(--bg) 60%,var(--bg-card));border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,opacity .18s ease;}
+.apcal-sb.collapsed{width:0;border-right:none;opacity:0;pointer-events:none;}
+.apcal-sb-toggle{width:26px;height:26px;border-radius:50%;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .12s,transform .22s ease;flex-shrink:0;}
+.apcal-sb-toggle:hover{background:var(--bd);color:var(--t);}
+.apcal-sb-inner{overflow-y:auto;padding:10px 8px 14px;flex:1;}
+.apcal-sb-inner::-webkit-scrollbar{width:3px;}
+.apcal-sb-inner::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+/* mini month in sidebar */
+.apcal-mini{margin-bottom:14px;}
+.apcal-mini-hdr{display:flex;align-items:center;justify-content:space-between;padding:0 2px 6px;gap:4px;}
+.apcal-mini-lbl{font-size:11px;font-weight:700;color:var(--t);letter-spacing:-0.01em;}
+.apcal-mini-nav{display:flex;gap:2px;}
+.apcal-mini-nav-btn{width:20px;height:20px;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.apcal-mini-nav-btn:hover{background:var(--bd);}
+.apcal-mini-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px 0;}
+.apcal-mini-dow{font-size:9px;font-weight:700;color:var(--ts);text-align:center;padding:2px 0 3px;text-transform:uppercase;letter-spacing:.04em;}
+.apcal-mini-day{font-size:10.5px;font-weight:500;color:var(--t);text-align:center;padding:2px 1px;border-radius:50%;cursor:pointer;aspect-ratio:1;display:flex;align-items:center;justify-content:center;transition:background .1s;}
+.apcal-mini-day:hover{background:var(--bd);}
+.apcal-mini-day.other-m{color:var(--th);}
+.apcal-mini-day.in-week{background:color-mix(in srgb,var(--blue) 15%,transparent);border-radius:0;}
+.apcal-mini-day.in-week:first-child,.apcal-mini-day.week-start{border-radius:50% 0 0 50%;}
+.apcal-mini-day.in-week:last-child,.apcal-mini-day.week-end{border-radius:0 50% 50% 0;}
+.apcal-mini-day.today-mini{background:var(--red)!important;color:#fff!important;font-weight:800;border-radius:50%!important;}
+.apcal-mini-day.selected-mini{background:var(--blue)!important;color:#fff!important;font-weight:800;border-radius:50%!important;}
+/* calendar groups */
+/* ── APPLE CALENDAR SIDEBAR — named calendars ── */
+.apcal-sb-sec{margin-bottom:12px;}
+.apcal-sb-sec-hdr{display:flex;align-items:center;justify-content:space-between;font-size:9.5px;font-weight:800;color:var(--ts);text-transform:uppercase;letter-spacing:.08em;padding:0 4px 5px;}
+.apcal-sb-add-btn{border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:17px;line-height:1;padding:0 2px;border-radius:4px;transition:color .12s,background .12s;display:flex;align-items:center;}
+.apcal-sb-add-btn:hover{color:var(--t);background:var(--bd);}
+.apcal-cal-row{display:flex;align-items:center;gap:7px;padding:4px 5px 4px 3px;border-radius:7px;cursor:default;transition:background .12s;user-select:none;}
+.apcal-cal-row:hover{background:var(--bd);}
+.apcal-cal-chk{width:14px;height:14px;border-radius:3px;border:2px solid var(--chk-c,#888);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s;}
+.apcal-cal-chk.on{background:var(--chk-c,#3b82f6);border-color:var(--chk-c,#3b82f6);}
+.apcal-cal-chk svg{display:none;pointer-events:none;}
+.apcal-cal-chk.on svg{display:block;}
+.apcal-cal-lbl{flex:1;font-size:12px;font-weight:500;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer;line-height:1.3;}
+.apcal-cal-row.dim .apcal-cal-lbl{color:var(--ts);}
+.apcal-cal-opts{display:none;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:13px;padding:1px 4px;border-radius:4px;line-height:1;font-family:var(--font);transition:background .1s,color .1s;}
+.apcal-cal-row:hover .apcal-cal-opts{display:flex;align-items:center;}
+.apcal-cal-opts:hover{background:var(--bd2);color:var(--t);}
+/* Calendar management popup */
+.apcal-mgmt-pop{position:fixed;z-index:2001;background:var(--bg-card);border:1px solid var(--bd2);border-radius:14px;padding:16px;box-shadow:0 14px 48px rgba(0,0,0,.5);width:244px;display:none;}
+.apcal-mgmt-pop.open{display:block;animation:wcalModalIn .2s cubic-bezier(.34,1.56,.64,1) both;}
+.apcal-mgmt-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.apcal-mgmt-title{font-size:13px;font-weight:700;color:var(--t);}
+.apcal-mgmt-close{background:none;border:none;color:var(--ts);font-size:16px;cursor:pointer;line-height:1;padding:0;}
+.apcal-mgmt-lbl{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;display:block;}
+.apcal-mgmt-inp{width:100%;box-sizing:border-box;font-family:var(--font);font-size:13px;padding:7px 10px;border:1px solid var(--bd);border-radius:9px;background:var(--bg-in);color:var(--t);margin-bottom:12px;}
+.apcal-mgmt-inp:focus{outline:none;border-color:var(--blue);}
+.apcal-mgmt-palette{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.apcal-mgmt-sw{width:24px;height:24px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .12s,box-shadow .12s;flex-shrink:0;}
+.apcal-mgmt-sw:hover{transform:scale(1.15);}
+.apcal-mgmt-sw.sel{transform:scale(1.18);box-shadow:0 0 0 2px var(--bg-card),0 0 0 4px var(--sw-sel,#888);}
+.apcal-mgmt-actions{display:flex;gap:8px;}
+.apcal-mgmt-save{flex:1;font-family:var(--font);font-size:12px;font-weight:700;padding:8px;border-radius:9px;border:none;background:var(--blue);color:#fff;cursor:pointer;transition:opacity .12s;}
+.apcal-mgmt-save:hover{opacity:.85;}
+.apcal-mgmt-del{font-family:var(--font);font-size:12px;font-weight:600;padding:8px 12px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--ts);cursor:pointer;transition:all .12s;}
+.apcal-mgmt-del:hover{background:color-mix(in srgb,var(--red) 10%,transparent);color:var(--red);border-color:var(--red);}
+/* Calendar selector row inside modals */
+.apcal-sel-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.apcal-sel-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;transition:background .15s;}
+.apcal-sel-row select{flex:1;}
+/* main area */
+.apcal-main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+/* toolbar */
+.apcal-toolbar{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 10px 12px;border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg-card);}
+.apcal-toolbar-l{display:flex;align-items:center;gap:8px;}
+.apcal-toolbar-r{display:flex;align-items:center;gap:8px;}
+.apcal-today-btn{font-family:var(--font);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px;border:1px solid var(--bd2);background:var(--bg-h);color:var(--t);cursor:pointer;transition:background .12s;}
+.apcal-today-btn:hover{background:var(--bd);}
+.apcal-tnav-btn{width:26px;height:26px;border-radius:50%;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:17px;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:background .12s;}
+.apcal-tnav-btn:hover{background:var(--bd);}
+.apcal-month-lbl{font-size:17px;font-weight:800;color:var(--t);letter-spacing:-0.02em;}
+.apcal-views{display:flex;border:1px solid var(--bd2);border-radius:8px;overflow:hidden;}
+.apcal-view-btn{font-family:var(--font);font-size:11.5px;font-weight:600;padding:5px 10px;border:none;background:transparent;color:var(--ts);cursor:pointer;transition:background .12s,color .12s;}
+.apcal-view-btn:hover{background:var(--bg-h);}
+.apcal-view-btn.active{background:var(--bg-h);color:var(--t);}
+.apcal-view-btn+.apcal-view-btn{border-left:1px solid var(--bd2);}
+.apcal-add-btn{width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:20px;font-family:var(--font);display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s;line-height:1;}
+.apcal-add-btn:hover{background:var(--bd);color:var(--t);}
+/* week header */
+.apcal-week-hdr{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);background:var(--bg-card);}
+.apcal-wk-gutter{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:6px 0;}
+.apcal-wk-num{font-size:9px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;}
+.apcal-wk-day-col{flex:1;text-align:center;padding:5px 2px 6px;cursor:pointer;transition:background .12s;border-left:1px solid var(--bd);}
+.apcal-wk-day-col:hover{background:var(--bg-h);}
+.apcal-wk-day-col.is-today{background:transparent;}
+.apcal-wk-dow{font-size:10px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;}
+.apcal-wk-date{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-size:16px;font-weight:700;color:var(--t);margin-top:2px;}
+.apcal-wk-day-col.is-today .apcal-wk-date{background:var(--red);color:#fff;}
+.apcal-wk-day-col.is-weekend .apcal-wk-dow,.apcal-wk-day-col.is-weekend .apcal-wk-date:not(.today-date){color:var(--th);}
+/* all-day row */
+.apcal-allday-row{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);min-height:0;max-height:56px;overflow:hidden;background:var(--bg-card);}
+.apcal-allday-gutter{width:52px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:4px 6px 0 0;}
+.apcal-allday-lbl{font-size:8.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;}
+.apcal-allday-days{flex:1;display:flex;}
+.apcal-allday-cell{flex:1;border-left:1px solid var(--bd);padding:2px 2px;min-height:20px;position:relative;}
+.apcal-allday-chip{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;cursor:pointer;}
+/* scrollable time body */
+.apcal-body-scroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;}
+.apcal-body-scroll::-webkit-scrollbar{width:4px;}
+.apcal-body-scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+.apcal-body-inner{display:flex;position:relative;min-height:100%;}
+.apcal-time-col{width:52px;flex-shrink:0;position:sticky;left:0;background:var(--bg-card);z-index:5;}
+.apcal-time-slot{height:60px;border-bottom:1px solid var(--bd);display:flex;align-items:flex-start;justify-content:flex-end;padding:0 6px 0 0;position:relative;}
+.apcal-time-slot-lbl{font-size:9.5px;font-weight:500;color:var(--ts);transform:translateY(-7px);white-space:nowrap;}
+.apcal-day-cols{flex:1;display:flex;position:relative;}
+.apcal-day-col{flex:1;border-left:1px solid var(--bd);position:relative;}
+.apcal-hour-slot{height:60px;border-bottom:1px solid color-mix(in srgb,var(--bd) 60%,transparent);position:relative;cursor:crosshair;}
+.apcal-hour-slot::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:color-mix(in srgb,var(--bd) 35%,transparent);}
+.apcal-hour-slot:hover{background:color-mix(in srgb,var(--blue) 6%,transparent);}
+.apcal-day-col.is-today{background:color-mix(in srgb,var(--blue) 4%,transparent);}
+.apcal-day-col.is-weekend{background:color-mix(in srgb,var(--bg) 40%,transparent);}
+/* events */
+.apcal-event{position:absolute;left:2px;right:2px;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;cursor:pointer;overflow:hidden;z-index:2;transition:filter .12s,box-shadow .12s;box-shadow:0 1px 3px rgba(0,0,0,.18);}
+.apcal-event:hover{filter:brightness(1.1);box-shadow:0 3px 8px rgba(0,0,0,.28);}
+.apcal-event-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;font-size:11.5px;font-weight:700;}
+.apcal-event-time-lbl{font-size:10px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apcal-event-subtask{font-size:10px;background:rgba(0,0,0,.2);border-radius:3px;padding:1px 4px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apcal-task-chip{position:absolute;left:2px;right:2px;height:22px;border-radius:5px;z-index:3;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0 6px;font-size:10.5px;font-weight:700;}
+.apcal-task-chip-cb{width:12px;height:12px;border-radius:50%;border:2px solid rgba(255,255,255,.8);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.apcal-task-chip-cb.done{background:#fff;}
+.apcal-task-chip-txt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff;}
+/* current time indicator */
+.apcal-now-line{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:10;pointer-events:none;}
+.apcal-now-dot{position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red);}
+/* month view inside apple cal */
+/* ── APPLE CAL MONTH VIEW ── */
+.apcal-mv{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.apcal-mv-hdr{display:grid;grid-template-columns:26px repeat(7,1fr);border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg-card);}
+.apcal-mv-wk-corner{border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
+.apcal-mv-dow{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;padding:7px 0;text-align:center;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
+.apcal-mv-dow.is-weekend{color:var(--th);}
+.apcal-mv-dow:last-child{border-right:none;}
+.apcal-mv-grid{flex:1;display:grid;overflow:hidden;}
+.apcal-mv-row{display:grid;grid-template-columns:26px repeat(7,1fr);border-bottom:1px solid var(--bd);overflow:hidden;min-height:0;}
+.apcal-mv-row:last-child{border-bottom:none;}
+.apcal-mv-wknum{font-size:8.5px;font-weight:700;color:var(--th);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
+.apcal-mc{overflow:hidden;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);padding:3px 4px 2px;cursor:pointer;transition:background .1s;display:flex;flex-direction:column;position:relative;}
+.apcal-mc:last-child{border-right:none;}
+.apcal-mc:hover{background:var(--bg-h);}
+.apcal-mc.other-m{background:color-mix(in srgb,var(--bg) 55%,var(--bg-card));}
+.apcal-mc.other-m .apcal-mc-date{color:var(--th);}
+.apcal-mc.other-m .apcal-mc-evt-title{color:var(--ts);}
+.apcal-mc-hdr{display:flex;align-items:center;justify-content:space-between;min-height:22px;gap:2px;}
+.apcal-mc-date{font-size:11.5px;font-weight:600;color:var(--t);min-width:20px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0;padding:0 3px;}
+.apcal-mc-date.today{background:var(--red);color:#fff!important;font-weight:800;}
+.apcal-mc-theme-btn{display:none;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:11px;padding:1px 4px;border-radius:4px;line-height:1;font-family:var(--font);}
+.apcal-mc:hover .apcal-mc-theme-btn{display:flex;align-items:center;}
+.apcal-mc-theme-btn:hover{background:var(--bd);color:var(--t);}
+.apcal-mc-theme-bar{font-size:9.5px;font-weight:700;padding:2px 5px;border-radius:3px;color:#fff;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:3px;flex-shrink:0;}
+.apcal-mc-evt{display:flex;align-items:center;gap:4px;font-size:10px;line-height:1.4;padding:0 1px;min-height:0;overflow:hidden;}
+.apcal-mc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.apcal-mc-evt-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t);font-weight:500;}
+.apcal-mc-evt-time{font-size:9px;color:var(--ts);white-space:nowrap;flex-shrink:0;margin-left:2px;}
+.apcal-mc-more{font-size:9.5px;color:var(--ts);font-weight:600;padding:0 2px;cursor:pointer;margin-top:auto;}
+.apcal-mc-more:hover{color:var(--blue);text-decoration:underline;}
+/* ── APPLE CAL YEAR VIEW ── */
+.apcal-yr{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;padding:18px;width:100%;box-sizing:border-box;}
+@media(max-width:900px){.apcal-yr{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:600px){.apcal-yr{grid-template-columns:repeat(2,1fr);gap:12px;padding:12px;}}
+.apcal-yr-month{cursor:pointer;border-radius:10px;padding:10px 8px 12px;border:1px solid transparent;transition:border-color .14s,background .14s;}
+.apcal-yr-month:hover{background:var(--bg-h);border-color:var(--bd);}
+.apcal-yr-mname{font-size:12px;font-weight:700;color:var(--t);margin-bottom:7px;text-align:center;}
+.apcal-yr-mini{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;}
+.apcal-yr-dow{font-size:7px;font-weight:700;color:var(--ts);text-align:center;padding-bottom:3px;}
+.apcal-yr-day{font-size:8px;font-weight:500;color:var(--t);text-align:center;line-height:1;padding:2px 0;border-radius:50%;position:relative;}
+.apcal-yr-day.other-m{color:var(--th);}
+.apcal-yr-day.is-today{background:var(--red);color:#fff!important;font-weight:800;}
+.apcal-yr-day.has-evts::after{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;background:var(--blue);}
+.apcal-yr-day.has-theme{border-radius:3px;}
+/* ── DAY THEME POPUP ── */
+.apcal-theme-pop{position:fixed;z-index:2000;background:var(--bg-card);border:1px solid var(--bd2);border-radius:14px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,.45);width:224px;display:none;}
+.apcal-theme-pop.open{display:block;animation:wcalModalIn .2s cubic-bezier(.34,1.56,.64,1) both;}
+.apcal-theme-pop-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.apcal-theme-pop-title{font-size:12px;font-weight:700;color:var(--t);}
+.apcal-theme-pop-close{background:none;border:none;color:var(--ts);font-size:16px;cursor:pointer;line-height:1;padding:0;}
+.apcal-theme-inp{width:100%;box-sizing:border-box;font-family:var(--font);font-size:12px;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg-in);color:var(--t);margin-bottom:8px;}
+.apcal-theme-inp:focus{outline:none;border-color:var(--blue);}
+.apcal-theme-swatches{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+.apcal-theme-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .12s;flex-shrink:0;}
+.apcal-theme-swatch:hover,.apcal-theme-swatch.sel{transform:scale(1.2);border-color:#fff;}
+.apcal-theme-emojis{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;}
+.apcal-theme-emoji-btn{background:none;border:1px solid transparent;border-radius:6px;cursor:pointer;padding:2px 4px;font-size:14px;transition:background .1s,border-color .1s;line-height:1.3;}
+.apcal-theme-emoji-btn:hover,.apcal-theme-emoji-btn.sel{background:var(--bg-h);border-color:var(--bd);}
+.apcal-theme-actions{display:flex;gap:6px;}
+.apcal-theme-save-btn{flex:1;font-family:var(--font);font-size:12px;font-weight:700;padding:7px;border-radius:8px;border:none;background:var(--blue);color:#fff;cursor:pointer;opacity:1;transition:opacity .12s;}
+.apcal-theme-save-btn:hover{opacity:.85;}
+.apcal-theme-rm-btn{font-family:var(--font);font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--ts);cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
+.apcal-theme-rm-btn:hover{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red);border-color:var(--red);}
+.apcal-month-view{flex:1;overflow-y:auto;padding:12px;}
+.apcal-month-num{font-size:12px;font-weight:600;color:var(--t);margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
+/* day view inside apple cal */
+.apcal-day-view-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;}
+.apcal-day-view-lbl{font-size:18px;font-weight:800;color:var(--t);letter-spacing:-0.02em;}
+.apcal-day-view-date{font-size:12px;color:var(--ts);margin-top:2px;}
+/* mobile */
+@media(max-width:700px){
+  .apcal{height:88svh;flex-direction:column;}
+  .apcal-sb{width:100%;border-right:none;border-bottom:1px solid var(--bd);max-height:0;overflow:hidden;transition:max-height .3s;}
+  .apcal-sb.open{max-height:300px;}
+  .apcal-month-lbl{font-size:14px;}
+  .apcal-wk-date{font-size:13px;width:24px;height:24px;}
+  .apcal-wk-dow{font-size:9px;}
+  .apcal-event-title{font-size:10px;}
+}
+
 /* ── HOME DIRECTORY LAYOUT ── */
 .home-dir-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-top:16px;align-items:start;}
 @media(max-width:768px){.home-dir-grid{grid-template-columns:1fr;}}
@@ -3140,27 +3350,54 @@ html,body{background:var(--bg);}
           <button class="gcal-connect-btn" onclick="gcalFetchEvents()" style="background:var(--bg-in);color:var(--t);border:1px solid var(--bd);">↻ Refresh</button>
         </div>
 
-        <!-- MASTER CALENDAR — full width, tap a day to open day view -->
-        <div class="mcal-wrap" id="mcal-wrap">
-          <div class="mcal-hdr">
-            <div class="mcal-hdr-left">
-              <button class="mcal-today-btn" onclick="mcalGoToday()">Today</button>
-              <div class="mcal-nav-grp">
-                <button class="mcal-nav-btn" onclick="mcalPrev()">‹</button>
-                <button class="mcal-nav-btn" onclick="mcalNext()">›</button>
+        <!-- APPLE CALENDAR — week view -->
+        <div class="apcal" id="apcal">
+          <!-- Sidebar -->
+          <div class="apcal-sb" id="apcal-sb">
+            <div class="apcal-sb-inner">
+              <div class="apcal-mini">
+                <div class="apcal-mini-hdr">
+                  <span class="apcal-mini-lbl" id="apcal-mini-lbl">—</span>
+                  <div class="apcal-mini-nav">
+                    <button class="apcal-mini-nav-btn" onclick="apCalMiniPrev()">‹</button>
+                    <button class="apcal-mini-nav-btn" onclick="apCalMiniNext()">›</button>
+                  </div>
+                </div>
+                <div class="apcal-mini-grid" id="apcal-mini-grid"></div>
               </div>
-              <span class="mcal-month-lbl" id="mcal-month-lbl">—</span>
+              <div id="apcal-cals-section"><!-- rendered by renderApCalSidebar() --></div>
             </div>
-            <div class="mcal-title">Master Calendar</div>
           </div>
-          <div class="mcal-board">
-            <div class="mcal-dow-row">
-              <div class="mcal-dow">Sun</div><div class="mcal-dow">Mon</div><div class="mcal-dow">Tue</div>
-              <div class="mcal-dow">Wed</div><div class="mcal-dow">Thu</div><div class="mcal-dow">Fri</div><div class="mcal-dow">Sat</div>
+          <!-- Main area -->
+          <div class="apcal-main">
+            <!-- Toolbar -->
+            <div class="apcal-toolbar">
+              <div class="apcal-toolbar-l">
+                <button class="apcal-sb-toggle" id="apcal-sb-toggle" onclick="apCalToggleSidebar()" title="Toggle sidebar">◀</button>
+                <button class="apcal-today-btn" onclick="apCalToday()">Today</button>
+                <button class="apcal-tnav-btn" onclick="apCalPrev()">‹</button>
+                <button class="apcal-tnav-btn" onclick="apCalNext()">›</button>
+                <span class="apcal-month-lbl" id="apcal-month-lbl">—</span>
+              </div>
+              <div class="apcal-toolbar-r">
+                <div class="apcal-views">
+                  <button class="apcal-view-btn" id="apcal-vb-day" onclick="apSetView('day')">Day</button>
+                  <button class="apcal-view-btn" id="apcal-vb-week" onclick="apSetView('week')">Week</button>
+                  <button class="apcal-view-btn" id="apcal-vb-month" onclick="apSetView('month')">Month</button>
+                  <button class="apcal-view-btn" id="apcal-vb-year" onclick="apSetView('year')">Year</button>
+                </div>
+                <button class="apcal-add-btn" onclick="apCalAddClick()">＋</button>
+              </div>
             </div>
-            <div class="mcal-grid" id="mcal-grid"></div>
+            <!-- Week header row (day names + dates) — hidden in month view -->
+            <div class="apcal-week-hdr" id="apcal-week-hdr"></div>
+            <!-- All-day events row -->
+            <div class="apcal-allday-row" id="apcal-allday-row"></div>
+            <!-- Scrollable time grid -->
+            <div class="apcal-body-scroll" id="apcal-body-scroll">
+              <div class="apcal-body-inner" id="apcal-body-inner"></div>
+            </div>
           </div>
-          <div id="mcal-detail"></div>
         </div>
 
         <!-- DAY VIEW BOTTOM SHEET -->
@@ -3199,6 +3436,39 @@ html,body{background:var(--bg);}
           <div id="plan-eis-matrix"></div>
         </div>
 
+        <!-- CALENDAR MANAGEMENT POPUP -->
+        <div class="apcal-mgmt-pop" id="apcal-mgmt-pop">
+          <div class="apcal-mgmt-hdr">
+            <span class="apcal-mgmt-title" id="apcal-mgmt-title">New Calendar</span>
+            <button class="apcal-mgmt-close" onclick="apCalCloseMgmt()">✕</button>
+          </div>
+          <span class="apcal-mgmt-lbl">Name</span>
+          <input class="apcal-mgmt-inp" id="apcal-mgmt-name" placeholder="Calendar name…" onkeydown="if(event.key==='Enter')apCalSaveMgmt()">
+          <span class="apcal-mgmt-lbl">Color</span>
+          <div class="apcal-mgmt-palette" id="apcal-mgmt-palette"></div>
+          <div class="apcal-mgmt-actions">
+            <button class="apcal-mgmt-del" id="apcal-mgmt-del" onclick="apCalDeleteCal()">Delete</button>
+            <button class="apcal-mgmt-save" onclick="apCalSaveMgmt()">Save</button>
+          </div>
+        </div>
+
+        <!-- DAY THEME POPUP -->
+        <div class="apcal-theme-pop" id="apcal-theme-pop">
+          <div class="apcal-theme-pop-hdr">
+            <span class="apcal-theme-pop-title">★ Day Theme</span>
+            <button class="apcal-theme-pop-close" onclick="apCalCloseThemePop()">✕</button>
+          </div>
+          <input class="apcal-theme-inp" id="apcal-theme-label" placeholder="Label (e.g. Birthday, Launch Day…)">
+          <div style="font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Color</div>
+          <div class="apcal-theme-swatches" id="apcal-theme-swatches"></div>
+          <div style="font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Icon</div>
+          <div class="apcal-theme-emojis" id="apcal-theme-emojis"></div>
+          <div class="apcal-theme-actions">
+            <button class="apcal-theme-rm-btn" onclick="apCalRemoveTheme()">Remove</button>
+            <button class="apcal-theme-save-btn" onclick="apCalSaveTheme()">Save</button>
+          </div>
+        </div>
+
         <!-- Block edit/create modal -->
         <div class="wcal-modal-overlay" id="wcal-modal-overlay" onclick="if(event.target===this)closeWcalModal()">
           <div class="wcal-modal" id="wcal-modal">
@@ -3206,25 +3476,28 @@ html,body{background:var(--bg);}
               <h3 style="font-size:15px;font-weight:700;color:var(--t);" id="wcal-modal-hdr-title">Time Block</h3>
               <button onclick="closeWcalModal()" style="background:none;border:none;font-size:18px;color:var(--ts);cursor:pointer;">✕</button>
             </div>
+            <!-- Sync banner — shown when editing a linked block -->
+            <div id="wcal-link-banner" style="display:none;align-items:center;gap:8px;padding:8px 16px;background:color-mix(in srgb,var(--blue) 10%,var(--bg-h));border-bottom:1px solid var(--bd);">
+              <span style="font-size:15px;">🔗</span>
+              <span id="wcal-link-info" style="flex:1;font-size:11.5px;font-weight:600;color:var(--t);"></span>
+              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:700;color:var(--blue);user-select:none;">
+                <input type="checkbox" id="wcal-sync-all" checked style="accent-color:var(--blue);width:14px;height:14px;">
+                Edit all
+              </label>
+              <button onclick="wcalUnlinkBlock()" style="font-family:var(--font);font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:6px;border:1px solid var(--bd2);background:transparent;color:var(--ts);cursor:pointer;">Unlink</button>
+            </div>
             <div style="padding:16px 20px;overflow-y:auto;flex:1;min-height:0;">
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">TITLE</label>
               <input class="fi" id="wcal-m-title" placeholder="Block title..." style="margin-bottom:10px;">
+              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">CALENDAR</label>
+              <div class="apcal-sel-row" style="margin-bottom:10px;">
+                <div class="apcal-sel-dot" id="wcal-m-cal-dot"></div>
+                <select class="fi" id="wcal-m-cal" onchange="apCalUpdateSelDot('wcal-m-cal','wcal-m-cal-dot')"></select>
+              </div>
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">DATE</label>
               <input class="fi" type="date" id="wcal-m-date" style="margin-bottom:10px;">
-              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">TYPE</label>
-              <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
-                <select class="fi" id="wcal-m-type" style="flex:1;" onchange="wcalSyncTypeColor()">
-                  <option value="work">💼 Work</option>
-                  <option value="personal">🌿 Personal</option>
-                  <option value="health">❤️ Health</option>
-                  <option value="finance">💰 Finance</option>
-                  <option value="custom">🎨 Custom</option>
-                </select>
-                <div style="display:flex;align-items:center;gap:6px;">
-                  <label style="font-size:11px;font-weight:600;color:var(--ts);">COLOR</label>
-                  <input type="color" id="wcal-m-color" value="#3b82f6" style="width:36px;height:32px;border:1px solid var(--bd);border-radius:6px;padding:2px;cursor:pointer;background:var(--bg-in);">
-                </div>
-              </div>
+              <!-- TYPE hidden (preserved in data for backwards compat) -->
+              <input type="hidden" id="wcal-m-type" value="custom">
               <div style="display:flex;gap:8px;margin-bottom:10px;">
                 <div style="flex:1;">
                   <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">START</label>
@@ -3235,7 +3508,13 @@ html,body{background:var(--bg);}
                   <input class="fi" type="time" id="wcal-m-end">
                 </div>
               </div>
-              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:6px;">SUB-TASKS <span style="font-weight:400;opacity:.7;">(set time to pin inside block)</span></label>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <label style="font-size:11px;font-weight:600;color:var(--ts);">SUB-TASKS <span style="font-weight:400;opacity:.7;">(set time to pin inside block)</span></label>
+                <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+                  <label style="font-size:10px;font-weight:600;color:var(--ts);">TASK COLOR</label>
+                  <input type="color" id="wcal-m-color" value="#ffffff" title="Task accent color" style="width:28px;height:24px;border:1px solid var(--bd);border-radius:5px;padding:1px;cursor:pointer;background:var(--bg-in);">
+                </div>
+              </div>
               <div id="wcal-m-tasks" style="margin-bottom:8px;"></div>
               <div style="display:flex;gap:6px;margin-bottom:14px;">
                 <input class="fi" id="wcal-m-add-task" placeholder="Add sub-task..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();wcalAddModalTask();}">
@@ -3337,6 +3616,11 @@ html,body{background:var(--bg);}
             <div style="padding:16px 20px;overflow-y:auto;flex:1;min-height:0;">
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">TITLE</label>
               <input class="fi" id="wcal-ev-title" placeholder="Event title..." style="margin-bottom:10px;">
+              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">CALENDAR</label>
+              <div class="apcal-sel-row" style="margin-bottom:10px;">
+                <div class="apcal-sel-dot" id="wcal-ev-cal-dot"></div>
+                <select class="fi" id="wcal-ev-cal" onchange="apCalUpdateSelDot('wcal-ev-cal','wcal-ev-cal-dot')"></select>
+              </div>
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">DATE</label>
               <input class="fi" type="date" id="wcal-ev-date" style="margin-bottom:10px;">
               <div style="display:flex;gap:8px;margin-bottom:10px;">
@@ -3389,6 +3673,11 @@ html,body{background:var(--bg);}
             <div style="padding:16px 20px;overflow-y:auto;flex:1;min-height:0;">
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">TASK</label>
               <input class="fi" id="wcal-tk-title" placeholder="What needs to get done?" style="margin-bottom:10px;">
+              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">CALENDAR</label>
+              <div class="apcal-sel-row" style="margin-bottom:10px;">
+                <div class="apcal-sel-dot" id="wcal-tk-cal-dot"></div>
+                <select class="fi" id="wcal-tk-cal" onchange="apCalUpdateSelDot('wcal-tk-cal','wcal-tk-cal-dot')"></select>
+              </div>
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">DATE</label>
               <input class="fi" type="date" id="wcal-tk-date" style="margin-bottom:10px;">
               <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">TIME ON CALENDAR</label>
@@ -3888,8 +4177,30 @@ G('h-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',mo
 document.querySelectorAll('input[type=date]').forEach(el=>{if(!el.value)el.value=today;});
 
 // STATE
-let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[],personalTodos:[],calEvents:[]};
+let S={finance:[],trades:[],backtests:[],goals:[],bills:[],todos:[],habits:[],hlog:{},habitStacks:[],hslog:{},projects:[],otherPayments:[],customCategories:[],wants:[],needs:[],routines:{morning:[],midday:[],night:[]},routineLog:{},points:{personal:0,financial:0},milestones:{personalLevel:1,financialLevel:1,claimedRewards:[]},journal:[],timeBlocks:[],personalTodos:[],calEvents:[],dayThemes:{},calendars:[],gcalVisible:true};
 try{const d=localStorage.getItem('lifeOS_v3');if(d)S=Object.assign(S,JSON.parse(d));}catch(e){}
+// Init default calendars on first run
+if(!S.calendars||!S.calendars.length){
+  S.calendars=[
+    {id:'cal_personal',name:'Personal',color:'#007AFF',visible:true},
+    {id:'cal_work',name:'Work',color:'#34C759',visible:true},
+    {id:'cal_health',name:'Health & Fitness',color:'#FF3B30',visible:true},
+    {id:'cal_finance',name:'Finance',color:'#FF9500',visible:true},
+    {id:'cal_goals',name:'Goals',color:'#AF52DE',visible:true},
+    {id:'cal_social',name:'Social',color:'#FF2D55',visible:true},
+  ];
+}
+if(S.gcalVisible===undefined)S.gcalVisible=true;
+// Auto-assign any unassigned blocks/events/tasks to the first calendar
+(function apCalEnsureAssigned(){
+  if(!S.calendars||!S.calendars.length)return;
+  const defaultId=S.calendars[0].id;
+  let changed=false;
+  ['timeBlocks','calEvents','personalTodos'].forEach(key=>{
+    (S[key]||[]).forEach(item=>{if(!item.calendarId){item.calendarId=defaultId;changed=true;}});
+  });
+  if(changed)try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
+})();
 if(!S.otherPayments)S.otherPayments=[];
 if(!S.customCategories)S.customCategories=[];
 if(!S.wants)S.wants=[];
@@ -3969,7 +4280,7 @@ function go(id,el){
   setTimeout(()=>{
     renderAll();
     if(id==='journal')renderJournal();
-    if(id==='planning'){renderMcal();renderProjectOverview();renderEisenhowerMatrix();}
+    if(id==='planning'){if(typeof renderApCal==='function')renderApCal();renderProjectOverview();renderEisenhowerMatrix();}
     setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
   },0);
 }
@@ -8173,7 +8484,7 @@ function switchPlanTab(tab, btn){
   if(btn)btn.classList.add('on');
   const body=G('ptab-'+tab+'-body');
   if(body)body.classList.add('on');
-  if(tab==='calendar'){setTimeout(()=>{renderMcal();renderProjectOverview();renderEisenhowerMatrix();},30);}
+  if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();},30);}
 }
 
 // ── SAVINGS ACCOUNTS ──
@@ -11021,11 +11332,16 @@ const WCAL_START=0, WCAL_END=24; // full 24h
 const WCAL_SLOTS=WCAL_END*2; // 30-min slots (48 total)
 const WCAL_TYPE_COLORS={work:'#3b82f6',personal:'#22c55e',health:'#ef4444',finance:'#f59e0b',custom:'#8b5cf6'};
 const TASK_PRIORITY_COLORS={high:'#ef4444',med:'#f59e0b',low:'#22c55e'};
-
-function wcalSyncTypeColor(){
-  const t=G('wcal-m-type');const c=G('wcal-m-color');
-  if(t&&c&&t.value!=='custom')c.value=WCAL_TYPE_COLORS[t.value]||'#3b82f6';
+function hexToRgba(hex,a){
+  if(!hex||typeof hex!=='string')return hex;
+  const h=hex.replace('#','');
+  const r=parseInt(h.length===3?h[0]+h[0]:h.slice(0,2),16)||0;
+  const g=parseInt(h.length===3?h[1]+h[1]:h.slice(2,4),16)||0;
+  const b=parseInt(h.length===3?h[2]+h[2]:h.slice(4,6),16)||0;
+  return`rgba(${r},${g},${b},${a})`;
 }
+
+function wcalSyncTypeColor(){} // type field removed; color is now task accent
 
 function wcalToggleRecurDays(){
   const v=G('wcal-m-recur')?.value;
@@ -11072,7 +11388,28 @@ function openDayView(dateStr){
   if(!overlay)return;
   panel.classList.remove('closing');
   overlay.classList.add('open');
-  setTimeout(()=>renderTodayCal(),60);
+  setTimeout(()=>{renderTodayCal();setTimeout(()=>dayViewApplyScroll(window.wcalViewDate),320);},60);
+}
+
+function dayViewApplyScroll(dStr){
+  const scroller=document.querySelector('.day-view-scroll');
+  if(!scroller)return;
+  const isToday=dStr===today;
+  let scrollH;
+  if(isToday){
+    scrollH=new Date().getHours()+new Date().getMinutes()/60;
+  } else {
+    const dayBlocks=(S.timeBlocks||[]).filter(b=>b.date===dStr);
+    const gcalHours=(gcalEvents&&gcalEvents.length?gcalEventsForDate(dStr).filter(e=>e.start&&e.start.dateTime).map(e=>{const st=new Date(e.start.dateTime);return st.getHours()+st.getMinutes()/60;}):[]);
+    const allHours=[
+      ...dayBlocks.map(b=>b.startHour),
+      ...(S.calEvents||[]).filter(e=>e.date===dStr).map(e=>e.startHour),
+      ...(S.personalTodos||[]).filter(t=>t.calDate===dStr&&t.calHour!=null).map(t=>t.calHour),
+      ...gcalHours
+    ];
+    scrollH=allHours.length?Math.min(...allHours):9;
+  }
+  scroller.scrollTop=Math.max(0,(scrollH-0.75)*80);
 }
 
 function closeDayView(){
@@ -11119,32 +11456,32 @@ function renderTodayCal(){
   dayBlocks.forEach(b=>{
     const top=28+(b.startHour*2)*40;
     const height=((b.endHour-b.startHour)*2)*40;
-    const blockColor=b.color||WCAL_TYPE_COLORS[b.type||'work']||'#3b82f6';
+    const calC=(typeof calColor==='function'?calColor(b.calendarId):null)||WCAL_TYPE_COLORS[b.type||'work']||'#3b82f6';
+    const taskAccent=b.taskAccentColor||'rgba(255,255,255,0.9)';
+    const bgColor=hexToRgba(calC,0.5);
     const allTasks=b.tasks||[];
-    // Sort: timed first by time, then untimed
     const timed=allTasks.filter(t=>t.scheduledTime).sort((a,z)=>a.scheduledTime.localeCompare(z.scheduledTime));
     const untimed=allTasks.filter(t=>!t.scheduledTime);
-    // Task pills: absolutely positioned over the block at 100% opacity
-    const TITLE_H=26; // px reserved for the block title row
+    const TITLE_H=26;
     const timedPills=timed.map(t=>{
       const th=wcalTimeToHour(t.scheduledTime);
       const offset=Math.round((th-b.startHour)*80);
       return`<div style="position:absolute;left:0;right:0;top:${Math.max(TITLE_H,offset)}px;z-index:3;padding:0 4px;">
-        <div style="background:rgba(0,0,0,0.72);color:#fff;border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.scheduledTime} · ${t.text}${t.done?' ✓':''}</div>
+        <div style="background:${hexToRgba(calC,0.85)};color:#fff;border-left:2px solid ${taskAccent};border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.scheduledTime} · ${t.text}${t.done?' ✓':''}</div>
       </div>`;
     }).join('');
     const untimedPills=untimed.map((t,ti)=>{
       const offset=TITLE_H+(timed.length*22)+(ti*22);
       return`<div style="position:absolute;left:0;right:0;top:${offset}px;z-index:3;padding:0 4px;">
-        <div style="background:rgba(0,0,0,0.60);color:#fff;border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.done?'✓ ':''}${t.text}</div>
+        <div style="background:${hexToRgba(calC,0.7)};color:#fff;border-radius:4px;font-size:11px;font-weight:700;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.done?'✓ ':''}${t.text}</div>
       </div>`;
     }).join('');
     html+=`<div data-block-id="${b.id}" style="position:absolute;top:${top}px;height:${Math.max(height,20)}px;left:2px;right:2px;z-index:1;cursor:grab;touch-action:none;user-select:none;"
       onpointerdown="wcalBlockDragStart(event,'${b.id}')"
       onclick="event.stopPropagation();if(!window._wcalDragMoved)wcalOpenDetail('${b.id}')">
-      <div style="position:absolute;inset:0;background:${blockColor};opacity:0.5;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.15);transition:box-shadow .1s;"></div>
+      <div style="position:absolute;inset:0;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,0.12);transition:box-shadow .1s;"></div>
       <div style="position:absolute;inset:0;padding:4px 6px 4px;overflow:hidden;">
-        <div style="font-size:14px;font-weight:800;color:rgba(0,0,0,0.82);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2;margin-bottom:4px;letter-spacing:-0.01em;">${b.title||'Untitled'}</div>
+        <div style="font-size:13px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;z-index:2;margin-bottom:4px;letter-spacing:-0.01em;text-shadow:0 1px 3px rgba(0,0,0,0.4);">${b.title||'Untitled'}</div>
         ${timedPills}${untimedPills}
       </div>
     </div>`;
@@ -11195,18 +11532,8 @@ function renderTodayCal(){
   html+=`</div>`;
   wrap.innerHTML=html;
 
-  // Auto-scroll to earliest item or current time
-  const scroller=wrap.closest('.today-cal-scroll');
-  if(scroller){
-    const nowH=new Date().getHours()+new Date().getMinutes()/60;
-    const allHours=[
-      ...dayBlocks.map(b=>b.startHour),
-      ...(S.calEvents||[]).filter(e=>e.date===dStr).map(e=>e.startHour),
-      ...(S.personalTodos||[]).filter(t=>t.calDate===dStr&&t.calHour!=null).map(t=>t.calHour)
-    ];
-    const earliest=allHours.length?Math.min(...allHours):nowH;
-    scroller.scrollTop=Math.max(0,earliest-0.5)*80;
-  }
+  // Auto-scroll: snap to current time for today, first event for other days
+  dayViewApplyScroll(dStr);
 
   // Current time indicator
   wcalUpdateTimeIndicator();
@@ -11276,7 +11603,7 @@ function wcalBlockDragEnd(e){
     if(block){
       block.startHour=clamped;
       block.endHour=Math.round((clamped+duration)*2)/2;
-      save();renderTodayCal();renderMcal();
+      save();renderTodayCal();if(typeof renderApCal==="function")renderApCal();
     }
     // prevent onclick firing
     setTimeout(()=>{window._wcalDragMoved=false;},50);
@@ -11324,6 +11651,7 @@ function wcalOpenEventModal(date,hour,existingId){
   G('wcal-ev-cat').value=ev?ev.cat:'meeting';
   G('wcal-ev-notes').value=ev?ev.notes:'';
   G('wcal-ev-delete-btn').style.display=ev?'inline-flex':'none';
+  if(typeof populateCalendarDropdown==='function')populateCalendarDropdown('wcal-ev-cal',ev?.calendarId);
   const o=G('wcal-event-overlay');if(o)o.classList.add('open');
 }
 function wcalCloseEventModal(){
@@ -11340,19 +11668,20 @@ function wcalSaveEvent(){
   const color=G('wcal-ev-color').value;
   const cat=G('wcal-ev-cat').value;
   const notes=G('wcal-ev-notes').value.trim();
+  const evCalId=G('wcal-ev-cal')?.value||(S.calendars&&S.calendars[0]?.id)||undefined;
   if(!S.calEvents)S.calEvents=[];
   if(wcalEditingEventId){
     const idx=S.calEvents.findIndex(e=>e.id===wcalEditingEventId);
-    if(idx>=0)S.calEvents[idx]={...S.calEvents[idx],title,date,startHour,endHour,color,cat,notes};
+    if(idx>=0)S.calEvents[idx]={...S.calEvents[idx],title,date,startHour,endHour,color,cat,notes,calendarId:evCalId||S.calEvents[idx].calendarId};
   } else {
-    S.calEvents.push({id:'ev'+Date.now(),title,date,startHour,endHour,color,cat,notes,source:'manual'});
+    S.calEvents.push({id:'ev'+Date.now(),title,date,startHour,endHour,color,cat,notes,calendarId:evCalId,source:'manual'});
   }
-  save();wcalCloseEventModal();renderTodayCal();renderMcal();
+  save();wcalCloseEventModal();renderTodayCal();if(typeof renderApCal==="function")renderApCal();
 }
 function wcalDeleteEvent(){
   if(!wcalEditingEventId||!confirm('Delete this event?'))return;
   S.calEvents=(S.calEvents||[]).filter(e=>e.id!==wcalEditingEventId);
-  save();wcalCloseEventModal();renderTodayCal();renderMcal();
+  save();wcalCloseEventModal();renderTodayCal();if(typeof renderApCal==="function")renderApCal();
 }
 
 // ── TASK MODAL ──
@@ -11368,6 +11697,7 @@ function wcalOpenTaskModal(date,hour,existingId){
   G('wcal-tk-priority').value=tk?tk.priority||'med':'med';
   G('wcal-tk-notes').value=tk?tk.calNotes||'':'';
   G('wcal-tk-delete-btn').style.display=tk?'inline-flex':'none';
+  if(typeof populateCalendarDropdown==='function')populateCalendarDropdown('wcal-tk-cal',tk?.calendarId);
   const o=G('wcal-task-overlay');if(o)o.classList.add('open');
 }
 function wcalCloseTaskModal(){
@@ -11382,20 +11712,21 @@ function wcalSaveTask(){
   const priority=G('wcal-tk-priority').value;
   const calNotes=G('wcal-tk-notes').value.trim();
   if(!text||!calDate){alert('Fill in the task name and date.');return;}
+  const tkCalId=G('wcal-tk-cal')?.value||(S.calendars&&S.calendars[0]?.id)||undefined;
   if(!S.personalTodos)S.personalTodos=[];
   if(wcalEditingTaskId){
     const t=S.personalTodos.find(t=>t.id===wcalEditingTaskId);
-    if(t)Object.assign(t,{text,calDate,calHour,priority,calNotes});
+    if(t)Object.assign(t,{text,calDate,calHour,priority,calNotes,calendarId:tkCalId||t.calendarId});
   } else {
-    S.personalTodos.push({id:Date.now(),text,done:false,calDate,calHour,priority,calNotes});
+    S.personalTodos.push({id:Date.now(),text,done:false,calDate,calHour,priority,calNotes,calendarId:tkCalId});
   }
-  save();wcalCloseTaskModal();renderTodayCal();renderMcal();renderPersonalTodos();
+  save();wcalCloseTaskModal();renderTodayCal();if(typeof renderApCal==="function")renderApCal();renderPersonalTodos();
 }
 function wcalDeleteCalTask(){
   if(!wcalEditingTaskId||!confirm('Remove this task from the calendar?'))return;
   const t=S.personalTodos.find(t=>t.id===wcalEditingTaskId);
   if(t){delete t.calDate;delete t.calHour;}
-  save();wcalCloseTaskModal();renderTodayCal();renderMcal();renderPersonalTodos();
+  save();wcalCloseTaskModal();renderTodayCal();if(typeof renderApCal==="function")renderApCal();renderPersonalTodos();
 }
 
 // ── BLOCK DETAIL PANEL ──
@@ -11454,7 +11785,7 @@ function wcalDetailToggleTask(idx){
   block.tasks[idx].done=!block.tasks[idx].done;
   save();
   wcalDetailRenderTasks(block);
-  renderTodayCal();renderMcal();
+  renderTodayCal();if(typeof renderApCal==="function")renderApCal();
 }
 
 function wcalDetailOpenEdit(){
@@ -11503,22 +11834,36 @@ function wcalOpenModal(date, hour, existingId){
     if(dateEl)dateEl.value=block.date||'';
     if(startEl)startEl.value=wcalHourToTime(block.startHour);
     if(endEl)endEl.value=wcalHourToTime(block.endHour);
-    wcalModalType=block.type||'work';
+    wcalModalType=block.type||'custom';
     if(typeEl)typeEl.value=wcalModalType;
-    if(colorEl)colorEl.value=block.color||WCAL_TYPE_COLORS[wcalModalType]||'#3b82f6';
+    if(colorEl)colorEl.value=block.taskAccentColor||block.color||'#ffffff';
     if(deleteBtn)deleteBtn.style.display='inline-flex';
     if(taskListEl)wcalRenderModalTasks(block.tasks||[]);
+    if(typeof populateCalendarDropdown==='function')populateCalendarDropdown('wcal-m-cal',block.calendarId);
+    // Show sync banner if block is linked
+    const banner=G('wcal-link-banner');
+    if(block.linkId){
+      const linkedCount=(S.timeBlocks||[]).filter(b=>b.linkId===block.linkId&&b.id!==block.id).length;
+      const info=G('wcal-link-info');
+      if(info)info.textContent=`Synced with ${linkedCount} other block${linkedCount!==1?'s':''}`;
+      const syncCb=G('wcal-sync-all');if(syncCb)syncCb.checked=true;
+      if(banner)banner.style.display='flex';
+    } else {
+      if(banner)banner.style.display='none';
+    }
   } else {
     G('wcal-modal-hdr-title').textContent='Add Block';
     if(titleEl)titleEl.value='';
     if(dateEl)dateEl.value=date||today;
     if(startEl)startEl.value=wcalHourToTime(hour||8);
     if(endEl)endEl.value=wcalHourToTime((hour||8)+1);
-    wcalModalType='work';
-    if(typeEl)typeEl.value='work';
-    if(colorEl)colorEl.value=WCAL_TYPE_COLORS.work;
+    wcalModalType='custom';
+    if(typeEl)typeEl.value='custom';
+    if(colorEl)colorEl.value='#ffffff';
     if(deleteBtn)deleteBtn.style.display='none';
     if(taskListEl)taskListEl.innerHTML='';
+    if(typeof populateCalendarDropdown==='function')populateCalendarDropdown('wcal-m-cal',null);
+    const banner=G('wcal-link-banner');if(banner)banner.style.display='none';
   }
   if(addTaskEl)addTaskEl.value='';
   if(recurEl)recurEl.value='none';
@@ -11596,7 +11941,7 @@ function wcalSetTaskTime(idx,val){
     block.tasks[idx].scheduledTime=val||'';
     // Re-sort: timed tasks float to top by time
     block.tasks=wcalSortTasks(block.tasks);
-    save();wcalRenderModalTasks(block.tasks);renderTodayCal();renderMcal();
+    save();wcalRenderModalTasks(block.tasks);renderTodayCal();if(typeof renderApCal==="function")renderApCal();
   }
 }
 
@@ -11629,7 +11974,7 @@ function wcalToggleTask(idx){
   const block=(S.timeBlocks||[]).find(b=>b.id===wcalEditingId);
   if(block&&block.tasks&&block.tasks[idx]){
     block.tasks[idx].done=!block.tasks[idx].done;
-    save();renderTodayCal();renderMcal();
+    save();renderTodayCal();if(typeof renderApCal==="function")renderApCal();
   }
 }
 
@@ -11665,8 +12010,8 @@ function wcalSaveBlock(){
 
   const title=titleEl.value.trim();
   const date=dateEl.value;
-  wcalModalType=typeEl?typeEl.value:'work';
-  const color=colorEl?colorEl.value:(WCAL_TYPE_COLORS[wcalModalType]||'#3b82f6');
+  wcalModalType=typeEl?typeEl.value:'custom';
+  const taskAccentColor=colorEl?colorEl.value:'#ffffff';
   const startVal=startEl.value, endVal=endEl.value;
 
   if(!title){alert('Please add a title.');return;}
@@ -11704,28 +12049,44 @@ function wcalSaveBlock(){
     });
   }
 
+  const blkCalId=G('wcal-m-cal')?.value||(S.calendars&&S.calendars[0]?.id)||undefined;
+  const syncAll=!!(G('wcal-sync-all')?.checked&&savedBlock?.linkId);
+
   if(wcalEditingId&&savedBlock){
-    // Update existing block
-    const idx=S.timeBlocks.indexOf(savedBlock);
-    S.timeBlocks[idx]={...savedBlock,title,date,startHour,endHour,type:wcalModalType,color,tasks};
-    // Apply recurrence: create copies on other days (never duplicate existing)
+    const calId=blkCalId||savedBlock.calendarId;
+    if(syncAll){
+      S.timeBlocks.forEach((b,i)=>{
+        if(b.linkId===savedBlock.linkId){
+          const mergedTasks=tasks.map(t=>{
+            const prev=(b.tasks||[]).find(pt=>pt.text===t.text);
+            return{...t,done:prev?prev.done:false};
+          });
+          S.timeBlocks[i]={...b,title,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:mergedTasks,calendarId:calId};
+        }
+      });
+    } else {
+      const idx=S.timeBlocks.indexOf(savedBlock);
+      S.timeBlocks[idx]={...savedBlock,title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,calendarId:calId};
+    }
     if(recur!=='none'){
       const existingRecurId=savedBlock.recurId||('ri'+Date.now());
-      S.timeBlocks[idx].recurId=existingRecurId;
+      const linkId=savedBlock.linkId||existingRecurId;
+      const idx=S.timeBlocks.findIndex(b=>b.id===wcalEditingId);
+      if(idx>=0){S.timeBlocks[idx].recurId=existingRecurId;S.timeBlocks[idx].linkId=linkId;}
       const existingDates=new Set(S.timeBlocks.filter(b=>b.recurId===existingRecurId).map(b=>b.date));
       wcalGetRecurDates(date,recur,weeks,pickedDays).forEach((rd,i)=>{
         if(!existingDates.has(rd)){
-          S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,color,tasks:tasks.map(t=>({...t,done:false})),recurId:existingRecurId});
+          S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId:existingRecurId,linkId,calendarId:calId});
         }
       });
     }
   } else {
-    // New block
     const recurId=recur!=='none'?('ri'+Date.now()):null;
-    S.timeBlocks.push({id:'tb'+Date.now(),title,date,startHour,endHour,type:wcalModalType,color,tasks,recurId});
+    const linkId=recurId;
+    S.timeBlocks.push({id:'tb'+Date.now(),title,date,startHour,endHour,type:wcalModalType,taskAccentColor,tasks,recurId,linkId,calendarId:blkCalId});
     if(recur!=='none'){
       wcalGetRecurDates(date,recur,weeks,pickedDays).forEach((rd,i)=>{
-        S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,color,tasks:tasks.map(t=>({...t,done:false})),recurId});
+        S.timeBlocks.push({id:'tb'+(Date.now()+i+1),title,date:rd,startHour,endHour,type:wcalModalType,taskAccentColor,tasks:tasks.map(t=>({...t,done:false})),recurId,linkId,calendarId:blkCalId});
       });
     }
   }
@@ -11733,8 +12094,25 @@ function wcalSaveBlock(){
   save();
   closeWcalModal();
   renderTodayCal();
-  renderMcal();
+  if(typeof renderApCal==="function")renderApCal();
   wcalShowSavedToast();
+}
+
+function wcalUnlinkBlock(){
+  const block=(S.timeBlocks||[]).find(b=>b.id===wcalEditingId);
+  if(!block)return;
+  delete block.linkId;
+  save();
+  const banner=G('wcal-link-banner');if(banner)banner.style.display='none';
+  renderTodayCal();if(typeof renderApCal==='function')renderApCal();
+  wcalShowSavedToast();
+}
+
+// Link two or more separate blocks together manually (called externally)
+function wcalLinkBlocks(ids){
+  const linkId='lk'+Date.now();
+  (S.timeBlocks||[]).forEach(b=>{if(ids.includes(b.id))b.linkId=linkId;});
+  save();if(typeof renderApCal==='function')renderApCal();
 }
 
 function wcalShowSavedToast(){
@@ -11758,7 +12136,7 @@ function wcalDeleteBlock(){
   S.timeBlocks=(S.timeBlocks||[]).filter(b=>b.id!==wcalEditingId);
   save();
   closeWcalModal();
-  renderTodayCal();renderMcal();
+  renderTodayCal();if(typeof renderApCal==="function")renderApCal();
 }
 
 // Refresh time indicator every minute
@@ -11902,11 +12280,11 @@ async function gcalFetchEvents(){
     const items = Array.isArray(raw) ? raw : (raw.data || []);
     gcalEvents = items.map(i => i.json || i).filter(e => e && e.start && (e.start.dateTime || e.start.date));
     if(statusEl) statusEl.innerHTML = '<span style="color:var(--green);font-weight:700;">● Connected</span> — ' + gcalEvents.length + ' events loaded.';
-    renderTodayCal(); renderMcal();
+    renderTodayCal(); if(typeof renderApCal==="function")renderApCal();
   } catch(e){
     console.error('gcalFetchEvents', e);
     if(statusEl) statusEl.innerHTML = '<span style="color:var(--red);">⚠ Could not reach n8n.</span> Make sure the workflow is published.';
-    renderMcal();
+    if(typeof renderApCal==="function")renderApCal();
   }
 }
 
@@ -11926,9 +12304,9 @@ setTimeout(gcalFetchEvents, 300);
 let mcalYear=new Date().getFullYear(),mcalMonth=new Date().getMonth(),mcalSelDay=null;
 const MCAL_PALETTE=['#4285f4','#0f9d58','#db4437','#f4b400','#ab47bc','#00acc1','#ff7043','#9e9d24','#795548','#607d8b'];
 
-function mcalPrev(){mcalMonth--;if(mcalMonth<0){mcalMonth=11;mcalYear--;}mcalSelDay=null;mcalExpandFetch();renderMcal();}
-function mcalNext(){mcalMonth++;if(mcalMonth>11){mcalMonth=0;mcalYear++;}mcalSelDay=null;mcalExpandFetch();renderMcal();}
-function mcalGoToday(){const n=new Date();mcalYear=n.getFullYear();mcalMonth=n.getMonth();mcalSelDay=null;mcalExpandFetch();renderMcal();}
+function mcalPrev(){mcalMonth--;if(mcalMonth<0){mcalMonth=11;mcalYear--;}mcalSelDay=null;mcalExpandFetch();if(typeof renderApCal==="function")renderApCal();}
+function mcalNext(){mcalMonth++;if(mcalMonth>11){mcalMonth=0;mcalYear++;}mcalSelDay=null;mcalExpandFetch();if(typeof renderApCal==="function")renderApCal();}
+function mcalGoToday(){const n=new Date();mcalYear=n.getFullYear();mcalMonth=n.getMonth();mcalSelDay=null;mcalExpandFetch();if(typeof renderApCal==="function")renderApCal();}
 
 function mcalExpandFetch(){
   const hasData=gcalEvents.some(e=>{
@@ -11997,7 +12375,7 @@ function mcalItemsForDay(y,m,d){
 
 function mcalSelectDay(y,m,d){
   mcalSelDay={y,m,d};
-  renderMcal();
+  if(typeof renderApCal==="function")renderApCal();
   const dateStr=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
   openDayView(dateStr);
 }
@@ -12263,6 +12641,838 @@ if (_origTaskCheck) {
 (async () => {
   const mems = await loadMemories();
   if (mems.length) console.log(`[Memory] Loaded ${mems.length} entries (DataTable + Postgres active)`);
+})();
+
+/* ════════════════════════════════════════════
+   APPLE CALENDAR — week / day / month view
+   ════════════════════════════════════════════ */
+(function(){
+  const DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const MONTHS_FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const SLOT_H=60; // px per hour
+  // Apple-style color palette (matches Apple Calendar)
+  const CAL_PALETTE=['#FF3B30','#FF6B00','#FF9500','#FFCC00','#34C759','#00C7BE','#007AFF','#5856D6','#AF52DE','#FF2D55','#A2845E','#8E8E93'];
+  const CHK_SVG=`<svg width="9" height="7" viewBox="0 0 9 7" fill="none"><polyline points="1,3.5 3.5,6 8,1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+  // Calendar visibility helpers
+  function calIsVisible(calId){
+    const cals=S.calendars||[];
+    if(!calId){
+      // Unassigned item: visible only if at least one calendar is on
+      return cals.some(c=>c.visible!==false);
+    }
+    const c=cals.find(c=>c.id===calId);
+    return c?(c.visible!==false):true;
+  }
+  function calColor(calId){
+    if(!calId)return null;
+    const c=(S.calendars||[]).find(c=>c.id===calId);
+    return c?c.color:null;
+  }
+  function resolveColor(item,fallback){
+    if(item.color)return item.color;
+    return calColor(item.calendarId)||fallback;
+  }
+
+  // State — default to day on mobile, week on desktop
+  let apView=window.innerWidth<=700?'day':'week';
+  // Sunday of the current week
+  function getWeekSunday(d){
+    const dt=new Date(d);
+    dt.setHours(12,0,0,0);
+    dt.setDate(dt.getDate()-dt.getDay());
+    return dt;
+  }
+  let apWeekStart=getWeekSunday(new Date());
+  let apDayDate=new Date(); apDayDate.setHours(12,0,0,0);
+  let apMiniYear=new Date().getFullYear();
+  let apMiniMonth=new Date().getMonth();
+
+  function dateStr(d){
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  }
+  function todayStr(){return dateStr(new Date());}
+  function addDays(d,n){const r=new Date(d);r.setDate(r.getDate()+n);return r;}
+
+  function apCalToday(){
+    const n=new Date();
+    apWeekStart=getWeekSunday(n);
+    apDayDate=new Date(n); apDayDate.setHours(12,0,0,0);
+    apMiniYear=n.getFullYear();
+    apMiniMonth=n.getMonth();
+    renderApCal();
+  }
+  function apCalPrev(){
+    if(apView==='week'){apWeekStart=addDays(apWeekStart,-7);}
+    else if(apView==='day'){apDayDate=addDays(apDayDate,-1);}
+    else if(apView==='year'){apMiniYear--;}
+    else{apMiniMonth--;if(apMiniMonth<0){apMiniMonth=11;apMiniYear--;}}
+    renderApCal();
+  }
+  function apCalNext(){
+    if(apView==='week'){apWeekStart=addDays(apWeekStart,7);}
+    else if(apView==='day'){apDayDate=addDays(apDayDate,1);}
+    else if(apView==='year'){apMiniYear++;}
+    else{apMiniMonth++;if(apMiniMonth>11){apMiniMonth=0;apMiniYear++;}}
+    renderApCal();
+  }
+  function apCalMiniPrev(){apMiniMonth--;if(apMiniMonth<0){apMiniMonth=11;apMiniYear--;}renderApMini();}
+  function apCalMiniNext(){apMiniMonth++;if(apMiniMonth>11){apMiniMonth=0;apMiniYear++;}renderApMini();}
+
+  function apSetView(v){
+    apView=v;
+    ['day','week','month','year'].forEach(x=>{
+      const b=document.getElementById('apcal-vb-'+x);
+      if(b)b.classList.toggle('active',x===v);
+    });
+    const hdr=document.getElementById('apcal-week-hdr');
+    const allday=document.getElementById('apcal-allday-row');
+    const timeView=v==='day'||v==='week';
+    if(hdr)hdr.style.display=timeView?'':'none';
+    if(allday)allday.style.display=timeView?'':'none';
+    renderApCal();
+  }
+
+  /* ── CALENDAR MANAGEMENT ── */
+  function renderApCalSidebar(){
+    const el=document.getElementById('apcal-cals-section');
+    if(!el)return;
+    const cals=S.calendars||[];
+    const gcalVis=S.gcalVisible!==false;
+    function rowHtml(id,name,color,on,showOpts){
+      const bdr=on?color:'var(--bd2)';
+      return`<div class="apcal-cal-row${on?'':' dim'}">
+        <div class="apcal-cal-chk${on?' on':''}" style="--chk-c:${color};border-color:${bdr};" onclick="apCalToggleCal('${id}')">${CHK_SVG}</div>
+        <span class="apcal-cal-lbl" onclick="${showOpts?`apCalOpenMgmt('${id}')`:''}">${name}</span>
+        ${showOpts?`<button class="apcal-cal-opts" onclick="apCalOpenMgmt('${id}')">•••</button>`:''}
+      </div>`;
+    }
+    let html=`<div class="apcal-sb-sec">
+      <div class="apcal-sb-sec-hdr"><span>My Calendars</span><button class="apcal-sb-add-btn" onclick="apCalOpenMgmt(null)" title="Add Calendar">+</button></div>`;
+    cals.forEach(c=>{ html+=rowHtml(c.id,c.name,c.color,c.visible!==false,true); });
+    html+=`</div><div class="apcal-sb-sec">
+      <div class="apcal-sb-sec-hdr"><span>Other</span></div>
+      ${rowHtml('_gcal','Google Calendar','#4285f4',gcalVis,false)}
+    </div>`;
+    el.innerHTML=html;
+  }
+
+  function apCalToggleCal(id){
+    if(id==='_gcal'){S.gcalVisible=S.gcalVisible===false?true:false;}
+    else{const c=(S.calendars||[]).find(c=>c.id===id);if(c)c.visible=!c.visible;}
+    save();renderApCalSidebar();renderApCal();
+  }
+
+  /* Calendar CRUD */
+  let _mgmtId=null,_mgmtColor=CAL_PALETTE[6];
+  function apCalOpenMgmt(calId,e){
+    if(e)e.stopPropagation();
+    _mgmtId=calId;
+    const cal=calId?(S.calendars||[]).find(c=>c.id===calId):null;
+    _mgmtColor=cal?cal.color:CAL_PALETTE[6];
+    const pop=document.getElementById('apcal-mgmt-pop');
+    if(!pop)return;
+    document.getElementById('apcal-mgmt-title').textContent=cal?'Edit Calendar':'New Calendar';
+    document.getElementById('apcal-mgmt-name').value=cal?cal.name:'';
+    const del=document.getElementById('apcal-mgmt-del');
+    if(del)del.style.display=cal?'':'none';
+    const pal=document.getElementById('apcal-mgmt-palette');
+    if(pal)pal.innerHTML=CAL_PALETTE.map(c=>`<div class="apcal-mgmt-sw${c===_mgmtColor?' sel':''}" style="background:${c};--sw-sel:${c};" onclick="apCalPickMgmtColor('${c}',this)"></div>`).join('');
+    // position next to sidebar
+    const sb=document.getElementById('apcal-sb');
+    const sbRect=sb?sb.getBoundingClientRect():{right:200,top:120};
+    pop.style.left=(sbRect.right+6)+'px';
+    pop.style.top=Math.min(sbRect.top+80,window.innerHeight-320)+'px';
+    pop.classList.add('open');
+    setTimeout(()=>document.addEventListener('click',_mgmtOutside,{once:true}),20);
+    document.getElementById('apcal-mgmt-name').focus();
+  }
+  function _mgmtOutside(ev){
+    const pop=document.getElementById('apcal-mgmt-pop');
+    if(pop&&!pop.contains(ev.target))pop.classList.remove('open');
+    else document.addEventListener('click',_mgmtOutside,{once:true});
+  }
+  function apCalPickMgmtColor(c,el){
+    _mgmtColor=c;
+    document.querySelectorAll('.apcal-mgmt-sw').forEach(s=>s.classList.remove('sel'));
+    if(el){el.classList.add('sel');el.style.setProperty('--sw-sel',c);}
+  }
+  function apCalSaveMgmt(){
+    const name=(document.getElementById('apcal-mgmt-name')?.value||'').trim();
+    if(!name)return;
+    if(!S.calendars)S.calendars=[];
+    if(_mgmtId){
+      const c=S.calendars.find(c=>c.id===_mgmtId);
+      if(c){c.name=name;c.color=_mgmtColor;}
+    } else {
+      S.calendars.push({id:'cal_'+Date.now(),name,color:_mgmtColor,visible:true});
+    }
+    save();
+    document.getElementById('apcal-mgmt-pop')?.classList.remove('open');
+    renderApCalSidebar();renderApCal();populateAllCalDropdowns();
+  }
+  function apCalDeleteCal(){
+    if(!_mgmtId)return;
+    const cal=(S.calendars||[]).find(c=>c.id===_mgmtId);
+    const blkCount=(S.timeBlocks||[]).filter(b=>b.calendarId===_mgmtId).length;
+    const evCount=(S.calEvents||[]).filter(e=>e.calendarId===_mgmtId).length;
+    const tkCount=(S.personalTodos||[]).filter(t=>t.calendarId===_mgmtId).length;
+    const total=blkCount+evCount+tkCount;
+    const msg=total>0
+      ?`Delete "${cal?.name}" and permanently remove all ${total} associated item${total!==1?'s':''}?\n\nThis cannot be undone.`
+      :`Delete calendar "${cal?.name}"?`;
+    if(!confirm(msg))return;
+    // Remove the calendar
+    S.calendars=(S.calendars||[]).filter(c=>c.id!==_mgmtId);
+    // Delete ALL items that belong to this calendar
+    S.timeBlocks=(S.timeBlocks||[]).filter(b=>b.calendarId!==_mgmtId);
+    S.calEvents=(S.calEvents||[]).filter(e=>e.calendarId!==_mgmtId);
+    S.personalTodos=(S.personalTodos||[]).filter(t=>t.calendarId!==_mgmtId);
+    save();
+    document.getElementById('apcal-mgmt-pop')?.classList.remove('open');
+    renderApCalSidebar();renderApCal();populateAllCalDropdowns();
+  }
+  function apCalCloseMgmt(){document.getElementById('apcal-mgmt-pop')?.classList.remove('open');}
+
+  /* Calendar dropdown helpers for modals */
+  function populateCalendarDropdown(selId,currentCalId){
+    const sel=document.getElementById(selId);
+    if(!sel)return;
+    const cals=S.calendars||[];
+    // Default to currentCalId, then first calendar — every item must have a calendar
+    const defaultId=currentCalId||(cals[0]?.id)||'';
+    sel.innerHTML=cals.map(c=>`<option value="${c.id}"${c.id===defaultId?' selected':''}>${c.name}</option>`).join('');
+    const dotId=selId.replace('-cal','-cal-dot');
+    apCalUpdateSelDot(selId,dotId);
+  }
+  function apCalUpdateSelDot(selId,dotId){
+    const sel=document.getElementById(selId);
+    const dot=document.getElementById(dotId);
+    if(!sel||!dot)return;
+    const c=(S.calendars||[]).find(c=>c.id===sel.value);
+    dot.style.background=c?c.color:'var(--bd2)';
+  }
+  function populateAllCalDropdowns(){
+    // called whenever S.calendars changes
+    ['wcal-m-cal','wcal-ev-cal','wcal-tk-cal'].forEach(id=>{
+      const sel=document.getElementById(id);
+      if(sel&&sel.offsetParent)populateCalendarDropdown(id,sel.value);
+    });
+  }
+
+  function apCalAddClick(){
+    const dStr=apView==='day'?dateStr(apDayDate):dateStr(apWeekStart);
+    wcalShowPicker(dStr,9);
+  }
+
+  // Get all items for a date string, filtered by calendar visibility
+  function apItemsForDay(dStr){
+    const out={blocks:[],events:[],tasks:[],gcal:[]};
+    (S.timeBlocks||[]).filter(b=>{
+      if(!calIsVisible(b.calendarId))return false;
+      if(b.date===dStr)return true;
+      if(b.recur&&b.recur!=='none'){
+        const dates=wcalGetRecurDates(b.date,b.recur,b.recurWeeks,b.recurDays);
+        return dates.includes(dStr);
+      }
+      return false;
+    }).forEach(b=>out.blocks.push(b));
+    (S.calEvents||[]).filter(e=>e.date===dStr&&calIsVisible(e.calendarId)).forEach(e=>out.events.push(e));
+    (S.personalTodos||[]).filter(t=>t.calDate===dStr&&t.calHour!=null&&calIsVisible(t.calendarId)).forEach(t=>out.tasks.push(t));
+    if(S.gcalVisible!==false&&window.gcalEvents){
+      (typeof gcalEventsForDate==='function'?gcalEventsForDate(dStr):[]).forEach(e=>out.gcal.push(e));
+    }
+    return out;
+  }
+
+  function apAllDayForDay(dStr){
+    const out=[];
+    if(S.gcalVisible!==false&&window.gcalEvents){
+      (typeof gcalEventsForDate==='function'?gcalEventsForDate(dStr):[]).filter(e=>e.start&&e.start.date&&!e.start.dateTime).forEach(e=>out.push({title:e.summary||'(no title)',color:'#4285f4'}));
+    }
+    (S.calEvents||[]).filter(e=>e.date===dStr&&e.startHour==null&&calIsVisible(e.calendarId)).forEach(e=>out.push({title:e.title,color:resolveColor(e,'#8b5cf6')}));
+    return out;
+  }
+
+  function fmtHour(h){
+    if(h===0)return'12am';
+    if(h<12)return h+'am';
+    if(h===12)return'12pm';
+    return(h-12)+'pm';
+  }
+
+  /* ---- Mini month sidebar ---- */
+  function renderApMini(){
+    const miniLbl=document.getElementById('apcal-mini-lbl');
+    const miniGrid=document.getElementById('apcal-mini-grid');
+    if(!miniLbl||!miniGrid)return;
+    miniLbl.textContent=MONTHS_FULL[apMiniMonth]+' '+apMiniYear;
+    const firstDay=new Date(apMiniYear,apMiniMonth,1).getDay();
+    const daysInMonth=new Date(apMiniYear,apMiniMonth+1,0).getDate();
+    const prevDays=new Date(apMiniYear,apMiniMonth,0).getDate();
+    const tStr=todayStr();
+    // week range for highlighting
+    const wStart=dateStr(apWeekStart);
+    const wEnd=dateStr(addDays(apWeekStart,6));
+    let html=DAYS.map(d=>`<div class="apcal-mini-dow">${d[0]}</div>`).join('');
+    // prev month fill
+    for(let i=0;i<firstDay;i++){
+      const d=prevDays-firstDay+1+i;
+      html+=`<div class="apcal-mini-day other-m">${d}</div>`;
+    }
+    for(let d=1;d<=daysInMonth;d++){
+      const ds=apMiniYear+'-'+String(apMiniMonth+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const isToday=ds===tStr;
+      const inWeek=apView==='week'&&ds>=wStart&&ds<=wEnd;
+      const isDay=apView==='day'&&ds===dateStr(apDayDate);
+      let cls='apcal-mini-day';
+      if(isToday)cls+=' today-mini';
+      else if(isDay)cls+=' selected-mini';
+      else if(inWeek)cls+=' in-week';
+      html+=`<div class="${cls}" onclick="apCalJumpToDate('${ds}')">${d}</div>`;
+    }
+    const remaining=(7-((firstDay+daysInMonth)%7))%7;
+    for(let d=1;d<=remaining;d++)html+=`<div class="apcal-mini-day other-m">${d}</div>`;
+    miniGrid.innerHTML=html;
+  }
+
+  /* ---- Week header ---- */
+  function renderApWeekHdr(days){
+    const el=document.getElementById('apcal-week-hdr');
+    if(!el)return;
+    const wNum=getWeekNumber(days[0]);
+    let html=`<div class="apcal-wk-gutter"><span class="apcal-wk-num">W${wNum}</span></div>`;
+    const tStr=todayStr();
+    days.forEach(d=>{
+      const ds=dateStr(d);
+      const isToday=ds===tStr;
+      const isWknd=d.getDay()===0||d.getDay()===6;
+      html+=`<div class="apcal-wk-day-col${isToday?' is-today':''}${isWknd?' is-weekend':''}" onclick="apCalJumpToDate('${ds}')">
+        <div class="apcal-wk-dow">${DAYS[d.getDay()]}</div>
+        <div class="apcal-wk-date${isToday?' today-date':''}">${d.getDate()}</div>
+      </div>`;
+    });
+    el.innerHTML=html;
+  }
+
+  /* ---- All-day row ---- */
+  function renderApAlldayRow(days){
+    const el=document.getElementById('apcal-allday-row');
+    if(!el)return;
+    let html=`<div class="apcal-allday-gutter"><span class="apcal-allday-lbl">all-day</span></div><div class="apcal-allday-days">`;
+    days.forEach(d=>{
+      const items=apAllDayForDay(dateStr(d));
+      html+=`<div class="apcal-allday-cell">`;
+      items.slice(0,2).forEach(it=>{
+        html+=`<div class="apcal-allday-chip" style="background:${it.color};">${it.title}</div>`;
+      });
+      if(items.length>2)html+=`<div style="font-size:9px;color:var(--ts);padding:0 2px;">+${items.length-2} more</div>`;
+      html+=`</div>`;
+    });
+    html+=`</div>`;
+    el.innerHTML=html;
+    // hide if empty
+    const hasAny=days.some(d=>apAllDayForDay(dateStr(d)).length>0);
+    el.style.display=hasAny?'':'none';
+  }
+
+  /* ---- Build event HTML for a day col ---- */
+  function buildDayEvents(dStr,isWeek){
+    let html='';
+    const items=apItemsForDay(dStr);
+    // Time blocks — calendar color at 50% opacity, full-opacity border
+    items.blocks.forEach(b=>{
+      const top=b.startHour*SLOT_H;
+      const height=Math.max((b.endHour-b.startHour)*SLOT_H,20);
+      const calC=calColor(b.calendarId)||WCAL_TYPE_COLORS[b.type||'work']||'#3b82f6';
+      const taskAccent=b.taskAccentColor||'rgba(255,255,255,0.9)';
+      const bgColor=hexToRgba(calC,0.5);
+      const bTasks=b.tasks||[];
+      const timed=bTasks.filter(t=>t.scheduledTime).sort((a,z)=>a.scheduledTime.localeCompare(z.scheduledTime));
+      const untimed=bTasks.filter(t=>!t.scheduledTime);
+      let inner=`<div class="apcal-event-title" style="text-shadow:0 1px 3px rgba(0,0,0,0.4);">${b.title||'Untitled'}</div>`;
+      if(height>32)inner+=`<div class="apcal-event-time-lbl" style="opacity:.85;">${fmtHour(Math.floor(b.startHour))} – ${fmtHour(Math.floor(b.endHour))}</div>`;
+      if(height>52){
+        timed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="border-left:2px solid ${taskAccent};background:${hexToRgba(calC,0.4)};">⏰ ${t.scheduledTime} ${t.text}</div>`;});
+        untimed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="background:${hexToRgba(calC,0.35)};">${t.done?'✓ ':''}${t.text}</div>`;});
+      }
+      html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};color:#fff;left:2px;right:2px;"
+        onclick="event.stopPropagation();wcalOpenDetail('${b.id}')">${inner}</div>`;
+    });
+    // Events
+    items.events.forEach(e=>{
+      const top=e.startHour*SLOT_H;
+      const height=Math.max((e.endHour-e.startHour)*SLOT_H,22);
+      const catIcons={meeting:'📋',appointment:'🏥',social:'🎉',travel:'✈️',reminder:'🔔',other:'📌'};
+      const eColor=resolveColor(e,'#8b5cf6');
+      let inner=`<div class="apcal-event-title">${catIcons[e.cat]||'📌'} ${e.title}</div>`;
+      if(height>32)inner+=`<div class="apcal-event-time-lbl">${fmtHour(Math.floor(e.startHour))} – ${fmtHour(Math.floor(e.endHour))}</div>`;
+      html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:${eColor}cc;color:#fff;left:2px;right:2px;border-left:3px solid ${eColor};"
+        onclick="event.stopPropagation();wcalOpenEventModal(null,null,'${e.id}')">${inner}</div>`;
+    });
+    // Tasks
+    items.tasks.forEach(t=>{
+      const top=t.calHour*SLOT_H;
+      const pColor=resolveColor(t,TASK_PRIORITY_COLORS[t.priority||'med']||'#f59e0b');
+      html+=`<div class="apcal-task-chip" style="top:${top}px;background:${pColor};"
+        onclick="event.stopPropagation();wcalOpenTaskModal(null,null,${t.id})">
+        <div class="apcal-task-chip-cb${t.done?' done':''}">
+          ${t.done?'<svg width="8" height="8" viewBox="0 0 8 8"><polyline points="1,4 3,6.5 7,1.5" stroke="#333" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>':''}
+        </div>
+        <span class="apcal-task-chip-txt">${t.text}</span>
+      </div>`;
+    });
+    // Google Calendar events
+    items.gcal.forEach(e=>{
+      if(e.start&&e.start.dateTime){
+        const st=new Date(e.start.dateTime);
+        const en=new Date(e.end&&e.end.dateTime?e.end.dateTime:e.start.dateTime);
+        const sh=st.getHours()+st.getMinutes()/60;
+        const eh=en.getHours()+en.getMinutes()/60;
+        const top=sh*SLOT_H;
+        const height=Math.max((eh-sh)*SLOT_H,22);
+        html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:#4285f4;color:#fff;left:2px;right:2px;border-left:3px solid #1a56db;"
+          title="${(e.summary||'').replace(/"/g,'&quot;')}">
+          <div class="apcal-event-title">📅 ${e.summary||'(no title)'}</div>
+          ${height>32?`<div class="apcal-event-time-lbl">${st.getHours()%12||12}:${String(st.getMinutes()).padStart(2,'0')}${st.getHours()<12?'am':'pm'}</div>`:''}
+        </div>`;
+      }
+    });
+    return html;
+  }
+
+  /* ---- Week grid (body) ---- */
+  function renderApWeekBody(days){
+    const el=document.getElementById('apcal-body-inner');
+    if(!el)return;
+    const tStr=todayStr();
+    // Time col
+    let html=`<div class="apcal-time-col">`;
+    for(let h=0;h<24;h++){
+      html+=`<div class="apcal-time-slot"><span class="apcal-time-slot-lbl">${h===0?'':fmtHour(h)}</span></div>`;
+    }
+    html+=`</div>`;
+    // Day cols
+    html+=`<div class="apcal-day-cols">`;
+    days.forEach(d=>{
+      const ds=dateStr(d);
+      const isToday=ds===tStr;
+      const isWknd=d.getDay()===0||d.getDay()===6;
+      html+=`<div class="apcal-day-col${isToday?' is-today':''}${isWknd?' is-weekend':''}" data-date="${ds}">`;
+      // Hour slots (clickable)
+      for(let h=0;h<24;h++){
+        html+=`<div class="apcal-hour-slot" onclick="wcalShowPicker('${ds}',${h})"></div>`;
+      }
+      // Events
+      html+=buildDayEvents(ds,true);
+      html+=`</div>`;
+    });
+    // Current time indicator
+    const now=new Date();
+    const nowH=now.getHours()+now.getMinutes()/60;
+    const nowTop=nowH*SLOT_H;
+    const nowDayIdx=days.findIndex(d=>dateStr(d)===tStr);
+    if(nowDayIdx>=0){
+      html+=`</div>`; // close apcal-day-cols, then add indicator as absolute overlay
+      el.innerHTML=html;
+      // add now line inside the correct day col
+      const dayColEls=el.querySelectorAll('.apcal-day-col');
+      if(dayColEls[nowDayIdx]){
+        const nowLine=document.createElement('div');
+        nowLine.className='apcal-now-line';
+        nowLine.style.top=nowTop+'px';
+        nowLine.innerHTML='<div class="apcal-now-dot"></div>';
+        dayColEls[nowDayIdx].appendChild(nowLine);
+      }
+      return;
+    }
+    html+=`</div>`;
+    el.innerHTML=html;
+  }
+
+  /* ---- Day view (single column) ---- */
+  function renderApDayBody(){
+    const el=document.getElementById('apcal-body-inner');
+    if(!el)return;
+    const d=apDayDate;
+    const ds=dateStr(d);
+    const tStr=todayStr();
+    let html=`<div class="apcal-time-col">`;
+    for(let h=0;h<24;h++){
+      html+=`<div class="apcal-time-slot"><span class="apcal-time-slot-lbl">${h===0?'':fmtHour(h)}</span></div>`;
+    }
+    html+=`</div>`;
+    const isToday=ds===tStr;
+    html+=`<div class="apcal-day-cols"><div class="apcal-day-col${isToday?' is-today':''}" data-date="${ds}" style="flex:1;">`;
+    for(let h=0;h<24;h++){
+      html+=`<div class="apcal-hour-slot" onclick="wcalShowPicker('${ds}',${h})"></div>`;
+    }
+    html+=buildDayEvents(ds,false);
+    html+=`</div></div>`;
+    el.innerHTML=html;
+    // now line
+    if(isToday){
+      const now=new Date();
+      const nowTop=(now.getHours()+now.getMinutes()/60)*SLOT_H;
+      const col=el.querySelector('.apcal-day-col');
+      if(col){
+        const nowLine=document.createElement('div');
+        nowLine.className='apcal-now-line';
+        nowLine.style.top=nowTop+'px';
+        nowLine.innerHTML='<div class="apcal-now-dot"></div>';
+        col.appendChild(nowLine);
+      }
+    }
+  }
+
+  /* ---- Month view — Apple Calendar style ---- */
+  function renderApMonthBody(){
+    const hdrEl=document.getElementById('apcal-week-hdr');
+    const alldayEl=document.getElementById('apcal-allday-row');
+    if(hdrEl)hdrEl.style.display='none';
+    if(alldayEl)alldayEl.style.display='none';
+    const scroll=document.getElementById('apcal-body-scroll');
+    const el=document.getElementById('apcal-body-inner');
+    if(!el)return;
+    if(scroll)scroll.style.overflowY='hidden';
+    el.style.cssText='flex-direction:column;height:100%;overflow:hidden;flex:1;display:flex;';
+    const y=apMiniYear,m=apMiniMonth;
+    const firstDay=new Date(y,m,1).getDay();
+    const daysInMonth=new Date(y,m+1,0).getDate();
+    const prevDays=new Date(y,m,0).getDate();
+    const tStr=todayStr();
+    const numRows=Math.ceil((firstDay+daysInMonth)/7);
+    let html=`<div class="apcal-mv">`;
+    // DOW header row
+    html+=`<div class="apcal-mv-hdr"><div class="apcal-mv-wk-corner"></div>`;
+    DAYS.forEach((d,i)=>{html+=`<div class="apcal-mv-dow${i===0||i===6?' is-weekend':''}">${d}</div>`;});
+    html+=`</div>`;
+    // Grid
+    html+=`<div class="apcal-mv-grid" style="grid-template-rows:repeat(${numRows},1fr);">`;
+    for(let row=0;row<numRows;row++){
+      const rowFirstIdx=row*7-firstDay+1;
+      const rowFirstDate=new Date(y,m,Math.max(rowFirstIdx,1));
+      rowFirstDate.setHours(12,0,0,0);
+      const wkNum=getWeekNumber(rowFirstDate);
+      html+=`<div class="apcal-mv-row"><div class="apcal-mv-wknum">${wkNum}</div>`;
+      for(let col=0;col<7;col++){
+        const di=row*7+col-firstDay+1;
+        let ds,label,isOther=false;
+        if(di<1){
+          const pd=prevDays+di;
+          const pm=m===0?11:m-1,py=m===0?y-1:y;
+          ds=py+'-'+String(pm+1).padStart(2,'0')+'-'+String(pd).padStart(2,'0');
+          label=String(pd); isOther=true;
+        } else if(di>daysInMonth){
+          const nd=di-daysInMonth;
+          const nm=m===11?0:m+1,ny=m===11?y+1:y;
+          ds=ny+'-'+String(nm+1).padStart(2,'0')+'-'+String(nd).padStart(2,'0');
+          label=String(nd); isOther=true;
+        } else {
+          ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(di).padStart(2,'0');
+          label=(di===1&&row>0)?MONTHS_SHORT[m]+' 1':String(di);
+        }
+        const isToday=ds===tStr;
+        const isWknd=col===0||col===6;
+        const theme=(S.dayThemes||{})[ds];
+        const items=apItemsForDay(ds);
+        const evts=[];
+        items.blocks.forEach(b=>{evts.push({title:b.title||'Untitled',color:resolveColor(b,WCAL_TYPE_COLORS[b.type||'work']||'#3b82f6'),h:b.startHour||0});});
+        items.events.forEach(e=>{evts.push({title:e.title,color:resolveColor(e,'#8b5cf6'),h:e.startHour||0});});
+        items.tasks.forEach(t=>{evts.push({title:t.text,color:resolveColor(t,TASK_PRIORITY_COLORS[t.priority||'med']||'#f59e0b'),h:t.calHour||0});});
+        items.gcal.filter(e=>e.start&&e.start.dateTime).forEach(e=>{const st=new Date(e.start.dateTime);evts.push({title:e.summary||'Event',color:'#4285f4',h:st.getHours()+st.getMinutes()/60});});
+        evts.sort((a,b)=>a.h-b.h);
+        const MAX=4;
+        const more=evts.length>MAX?evts.length-MAX:0;
+        html+=`<div class="apcal-mc${isOther?' other-m':''}${isToday?' is-today':''}${isWknd?' is-weekend':''}"
+          onclick="apCalMonthCellClick(event,'${ds}')"
+          oncontextmenu="apCalShowThemeMenu(event,'${ds}');return false;">`;
+        if(theme){html+=`<div class="apcal-mc-theme-bar" style="background:${theme.color};">${theme.emoji?theme.emoji+' ':''}${theme.label||''}</div>`;}
+        html+=`<div class="apcal-mc-hdr">
+          <div class="apcal-mc-date${isToday?' today':''}">${label}</div>
+          <button class="apcal-mc-theme-btn" onclick="event.stopPropagation();apCalShowThemeMenu(event,'${ds}')" title="Set day theme">★</button>
+        </div>`;
+        evts.slice(0,MAX).forEach(ev=>{
+          html+=`<div class="apcal-mc-evt">
+            <span class="apcal-mc-dot" style="background:${ev.color};"></span>
+            <span class="apcal-mc-evt-title">${ev.title}</span>
+            <span class="apcal-mc-evt-time">${fmtHour(Math.floor(ev.h))}</span>
+          </div>`;
+        });
+        if(more>0)html+=`<div class="apcal-mc-more" onclick="event.stopPropagation();apCalMonthJumpDay('${ds}')">${more} more…</div>`;
+        html+=`</div>`;
+      }
+      html+=`</div>`;
+    }
+    html+=`</div></div>`;
+    el.innerHTML=html;
+  }
+
+  /* ---- Year view ---- */
+  function renderApYearBody(){
+    const hdrEl=document.getElementById('apcal-week-hdr');
+    const alldayEl=document.getElementById('apcal-allday-row');
+    if(hdrEl)hdrEl.style.display='none';
+    if(alldayEl)alldayEl.style.display='none';
+    const scroll=document.getElementById('apcal-body-scroll');
+    const el=document.getElementById('apcal-body-inner');
+    if(!el)return;
+    if(scroll)scroll.style.overflowY='auto';
+    el.style.cssText='flex-direction:column;flex:1;display:flex;';
+    const y=apMiniYear;
+    const tStr=todayStr();
+    let html=`<div class="apcal-yr">`;
+    for(let m=0;m<12;m++){
+      const firstDay=new Date(y,m,1).getDay();
+      const daysInMonth=new Date(y,m+1,0).getDate();
+      html+=`<div class="apcal-yr-month" onclick="apCalYearJump(${m})">
+        <div class="apcal-yr-mname">${MONTHS_FULL[m]}</div>
+        <div class="apcal-yr-mini">`;
+      DAYS.forEach(d=>{html+=`<div class="apcal-yr-dow">${d[0]}</div>`;});
+      for(let i=0;i<firstDay;i++)html+=`<div class="apcal-yr-day other-m"></div>`;
+      for(let d=1;d<=daysInMonth;d++){
+        const ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+        const isToday=ds===tStr;
+        const items=apItemsForDay(ds);
+        const hasEvts=!!(items.blocks.length||items.events.length||items.tasks.length||items.gcal.length);
+        const theme=(S.dayThemes||{})[ds];
+        const thStyle=theme?` style="background:${theme.color}30;border-radius:3px;"`:' style=""';
+        html+=`<div class="apcal-yr-day${isToday?' is-today':''}${hasEvts?' has-evts':''}${theme?' has-theme':''}"${thStyle}>${d}</div>`;
+      }
+      html+=`</div></div>`;
+    }
+    html+=`</div>`;
+    el.innerHTML=html;
+  }
+
+  /* ---- Main render ---- */
+  function renderApCal(){
+    // sync active view button
+    ['day','week','month','year'].forEach(x=>{
+      const b=document.getElementById('apcal-vb-'+x);
+      if(b)b.classList.toggle('active',x===apView);
+    });
+    // reset body scroll for time views
+    const scroll=document.getElementById('apcal-body-scroll');
+    const bodyInner=document.getElementById('apcal-body-inner');
+    if(apView==='week'||apView==='day'){
+      if(scroll)scroll.style.overflowY='auto';
+      if(bodyInner)bodyInner.style.cssText='';
+    }
+    // toolbar label
+    const lbl=document.getElementById('apcal-month-lbl');
+    if(apView==='week'){
+      const days=[];
+      for(let i=0;i<7;i++)days.push(addDays(apWeekStart,i));
+      const startM=days[0].getMonth(),endM=days[6].getMonth();
+      const yr=days[0].getFullYear();
+      if(startM===endM){
+        if(lbl)lbl.textContent=MONTHS_FULL[startM]+' '+yr;
+      }else{
+        if(lbl)lbl.textContent=MONTHS_SHORT[startM]+' – '+MONTHS_SHORT[endM]+' '+yr;
+      }
+      apMiniYear=yr; apMiniMonth=startM;
+      const hdrEl=document.getElementById('apcal-week-hdr');
+      const alldayEl=document.getElementById('apcal-allday-row');
+      if(hdrEl)hdrEl.style.display='';
+      renderApWeekHdr(days);
+      const hasAllday=days.some(d=>apAllDayForDay(dateStr(d)).length>0);
+      if(alldayEl){alldayEl.style.display=hasAllday?'':'none';}
+      if(hasAllday)renderApAlldayRow(days);
+      renderApWeekBody(days);
+      apMiniMonth=startM;
+    } else if(apView==='day'){
+      const ds=dateStr(apDayDate);
+      if(lbl)lbl.textContent=apDayDate.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+      apMiniYear=apDayDate.getFullYear(); apMiniMonth=apDayDate.getMonth();
+      const hdrEl=document.getElementById('apcal-week-hdr');
+      const alldayEl=document.getElementById('apcal-allday-row');
+      if(hdrEl){
+        hdrEl.innerHTML=`<div class="apcal-wk-gutter"></div><div class="apcal-wk-day-col${ds===todayStr()?' is-today':''}" style="flex:1;">
+          <div class="apcal-wk-dow">${DAYS[apDayDate.getDay()]}</div>
+          <div class="apcal-wk-date${ds===todayStr()?' today-date':''}">${apDayDate.getDate()}</div>
+        </div>`;
+        hdrEl.style.display='';
+      }
+      const allday=apAllDayForDay(ds);
+      if(alldayEl){
+        alldayEl.style.display=allday.length?'':'none';
+        if(allday.length){
+          alldayEl.innerHTML=`<div class="apcal-allday-gutter"><span class="apcal-allday-lbl">all-day</span></div><div class="apcal-allday-days"><div class="apcal-allday-cell">${allday.map(it=>`<div class="apcal-allday-chip" style="background:${it.color};">${it.title}</div>`).join('')}</div></div>`;
+        }
+      }
+      renderApDayBody();
+    } else if(apView==='month'){
+      if(lbl)lbl.textContent=MONTHS_FULL[apMiniMonth]+' '+apMiniYear;
+      renderApMonthBody();
+    } else if(apView==='year'){
+      if(lbl)lbl.textContent=String(apMiniYear);
+      renderApYearBody();
+    }
+    renderApMini();
+    renderApCalSidebar();
+    // snap to current time only in time-grid views
+    if(apView==='week'||apView==='day'){
+      setTimeout(()=>{
+        const sc=document.getElementById('apcal-body-scroll');
+        if(sc){
+          const now=new Date();
+          const nowH=now.getHours()+now.getMinutes()/60;
+          sc.scrollTop=Math.max(0,(nowH-1.5)*SLOT_H);
+        }
+      },50);
+    }
+  }
+
+  function apCalJumpToDate(ds){
+    const d=new Date(ds+'T12:00:00');
+    if(apView==='week'){
+      apWeekStart=getWeekSunday(d);
+    } else if(apView==='day'){
+      apDayDate=d;
+    } else {
+      apMiniYear=d.getFullYear();apMiniMonth=d.getMonth();
+    }
+    renderApCal();
+  }
+
+  function getWeekNumber(d){
+    const date=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+    date.setUTCDate(date.getUTCDate()+4-(date.getUTCDay()||7));
+    const yearStart=new Date(Date.UTC(date.getUTCFullYear(),0,1));
+    return Math.ceil((((date-yearStart)/86400000)+1)/7);
+  }
+
+  /* ---- Day theme ---- */
+  const THEME_COLORS=['#ef4444','#f97316','#f59e0b','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#64748b'];
+  const THEME_EMOJIS=['⭐','🎂','🎉','🏆','❤️','⚡','🔥','💎','🎯','📌','🚀','🌟'];
+  let _apThemeDate=null,_apThemeColor=THEME_COLORS[5],_apThemeEmoji='';
+
+  function apCalShowThemeMenu(e,ds){
+    e.stopPropagation();
+    _apThemeDate=ds;
+    const pop=document.getElementById('apcal-theme-pop');
+    if(!pop)return;
+    const theme=(S.dayThemes||{})[ds]||{};
+    _apThemeColor=theme.color||THEME_COLORS[5];
+    _apThemeEmoji=theme.emoji||'';
+    const inp=document.getElementById('apcal-theme-label');
+    if(inp)inp.value=theme.label||'';
+    const sw=document.getElementById('apcal-theme-swatches');
+    if(sw)sw.innerHTML=THEME_COLORS.map(c=>`<div class="apcal-theme-swatch${c===_apThemeColor?' sel':''}" style="background:${c};" onclick="apCalPickThemeColor('${c}',this)"></div>`).join('');
+    const em=document.getElementById('apcal-theme-emojis');
+    if(em)em.innerHTML=THEME_EMOJIS.map(emoji=>`<button class="apcal-theme-emoji-btn${emoji===_apThemeEmoji?' sel':''}" onclick="apCalPickThemeEmoji('${emoji}',this)">${emoji}</button>`).join('');
+    // position near click but keep inside viewport
+    pop.style.left=Math.min(e.clientX,window.innerWidth-240)+'px';
+    pop.style.top=Math.min(e.clientY+4,window.innerHeight-280)+'px';
+    pop.classList.add('open');
+    setTimeout(()=>document.addEventListener('click',_apThemeOutside,{once:true}),10);
+  }
+  function _apThemeOutside(e){
+    const pop=document.getElementById('apcal-theme-pop');
+    if(pop&&!pop.contains(e.target))pop.classList.remove('open');
+    else document.addEventListener('click',_apThemeOutside,{once:true});
+  }
+  function apCalPickThemeColor(c,el){
+    _apThemeColor=c;
+    document.querySelectorAll('.apcal-theme-swatch').forEach(s=>s.classList.remove('sel'));
+    if(el)el.classList.add('sel');
+  }
+  function apCalPickThemeEmoji(emoji,el){
+    _apThemeEmoji=(_apThemeEmoji===emoji)?'':emoji;
+    document.querySelectorAll('.apcal-theme-emoji-btn').forEach(s=>s.classList.remove('sel'));
+    if(_apThemeEmoji&&el)el.classList.add('sel');
+  }
+  function apCalSaveTheme(){
+    const inp=document.getElementById('apcal-theme-label');
+    const label=(inp?inp.value:'').trim();
+    if(!label&&!_apThemeEmoji){apCalRemoveTheme();return;}
+    if(!S.dayThemes)S.dayThemes={};
+    S.dayThemes[_apThemeDate]={label,color:_apThemeColor,emoji:_apThemeEmoji};
+    save();
+    document.getElementById('apcal-theme-pop')?.classList.remove('open');
+    renderApCal();
+  }
+  function apCalRemoveTheme(){
+    if(S.dayThemes&&_apThemeDate)delete S.dayThemes[_apThemeDate];
+    save();
+    document.getElementById('apcal-theme-pop')?.classList.remove('open');
+    renderApCal();
+  }
+  function apCalCloseThemePop(){document.getElementById('apcal-theme-pop')?.classList.remove('open');}
+
+  function apCalMonthCellClick(e,ds){
+    if(e.target.classList.contains('apcal-mc-more')||e.target.classList.contains('apcal-mc-theme-btn'))return;
+    apCalMonthJumpDay(ds);
+  }
+  function apCalMonthJumpDay(ds){
+    apDayDate=new Date(ds+'T12:00:00');
+    apSetView('day');
+  }
+  function apCalYearJump(m){
+    apMiniMonth=m;
+    apSetView('month');
+  }
+
+  function apCalToggleSidebar(){
+    const sb=document.getElementById('apcal-sb');
+    const btn=document.getElementById('apcal-sb-toggle');
+    if(!sb)return;
+    const collapsed=sb.classList.toggle('collapsed');
+    if(btn){btn.textContent=collapsed?'▶':'◀';btn.style.transform=collapsed?'':'rotate(0deg)';}
+  }
+
+  // Expose to global scope
+  window.apCalToggleSidebar=apCalToggleSidebar;
+  window.renderApCalSidebar=renderApCalSidebar;
+  window.apCalToggleCal=apCalToggleCal;
+  window.apCalOpenMgmt=apCalOpenMgmt;
+  window.apCalPickMgmtColor=apCalPickMgmtColor;
+  window.apCalSaveMgmt=apCalSaveMgmt;
+  window.apCalDeleteCal=apCalDeleteCal;
+  window.apCalCloseMgmt=apCalCloseMgmt;
+  window.populateCalendarDropdown=populateCalendarDropdown;
+  window.apCalUpdateSelDot=apCalUpdateSelDot;
+  window.apCalShowThemeMenu=apCalShowThemeMenu;
+  window.apCalPickThemeColor=apCalPickThemeColor;
+  window.apCalPickThemeEmoji=apCalPickThemeEmoji;
+  window.apCalSaveTheme=apCalSaveTheme;
+  window.apCalRemoveTheme=apCalRemoveTheme;
+  window.apCalCloseThemePop=apCalCloseThemePop;
+  window.apCalMonthCellClick=apCalMonthCellClick;
+  window.apCalMonthJumpDay=apCalMonthJumpDay;
+  window.apCalYearJump=apCalYearJump;
+  window.apCalToday=apCalToday;
+  window.apCalPrev=apCalPrev;
+  window.apCalNext=apCalNext;
+  window.apCalMiniPrev=apCalMiniPrev;
+  window.apCalMiniNext=apCalMiniNext;
+  window.apSetView=apSetView;
+  window.apCalToggleCal=apCalToggleCal;
+  window.apCalAddClick=apCalAddClick;
+  window.apCalJumpToDate=apCalJumpToDate;
+  window.renderApCal=renderApCal;
+
+  // Auto-refresh now line every minute
+  setInterval(()=>{
+    if(apView==='week'||apView==='day'){
+      document.querySelectorAll('.apcal-now-line').forEach(el=>el.remove());
+      if(apView==='week'){
+        const tStr=todayStr();
+        const now=new Date();
+        const nowTop=(now.getHours()+now.getMinutes()/60)*SLOT_H;
+        const col=document.querySelector(`.apcal-day-col[data-date="${tStr}"]`);
+        if(col){
+          const line=document.createElement('div');
+          line.className='apcal-now-line';
+          line.style.top=nowTop+'px';
+          line.innerHTML='<div class="apcal-now-dot"></div>';
+          col.appendChild(line);
+        }
+      }
+    }
+  },60000);
 })();
 </script>
 
