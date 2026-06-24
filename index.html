@@ -2457,7 +2457,7 @@ html,body{background:var(--bg);}
 .wcal-recur-row{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
 .wcal-recur-day{padding:4px 9px;font-size:11px;font-weight:700;border:1px solid var(--bd);border-radius:6px;background:var(--bg-in);color:var(--ts);cursor:pointer;user-select:none;}
 .wcal-recur-day.on{background:var(--blue);color:#fff;border-color:var(--blue);}
-.plan-below-cal{margin-top:22px;margin-bottom:8px;}
+.plan-below-cal{margin-top:22px;margin-bottom:24px;}
 .plan-below-cal .bh2{margin:0 0 8px;}
 
 /* ── TODAY SIDEBAR (single-day timeline) ── */
@@ -2648,7 +2648,7 @@ html,body{background:var(--bg);}
 .apcal-add-btn{width:28px;height:28px;border-radius:50%;border:none;background:transparent;color:var(--ts);cursor:pointer;font-size:20px;font-family:var(--font);display:flex;align-items:center;justify-content:center;transition:background .12s,color .12s;line-height:1;}
 .apcal-add-btn:hover{background:var(--bd);color:var(--t);}
 /* week header */
-.apcal-week-hdr{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);background:var(--bg-card);}
+.apcal-week-hdr{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);background:var(--bg-card);padding-right:4px;}
 .apcal-wk-gutter{width:52px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:6px 0;}
 .apcal-wk-num{font-size:9px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;}
 .apcal-wk-day-col{flex:1;text-align:center;padding:5px 2px 6px;cursor:pointer;transition:background .12s;border-left:1px solid var(--bd);}
@@ -2659,14 +2659,14 @@ html,body{background:var(--bg);}
 .apcal-wk-day-col.is-today .apcal-wk-date{background:var(--red);color:#fff;}
 .apcal-wk-day-col.is-weekend .apcal-wk-dow,.apcal-wk-day-col.is-weekend .apcal-wk-date:not(.today-date){color:var(--th);}
 /* all-day row */
-.apcal-allday-row{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);min-height:0;max-height:56px;overflow:hidden;background:var(--bg-card);}
+.apcal-allday-row{display:flex;flex-shrink:0;border-bottom:1px solid var(--bd);min-height:0;max-height:56px;overflow:hidden;background:var(--bg-card);padding-right:4px;}
 .apcal-allday-gutter{width:52px;flex-shrink:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:4px 6px 0 0;}
 .apcal-allday-lbl{font-size:8.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;}
 .apcal-allday-days{flex:1;display:flex;}
 .apcal-allday-cell{flex:1;border-left:1px solid var(--bd);padding:2px 2px;min-height:20px;position:relative;}
 .apcal-allday-chip{font-size:10px;font-weight:600;padding:2px 5px;border-radius:3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;cursor:pointer;}
 /* scrollable time body */
-.apcal-body-scroll{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;scrollbar-gutter:stable;}
+.apcal-body-scroll{flex:1;overflow-y:scroll;overflow-x:hidden;position:relative;}
 .apcal-body-scroll::-webkit-scrollbar{width:4px;}
 .apcal-body-scroll::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
 .apcal-body-inner{display:flex;position:relative;min-height:100%;}
