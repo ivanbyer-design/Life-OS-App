@@ -2681,7 +2681,11 @@ html,body{background:var(--bg);}
 .apcal-day-col.is-today{background:color-mix(in srgb,var(--blue) 4%,transparent);}
 .apcal-day-col.is-weekend{background:color-mix(in srgb,var(--bg) 40%,transparent);}
 /* events */
-.apcal-event{position:absolute;left:2px;right:2px;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;cursor:pointer;overflow:hidden;z-index:2;transition:filter .12s,box-shadow .12s;box-shadow:0 1px 3px rgba(0,0,0,.18);}
+.apcal-event{position:absolute;left:2px;right:2px;border-radius:6px;padding:3px 6px;font-size:11px;font-weight:600;cursor:grab;overflow:hidden;z-index:2;transition:filter .12s,box-shadow .12s;box-shadow:0 1px 3px rgba(0,0,0,.18);}
+.apcal-event.ap-dragging{opacity:0.3;cursor:grabbing;}
+.apcal-drag-ghost{position:fixed;pointer-events:none;z-index:9999;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;color:#fff;box-shadow:0 6px 24px rgba(0,0,0,.35);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apcal-drop-indicator{position:absolute;left:2px;right:2px;height:2px;background:var(--blue);border-radius:1px;pointer-events:none;z-index:10;}
+.apcal-drop-indicator::before{content:'';position:absolute;left:-3px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--blue);}
 .apcal-event:hover{filter:brightness(1.1);box-shadow:0 3px 8px rgba(0,0,0,.28);}
 .apcal-event-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;font-size:11.5px;font-weight:700;}
 .apcal-event-time-lbl{font-size:10px;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -13127,8 +13131,8 @@ if (_origTaskCheck) {
         timed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="border-left:2px solid ${taskAccent};background:${hexToRgba(calC,0.4)};">⏰ ${t.scheduledTime} ${t.text}</div>`;});
         untimed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="background:${hexToRgba(calC,0.35)};">${t.done?'✓ ':''}${t.text}</div>`;});
       }
-      html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};color:#fff;left:2px;right:2px;"
-        onclick="event.stopPropagation();wcalOpenDetail('${b.id}')">${inner}</div>`;
+      html+=`<div class="apcal-event" data-id="${b.id}" data-type="block" data-start="${b.startHour}" data-end="${b.endHour}" data-color="${calC}" data-title="${(b.title||'Untitled').replace(/"/g,'&quot;')}" style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};color:#fff;left:2px;right:2px;"
+        onclick="event.stopPropagation();if(!window._apCalDragMoved)wcalOpenDetail('${b.id}')">${inner}</div>`;
     });
     // Events (skip all-day — those appear in the allday row)
     items.events.filter(e=>e.startHour!=null).forEach(e=>{
@@ -13138,8 +13142,8 @@ if (_origTaskCheck) {
       const eColor=resolveColor(e,'#8b5cf6');
       let inner=`<div class="apcal-event-title">${catIcons[e.cat]||'📌'} ${e.title}</div>`;
       if(height>32)inner+=`<div class="apcal-event-time-lbl">${fmtHour(Math.floor(e.startHour))} – ${fmtHour(Math.floor(e.endHour))}</div>`;
-      html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:${eColor}cc;color:#fff;left:2px;right:2px;border-left:3px solid ${eColor};"
-        onclick="event.stopPropagation();wcalOpenEventModal(null,null,'${e.id}')">${inner}</div>`;
+      html+=`<div class="apcal-event" data-id="${e.id}" data-type="event" data-start="${e.startHour}" data-end="${e.endHour}" data-color="${eColor}" data-title="${(e.title||'').replace(/"/g,'&quot;')}" style="top:${top}px;height:${height}px;background:${eColor}cc;color:#fff;left:2px;right:2px;border-left:3px solid ${eColor};"
+        onclick="event.stopPropagation();if(!window._apCalDragMoved)wcalOpenEventModal(null,null,'${e.id}')">${inner}</div>`;
     });
     // Tasks
     items.tasks.forEach(t=>{
@@ -13215,10 +13219,12 @@ if (_origTaskCheck) {
         nowLine.innerHTML='<div class="apcal-now-dot"></div>';
         dayColEls[nowDayIdx].appendChild(nowLine);
       }
+      apCalSetupDrag();
       return;
     }
     html+=`</div>`;
     el.innerHTML=html;
+    apCalSetupDrag();
   }
 
   /* ---- Day view (single column) ---- */
@@ -13241,6 +13247,7 @@ if (_origTaskCheck) {
     html+=buildDayEvents(ds,false);
     html+=`</div></div>`;
     el.innerHTML=html;
+    apCalSetupDrag();
     // now line
     if(isToday){
       const now=new Date();
@@ -13603,6 +13610,97 @@ if (_origTaskCheck) {
       }
     }
   },60000);
+
+  // ─── DRAG & DROP ───
+  let _apDrag=null;
+  window._apCalDragMoved=false;
+
+  function apCalSetupDrag(){
+    const inner=G('apcal-body-inner');
+    if(!inner||inner._apDragReady)return;
+    inner._apDragReady=true;
+    inner.addEventListener('mousedown',function(e){
+      const el=e.target.closest('.apcal-event[data-id]');
+      if(!el)return;
+      const startHour=parseFloat(el.dataset.start);
+      const endHour=parseFloat(el.dataset.end);
+      const rect=el.getBoundingClientRect();
+      _apDrag={
+        id:el.dataset.id,type:el.dataset.type,
+        duration:endHour-startHour,
+        clickOffsetHours:(e.clientY-rect.top)/SLOT_H,
+        color:el.dataset.color||'#3b82f6',
+        title:el.dataset.title||'',
+        el,moved:false,
+        startX:e.clientX,startY:e.clientY
+      };
+      e.preventDefault();
+      e.stopPropagation();
+    });
+  }
+
+  function apCalDragGetPos(e){
+    const scroll=G('apcal-body-scroll');
+    if(!scroll)return null;
+    const sr=scroll.getBoundingClientRect();
+    if(e.clientX<sr.left||e.clientX>sr.right||e.clientY<sr.top||e.clientY>sr.bottom)return null;
+    const els=document.elementsFromPoint(e.clientX,e.clientY);
+    const col=els.find(el=>el.classList&&el.classList.contains('apcal-day-col'));
+    if(!col||!col.dataset.date)return null;
+    const yInContent=e.clientY-sr.top+scroll.scrollTop;
+    const raw=yInContent/SLOT_H-_apDrag.clickOffsetHours;
+    const snapped=Math.round(Math.max(0,Math.min(23.75,raw))*4)/4;
+    return{date:col.dataset.date,hour:snapped};
+  }
+
+  document.addEventListener('mousemove',function(e){
+    if(!_apDrag)return;
+    const dx=e.clientX-_apDrag.startX,dy=e.clientY-_apDrag.startY;
+    if(!_apDrag.moved&&dx*dx+dy*dy<36)return;
+    if(!_apDrag.moved){
+      _apDrag.moved=true;
+      _apDrag.el.classList.add('ap-dragging');
+      const g=document.createElement('div');
+      g.id='apcal-drag-ghost';
+      g.className='apcal-drag-ghost';
+      g.style.background=_apDrag.color;
+      g.textContent=_apDrag.title||'Block';
+      document.body.appendChild(g);
+      _apDrag.ghost=g;
+    }
+    if(_apDrag.ghost){_apDrag.ghost.style.left=(e.clientX+10)+'px';_apDrag.ghost.style.top=(e.clientY-14)+'px';}
+    document.querySelectorAll('.apcal-drop-indicator').forEach(el=>el.remove());
+    const pos=apCalDragGetPos(e);
+    if(pos){
+      const col=document.querySelector(`.apcal-day-col[data-date="${pos.date}"]`);
+      if(col){const ind=document.createElement('div');ind.className='apcal-drop-indicator';ind.style.top=(pos.hour*SLOT_H)+'px';col.appendChild(ind);}
+    }
+  });
+
+  document.addEventListener('mouseup',function(e){
+    if(!_apDrag)return;
+    if(_apDrag.ghost)_apDrag.ghost.remove();
+    document.querySelectorAll('.apcal-drop-indicator').forEach(el=>el.remove());
+    _apDrag.el.classList.remove('ap-dragging');
+    if(_apDrag.moved){
+      window._apCalDragMoved=true;
+      setTimeout(()=>{window._apCalDragMoved=false;},80);
+      const pos=apCalDragGetPos(e);
+      if(pos){
+        const ns=pos.hour,ne=Math.min(24,ns+_apDrag.duration);
+        if(_apDrag.type==='block'){
+          const b=(S.timeBlocks||[]).find(b=>b.id===_apDrag.id);
+          if(b){b.date=pos.date;b.startHour=ns;b.endHour=ne;save();}
+        } else if(_apDrag.type==='event'){
+          const ev=(S.calEvents||[]).find(ev=>ev.id===_apDrag.id);
+          if(ev){ev.date=pos.date;ev.startHour=ns;ev.endHour=ne;save();}
+        }
+        renderApCal();
+      }
+    }
+    _apDrag=null;
+  });
+
 })();
 </script>
 
