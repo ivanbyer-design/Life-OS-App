@@ -3343,11 +3343,14 @@ html,body{background:var(--bg);}
 
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
-        <!-- Google Calendar Status Banner (via n8n) -->
-        <div class="gcal-banner" id="gcal-banner">
-          <span style="font-size:20px;">📅</span>
-          <div class="gcal-banner-status" id="gcal-status-text"><span style="color:var(--ts);">⏳ Loading calendar…</span></div>
-          <button class="gcal-connect-btn" onclick="gcalFetchEvents()" style="background:var(--bg-in);color:var(--t);border:1px solid var(--bd);">↻ Refresh</button>
+
+        <!-- EISENHOWER MATRIX — above calendar -->
+        <div class="plan-below-cal">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="bh2" style="margin:0;">🎯 Eisenhower Matrix</div>
+            <button class="btn sml" onclick="switchPlanTab('todos',G('ptab-todos'))">All tasks</button>
+          </div>
+          <div id="plan-eis-matrix"></div>
         </div>
 
         <!-- APPLE CALENDAR — week view -->
@@ -3425,15 +3428,6 @@ html,body{background:var(--bg);}
             <button class="btn sml" onclick="switchPlanTab('projects',G('ptab-projects'))">View all</button>
           </div>
           <div id="planning-proj-overview"></div>
-        </div>
-
-        <!-- EISENHOWER MATRIX below projects -->
-        <div class="plan-below-cal">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div class="bh2" style="margin:0;">🎯 Eisenhower Matrix</div>
-            <button class="btn sml" onclick="switchPlanTab('todos',G('ptab-todos'))">All tasks</button>
-          </div>
-          <div id="plan-eis-matrix"></div>
         </div>
 
         <!-- CALENDAR MANAGEMENT POPUP -->
@@ -4081,6 +4075,21 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
+      <!-- INTEGRATIONS / MCPs -->
+      <div class="stt-section">
+        <div class="stt-section-hdr">🔌 Integrations & MCPs</div>
+        <div class="stt-card">
+          <div class="stt-action-row" onclick="gcalFetchEvents()" style="cursor:pointer;">
+            <div class="stt-action-icon" style="background:#e8f0fe;color:#4285f4;font-size:18px;">📅</div>
+            <div class="stt-row-info">
+              <div class="stt-row-label">Google Calendar (n8n)</div>
+              <div class="stt-row-sub" id="gcal-status-text"><span style="color:var(--ts);">⏳ Loading…</span></div>
+            </div>
+            <button class="stt-run-btn" onclick="event.stopPropagation();gcalFetchEvents()" style="white-space:nowrap;">↻ Reload</button>
+          </div>
+        </div>
+      </div>
+
       <!-- ABOUT -->
       <div class="stt-section">
         <div class="stt-section-hdr">ℹ️ About</div>
@@ -4198,6 +4207,14 @@ if(S.gcalVisible===undefined)S.gcalVisible=true;
   let changed=false;
   ['timeBlocks','calEvents','personalTodos'].forEach(key=>{
     (S[key]||[]).forEach(item=>{if(!item.calendarId){item.calendarId=defaultId;changed=true;}});
+  });
+  if(changed)try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
+})();
+// Backfill linkId from recurId for existing recurring blocks
+(function backfillLinkIds(){
+  let changed=false;
+  (S.timeBlocks||[]).forEach(b=>{
+    if(b.recurId&&!b.linkId){b.linkId=b.recurId;changed=true;}
   });
   if(changed)try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
 })();
@@ -12132,6 +12149,21 @@ function wcalShowSavedToast(){
 
 function wcalDeleteBlock(){
   if(!wcalEditingId)return;
+  const block=(S.timeBlocks||[]).find(b=>b.id===wcalEditingId);
+  if(!block)return;
+  if(block.linkId){
+    const syncedCount=(S.timeBlocks||[]).filter(b=>b.linkId===block.linkId&&b.id!==block.id).length;
+    if(syncedCount>0){
+      const choice=confirm(`This block is synced with ${syncedCount} other block${syncedCount!==1?'s':''}.\n\nOK = Delete all ${syncedCount+1} synced blocks\nCancel = Delete only this one`);
+      if(choice){
+        S.timeBlocks=(S.timeBlocks||[]).filter(b=>b.linkId!==block.linkId);
+      } else {
+        S.timeBlocks=(S.timeBlocks||[]).filter(b=>b.id!==wcalEditingId);
+      }
+      save();closeWcalModal();renderTodayCal();if(typeof renderApCal==="function")renderApCal();
+      return;
+    }
+  }
   if(!confirm('Delete this block?'))return;
   S.timeBlocks=(S.timeBlocks||[]).filter(b=>b.id!==wcalEditingId);
   save();
