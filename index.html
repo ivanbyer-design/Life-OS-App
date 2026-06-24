@@ -3615,9 +3615,15 @@ html,body{background:var(--bg);}
                 <div class="apcal-sel-dot" id="wcal-ev-cal-dot"></div>
                 <select class="fi" id="wcal-ev-cal" onchange="apCalUpdateSelDot('wcal-ev-cal','wcal-ev-cal-dot')"></select>
               </div>
-              <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">DATE</label>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+                <label style="font-size:11px;font-weight:600;color:var(--ts);">DATE</label>
+                <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;font-weight:600;color:var(--blue);user-select:none;">
+                  <input type="checkbox" id="wcal-ev-allday" onchange="wcalEvToggleAllDay(this.checked)" style="accent-color:var(--blue);width:14px;height:14px;">
+                  All Day
+                </label>
+              </div>
               <input class="fi" type="date" id="wcal-ev-date" style="margin-bottom:10px;">
-              <div style="display:flex;gap:8px;margin-bottom:10px;">
+              <div id="wcal-ev-time-row" style="display:flex;gap:8px;margin-bottom:10px;">
                 <div style="flex:1;">
                   <label style="font-size:11px;font-weight:600;color:var(--ts);display:block;margin-bottom:4px;">START</label>
                   <input class="fi" type="time" id="wcal-ev-start">
@@ -11524,7 +11530,7 @@ function renderTodayCal(){
   }
 
   // Manual events
-  (S.calEvents||[]).filter(e=>e.date===dStr).forEach(e=>{
+  (S.calEvents||[]).filter(e=>e.date===dStr&&e.startHour!=null).forEach(e=>{
     const top=28+(e.startHour*2)*40;
     const height=Math.max(((e.endHour-e.startHour)*2)*40,24);
     const catIcons={meeting:'📋',appointment:'🏥',social:'🎉',travel:'✈️',reminder:'🔔',other:'📌'};
@@ -11656,14 +11662,21 @@ function wcalPickType(type){
 // ── EVENT MODAL ──
 let wcalEditingEventId=null;
 
+function wcalEvToggleAllDay(on){
+  const row=G('wcal-ev-time-row');
+  if(row)row.style.display=on?'none':'flex';
+}
 function wcalOpenEventModal(date,hour,existingId){
   wcalEditingEventId=existingId||null;
   const ev=existingId?(S.calEvents||[]).find(e=>e.id===existingId):null;
   G('wcal-event-modal-title').textContent=ev?'Edit Event':'Add Event';
   G('wcal-ev-title').value=ev?ev.title:'';
   G('wcal-ev-date').value=ev?ev.date:(date||today);
-  G('wcal-ev-start').value=ev?wcalHourToTime(ev.startHour):wcalHourToTime(hour||9);
-  G('wcal-ev-end').value=ev?wcalHourToTime(ev.endHour):wcalHourToTime((hour||9)+1);
+  const isAllDay=ev?ev.startHour==null:false;
+  const alldayCb=G('wcal-ev-allday');
+  if(alldayCb){alldayCb.checked=isAllDay;wcalEvToggleAllDay(isAllDay);}
+  G('wcal-ev-start').value=ev&&ev.startHour!=null?wcalHourToTime(ev.startHour):wcalHourToTime(hour||9);
+  G('wcal-ev-end').value=ev&&ev.endHour!=null?wcalHourToTime(ev.endHour):wcalHourToTime((hour||9)+1);
   G('wcal-ev-color').value=ev?ev.color:'#4285f4';
   G('wcal-ev-cat').value=ev?ev.cat:'meeting';
   G('wcal-ev-notes').value=ev?ev.notes:'';
@@ -11679,9 +11692,14 @@ function wcalCloseEventModal(){
 function wcalSaveEvent(){
   const title=G('wcal-ev-title').value.trim();
   const date=G('wcal-ev-date').value;
-  const startHour=wcalTimeToHour(G('wcal-ev-start').value);
-  const endHour=wcalTimeToHour(G('wcal-ev-end').value);
-  if(!title||!date||endHour<=startHour){alert('Fill in title, date, and a valid time range.');return;}
+  if(!title||!date){alert('Fill in title and date.');return;}
+  const isAllDay=G('wcal-ev-allday')?.checked||false;
+  let startHour=null,endHour=null;
+  if(!isAllDay){
+    startHour=wcalTimeToHour(G('wcal-ev-start').value);
+    endHour=wcalTimeToHour(G('wcal-ev-end').value);
+    if(isNaN(startHour)||isNaN(endHour)||endHour<=startHour){alert('Set a valid time range.');return;}
+  }
   const color=G('wcal-ev-color').value;
   const cat=G('wcal-ev-cat').value;
   const notes=G('wcal-ev-notes').value.trim();
@@ -13032,8 +13050,8 @@ if (_origTaskCheck) {
       html+=`<div class="apcal-event" style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};color:#fff;left:2px;right:2px;"
         onclick="event.stopPropagation();wcalOpenDetail('${b.id}')">${inner}</div>`;
     });
-    // Events
-    items.events.forEach(e=>{
+    // Events (skip all-day — those appear in the allday row)
+    items.events.filter(e=>e.startHour!=null).forEach(e=>{
       const top=e.startHour*SLOT_H;
       const height=Math.max((e.endHour-e.startHour)*SLOT_H,22);
       const catIcons={meeting:'📋',appointment:'🏥',social:'🎉',travel:'✈️',reminder:'🔔',other:'📌'};
