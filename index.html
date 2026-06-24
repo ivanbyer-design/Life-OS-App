@@ -2821,7 +2821,7 @@ html,body{background:var(--bg);}
 .eis-main-grid{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;align-items:start;}
 .eis-side-lbl{display:flex;align-items:center;justify-content:center;}
 .eis-axis-label{font-size:12px;font-weight:600;color:var(--t);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;}
-.eis-q{border-radius:var(--r);padding:12px 12px 10px;margin:3px;display:flex;flex-direction:column;border:1px solid;}
+.eis-q{border-radius:var(--r);padding:12px 12px 10px;margin:3px;display:flex;flex-direction:column;border:1px solid;position:relative;}
 .eis-q.q1{background:color-mix(in srgb,var(--green) 11%,var(--bg-card));border-color:color-mix(in srgb,var(--green) 28%,transparent);}
 .eis-q.q2{background:color-mix(in srgb,var(--blue) 11%,var(--bg-card));border-color:color-mix(in srgb,var(--blue) 28%,transparent);}
 .eis-q.q3{background:color-mix(in srgb,var(--amber) 13%,var(--bg-card));border-color:color-mix(in srgb,var(--amber) 30%,transparent);}
@@ -2847,10 +2847,14 @@ html,body{background:var(--bg);}
 .eis-move-btn:hover{background:var(--bg-a);}
 .eis-move-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
 .eis-move-btn.clr{background:transparent;color:var(--th);border-style:dashed;font-size:9px;}
-.eis-add-row{display:flex;gap:5px;margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);}
-.eis-add-inp{font-size:11px!important;padding:4px 8px!important;}
-.eis-add-btn{flex-shrink:0;width:26px;height:26px;border-radius:8px;border:1.5px solid var(--bd2);background:var(--bg-h);color:var(--t);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all .15s;}
-.eis-add-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.eis-add-corner{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bd2);background:var(--bg-card);color:var(--t);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all .15s;z-index:2;padding:0;}
+.eis-add-corner:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.eis-add-pop{display:none;position:absolute;top:36px;right:8px;background:var(--bg-card);border:1px solid var(--bd);border-radius:12px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,0.14);z-index:20;min-width:220px;flex-direction:column;gap:6px;}
+.eis-add-pop.open{display:flex;}
+.eis-add-inp{font-size:12px!important;padding:6px 10px!important;}
+.eis-add-pop-row{display:flex;gap:6px;align-items:center;}
+.eis-add-pop-btn{flex-shrink:0;height:30px;padding:0 12px;border-radius:8px;border:1.5px solid var(--blue);background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .15s;}
+.eis-add-pop-btn:hover{opacity:.85;}
 
 /* ── PERSONAL TO-DOS ── */
 .home-ptodos-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 16px 12px;box-shadow:var(--sh);}
@@ -7056,6 +7060,15 @@ window._eisFocused=null;
 function eisFocus(id){window._eisFocused=(window._eisFocused===id?null:id);renderEisenhowerMatrix();}
 function eisMove(todoId,q){const t=S.todos.find(t=>t.id===todoId);if(t){t.eis=q;save();}window._eisFocused=null;renderEisenhowerMatrix();renderTodos&&renderTodos();}
 function eisClear(todoId){const t=S.todos.find(t=>t.id===todoId);if(t){delete t.eis;save();}window._eisFocused=null;renderEisenhowerMatrix();}
+function eisToggleAdd(q){
+  const pop=G('eis-add-pop-'+q);
+  if(!pop)return;
+  const isOpen=pop.classList.contains('open');
+  document.querySelectorAll('.eis-add-pop').forEach(p=>p.classList.remove('open'));
+  if(!isOpen){pop.classList.add('open');setTimeout(()=>{const inp=G('eis-add-'+q);if(inp)inp.focus();},40);}
+}
+function eisCloseAdd(){document.querySelectorAll('.eis-add-pop').forEach(p=>p.classList.remove('open'));}
+document.addEventListener('click',function(e){if(!e.target.closest('.eis-add-pop')&&!e.target.closest('.eis-add-corner'))eisCloseAdd();});
 function eisAddTask(q){
   const inp=G('eis-add-'+q);
   const text=(inp&&inp.value||'').trim();
@@ -7064,6 +7077,7 @@ function eisAddTask(q){
   const d=(q===1||q===3)?today:null;
   S.todos.push({id:Date.now(),t:text,p:priority,done:false,d,eis:q});
   if(inp)inp.value='';
+  eisCloseAdd();
   save();renderEisenhowerMatrix();if(typeof renderTodos==='function')renderTodos();
 }
 function renderEisenhowerMatrix(){
@@ -7090,14 +7104,24 @@ function renderEisenhowerMatrix(){
     const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot"></div><div class="eis-task-txt">${t.t}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
     return rows+more;
   };
-  const addRow=q=>`<div class="eis-add-row"><input class="fi eis-add-inp" id="eis-add-${q}" placeholder="Add task..." onkeydown="if(event.key==='Enter')eisAddTask(${q})"><button class="eis-add-btn" onclick="eisAddTask(${q})">+</button></div>`;
   const qs=[
     {arr:q1,q:1,cls:'q1',name:'Do',sub:'Do it now.'},
     {arr:q2,q:2,cls:'q2',name:'Decide',sub:'Schedule a time to do it'},
     {arr:q3,q:3,cls:'q3',name:'Delegate',sub:'Who can do it for you?'},
     {arr:q4,q:4,cls:'q4',name:'Delete',sub:'Eliminate it'}
   ];
-  const qCard=x=>`<div class="eis-q ${x.cls}"><div class="eis-q-name">${x.name}</div><div class="eis-q-action">${x.sub}</div>${taskHtml(x.arr,x.q)}${addRow(x.q)}</div>`;
+  const qCard=x=>`<div class="eis-q ${x.cls}">
+    <button class="eis-add-corner" onclick="event.stopPropagation();eisToggleAdd(${x.q})">+</button>
+    <div class="eis-add-pop" id="eis-add-pop-${x.q}">
+      <div class="eis-add-pop-row">
+        <input class="fi eis-add-inp" id="eis-add-${x.q}" placeholder="Task name..." onkeydown="if(event.key==='Enter')eisAddTask(${x.q});if(event.key==='Escape')eisCloseAdd();">
+        <button class="eis-add-pop-btn" onclick="eisAddTask(${x.q})">Add</button>
+      </div>
+    </div>
+    <div class="eis-q-name">${x.name}</div>
+    <div class="eis-q-action">${x.sub}</div>
+    ${taskHtml(x.arr,x.q)}
+  </div>`;
   el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">Urgent</div><div class="eis-axis-top">Not Urgent</div></div><div class="eis-main-grid"><div class="eis-side-lbl"><span class="eis-axis-label">Important</span></div>${qCard(qs[0])}${qCard(qs[1])}<div class="eis-side-lbl"><span class="eis-axis-label">Not Important</span></div>${qCard(qs[2])}${qCard(qs[3])}</div></div>`;
 }
 
