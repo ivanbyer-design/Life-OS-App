@@ -2696,13 +2696,13 @@ html,body{background:var(--bg);}
 /* month view inside apple cal */
 /* ── APPLE CAL MONTH VIEW ── */
 .apcal-mv{display:flex;flex-direction:column;height:100%;overflow:hidden;}
-.apcal-mv-hdr{display:grid;grid-template-columns:26px repeat(7,1fr);border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg-card);}
+.apcal-mv-hdr{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--bd);flex-shrink:0;background:var(--bg-card);}
 .apcal-mv-wk-corner{border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
 .apcal-mv-dow{font-size:10px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.05em;padding:7px 0;text-align:center;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
 .apcal-mv-dow.is-weekend{color:var(--th);}
 .apcal-mv-dow:last-child{border-right:none;}
 .apcal-mv-grid{flex:1;display:grid;overflow:hidden;}
-.apcal-mv-row{display:grid;grid-template-columns:26px repeat(7,1fr);border-bottom:1px solid var(--bd);overflow:hidden;min-height:0;}
+.apcal-mv-row{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--bd);overflow:hidden;min-height:0;}
 .apcal-mv-row:last-child{border-bottom:none;}
 .apcal-mv-wknum{font-size:8.5px;font-weight:700;color:var(--th);display:flex;align-items:flex-start;justify-content:center;padding-top:6px;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);}
 .apcal-mc{overflow:hidden;border-right:1px solid color-mix(in srgb,var(--bd) 55%,transparent);padding:3px 4px 2px;cursor:pointer;transition:background .1s;display:flex;flex-direction:column;position:relative;}
@@ -13177,7 +13177,7 @@ if (_origTaskCheck) {
     const numRows=Math.ceil((firstDay+daysInMonth)/7);
     let html=`<div class="apcal-mv">`;
     // DOW header row
-    html+=`<div class="apcal-mv-hdr"><div class="apcal-mv-wk-corner"></div>`;
+    html+=`<div class="apcal-mv-hdr">`;
     DAYS.forEach((d,i)=>{html+=`<div class="apcal-mv-dow${i===0||i===6?' is-weekend':''}">${d}</div>`;});
     html+=`</div>`;
     // Grid
@@ -13187,7 +13187,7 @@ if (_origTaskCheck) {
       const rowFirstDate=new Date(y,m,Math.max(rowFirstIdx,1));
       rowFirstDate.setHours(12,0,0,0);
       const wkNum=getWeekNumber(rowFirstDate);
-      html+=`<div class="apcal-mv-row"><div class="apcal-mv-wknum">${wkNum}</div>`;
+      html+=`<div class="apcal-mv-row">`;
       for(let col=0;col<7;col++){
         const di=row*7+col-firstDay+1;
         let ds,label,isOther=false;
