@@ -4226,6 +4226,9 @@ if(S.gcalVisible===undefined)S.gcalVisible=true;
   let changed=false;
   (S.timeBlocks||[]).forEach(b=>{
     if(b.recurId&&!b.linkId){b.linkId=b.recurId;changed=true;}
+    if(b.recur!==undefined){delete b.recur;changed=true;}
+    if(b.recurWeeks!==undefined){delete b.recurWeeks;changed=true;}
+    if(b.recurDays!==undefined){delete b.recurDays;changed=true;}
   });
   if(changed)try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
 })();
@@ -4297,7 +4300,7 @@ function go(id,el){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   const _panel=G('p-'+id);
   _panel.classList.add('on');
-  _panel.addEventListener('animationend',function _clearT(){_panel.style.transform='none';_panel.removeEventListener('animationend',_clearT);},{once:true});
+  _panel.addEventListener('animationend',function _clearT(e){if(e.target!==_panel)return;_panel.style.animation='none';_panel.removeEventListener('animationend',_clearT);});
   if(el)el.classList.add('on');
   G('bc-ic').textContent=PM[id]?PM[id].ic:'📝';
   G('bc-ttl').textContent=PM[id]?PM[id].ttl:id;
@@ -13004,15 +13007,7 @@ if (_origTaskCheck) {
   // Get all items for a date string, filtered by calendar visibility
   function apItemsForDay(dStr){
     const out={blocks:[],events:[],tasks:[],gcal:[]};
-    (S.timeBlocks||[]).filter(b=>{
-      if(!calIsVisible(b.calendarId))return false;
-      if(b.date===dStr)return true;
-      if(b.recur&&b.recur!=='none'){
-        const dates=wcalGetRecurDates(b.date,b.recur,b.recurWeeks,b.recurDays);
-        return dates.includes(dStr);
-      }
-      return false;
-    }).forEach(b=>out.blocks.push(b));
+    (S.timeBlocks||[]).filter(b=>calIsVisible(b.calendarId)&&b.date===dStr).forEach(b=>out.blocks.push(b));
     (S.calEvents||[]).filter(e=>e.date===dStr&&calIsVisible(e.calendarId)).forEach(e=>out.events.push(e));
     (S.personalTodos||[]).filter(t=>t.calDate===dStr&&t.calHour!=null&&calIsVisible(t.calendarId)).forEach(t=>out.tasks.push(t));
     if(S.gcalVisible!==false&&window.gcalEvents){
