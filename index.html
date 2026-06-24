@@ -830,7 +830,7 @@ textarea.fi{resize:vertical;min-height:52px;}
 
 /* PANEL FADE IN */
 .panel.on{animation:panelIn .4s var(--spring) both;}
-@keyframes panelIn{0%{opacity:0;transform:translateY(18px) scale(0.97);}60%{opacity:1;transform:translateY(-4px) scale(1.004);}100%{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes panelIn{0%{opacity:0;transform:translateY(18px) scale(0.97);}60%{opacity:1;transform:translateY(-4px) scale(1.004);}100%{opacity:1;transform:none;}}
 
 /* BUCKET PCT font upgrade */
 .proj-bucket-pct{font-weight:800!important;letter-spacing:-0.02em!important;}
@@ -1168,7 +1168,7 @@ input:-webkit-autofill,input:-webkit-autofill:focus{
 
 /* Smooth panel entry animation */
 .panel.on{animation:panelFadeIn .38s var(--spring) both;}
-@keyframes panelFadeIn{0%{opacity:0;transform:translateY(14px) scale(0.97);}65%{opacity:1;transform:translateY(-3px) scale(1.003);}100%{opacity:1;transform:translateY(0) scale(1);}}
+@keyframes panelFadeIn{0%{opacity:0;transform:translateY(14px) scale(0.97);}65%{opacity:1;transform:translateY(-3px) scale(1.003);}100%{opacity:1;transform:none;}}
 
 /* Divider style */
 .divider{height:1px;background:var(--bd);margin:12px 0;}
@@ -2390,7 +2390,7 @@ html,body{background:var(--bg);}
 .wcal-time-indicator{position:absolute;left:0;right:0;height:2px;background:var(--red);z-index:3;pointer-events:none;}
 .wcal-time-indicator::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--red);}
 /* wcal modal */
-.wcal-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:1000;display:flex;align-items:flex-start;justify-content:center;padding-top:5vh;pointer-events:none;transition:background .22s ease;}
+.wcal-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:1000;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:background .22s ease;}
 .wcal-modal-overlay.open{background:rgba(0,0,0,0.55);pointer-events:all;}
 @keyframes wcalModalIn{from{opacity:0;transform:scale(0.94) translateY(-18px);}to{opacity:1;transform:scale(1) translateY(0);}}
 @keyframes wcalModalOut{from{opacity:1;transform:scale(1) translateY(0);}to{opacity:0;transform:scale(0.94) translateY(-14px);}}
@@ -2398,7 +2398,7 @@ html,body{background:var(--bg);}
 .wcal-modal-overlay.open .wcal-modal{opacity:1;pointer-events:all;animation:wcalModalIn .26s cubic-bezier(0.34,1.56,0.64,1) forwards;}
 .wcal-modal.closing{animation:wcalModalOut .16s ease forwards;}
 /* Block detail popup */
-.wcal-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:999;display:flex;align-items:flex-start;justify-content:center;padding-top:5vh;pointer-events:none;transition:background .18s ease;}
+.wcal-detail-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:999;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:background .18s ease;}
 .wcal-detail-overlay.open{background:rgba(0,0,0,0.45);pointer-events:all;}
 @keyframes wcalDetailIn{from{opacity:0;transform:scale(0.94) translateY(-14px);}to{opacity:1;transform:scale(1) translateY(0);}}
 .wcal-detail-panel{background:var(--bg-card);border-radius:18px;width:min(96vw,400px);max-height:80vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.3);opacity:0;pointer-events:none;transform:scale(0.94) translateY(-14px);}
@@ -2418,7 +2418,7 @@ html,body{background:var(--bg);}
 .wcal-detail-empty{font-size:13px;color:var(--ts);padding:16px 0;text-align:center;}
 .wcal-detail-footer{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;}
 /* Type picker */
-.wcal-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:1001;display:flex;align-items:flex-start;justify-content:center;padding-top:5vh;pointer-events:none;transition:background .18s ease;}
+.wcal-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,0);z-index:1001;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:background .18s ease;}
 .wcal-picker-overlay.open{background:rgba(0,0,0,0.5);pointer-events:all;}
 .wcal-picker{background:var(--bg-card);border-radius:20px;width:min(96vw,420px);box-shadow:0 20px 60px rgba(0,0,0,0.3);padding:20px;opacity:0;transform:scale(0.94) translateY(-14px);pointer-events:none;}
 .wcal-picker-overlay.open .wcal-picker{opacity:1;pointer-events:all;animation:wcalModalIn .24s cubic-bezier(0.34,1.56,0.64,1) forwards;}
