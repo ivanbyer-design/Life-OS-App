@@ -4295,7 +4295,9 @@ const PM={home:{ic:'∞',ttl:'Home'},finance:{ic:'🧾',ttl:'Bills & Budgets'},t
 function go(id,el){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
-  G('p-'+id).classList.add('on');
+  const _panel=G('p-'+id);
+  _panel.classList.add('on');
+  _panel.addEventListener('animationend',function _clearT(){_panel.style.transform='none';_panel.removeEventListener('animationend',_clearT);},{once:true});
   if(el)el.classList.add('on');
   G('bc-ic').textContent=PM[id]?PM[id].ic:'📝';
   G('bc-ttl').textContent=PM[id]?PM[id].ttl:id;
@@ -14102,14 +14104,5 @@ if (_origTaskCheck) {
 </div>
 
 
-<script>
-// After each panel's slide-in animation ends, explicitly clear the transform
-// so it no longer acts as a containing block for position:fixed descendants.
-document.addEventListener('animationend',function(e){
-  if(e.animationName==='panelIn'||e.animationName==='panelFadeIn'){
-    e.target.style.transform='none';
-  }
-},true);
-</script>
 </body>
 </html>
