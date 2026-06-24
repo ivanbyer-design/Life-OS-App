@@ -7083,11 +7083,12 @@ function renderEisenhowerMatrix(){
   const qLabels=['Q1','Q2','Q3','Q4'];
   const movePanel=(t,curQ)=>`<div class="eis-move-panel"><span class="eis-move-lbl">Move:</span>${qLabels.map((l,i)=>`<button class="eis-move-btn${(i+1)===curQ?' active':''}" onclick="event.stopPropagation();eisMove(${t.id},${i+1})">${l}</button>`).join('')}${t.eis?`<button class="eis-move-btn clr" onclick="event.stopPropagation();eisClear(${t.id})">auto</button>`:''}</div>`;
   const taskHtml=(arr,curQ,max=5)=>{
-    if(!arr.length&&focused===null)return'<div class="eis-empty">None</div>';
-    const shown=arr.slice(0,max);
-    const more=arr.length>max?`<div class="eis-more">+${arr.length-max} more</div>`:'';
-    const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot"></div><div class="eis-task-txt">${t.t||''}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
-    return(rows||'<div class="eis-empty">None</div>')+more;
+    const valid=arr.filter(t=>t.t&&t.t.trim());
+    if(!valid.length&&focused===null)return'';
+    const shown=valid.slice(0,max);
+    const more=valid.length>max?`<div class="eis-more">+${valid.length-max} more</div>`:'';
+    const rows=shown.map(t=>`<div class="eis-task${focused===t.id?' focused':''}" onclick="eisFocus(${t.id})"><div class="eis-dot"></div><div class="eis-task-txt">${t.t}</div><div class="eis-task-arr">›</div></div>${focused===t.id?movePanel(t,curQ):''}`).join('');
+    return rows+more;
   };
   const addRow=q=>`<div class="eis-add-row"><input class="fi eis-add-inp" id="eis-add-${q}" placeholder="Add task..." onkeydown="if(event.key==='Enter')eisAddTask(${q})"><button class="eis-add-btn" onclick="eisAddTask(${q})">+</button></div>`;
   const qs=[
