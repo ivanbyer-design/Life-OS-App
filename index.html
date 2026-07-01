@@ -671,6 +671,26 @@ textarea.fi{resize:vertical;min-height:52px;}
 .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:14px 0;}
 @media(max-width:768px){.proj-grid{grid-template-columns:1fr;}}
 
+/* RESUME WIDGET — "continue where you left off" */
+.proj-resume{
+  display:flex;align-items:center;gap:14px;padding:16px 18px;
+  border-radius:var(--rl);border:1px solid var(--bd);margin:12px 0;cursor:pointer;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--blue) 10%,var(--bg-card)),var(--bg-card));
+  transition:transform .15s,box-shadow .15s;
+}
+.proj-resume:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.proj-resume-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;box-shadow:0 0 0 4px color-mix(in srgb,var(--blue) 18%,transparent);}
+.proj-resume-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--ts);}
+.proj-resume-name{font-size:14.5px;font-weight:800;color:var(--t);margin-top:2px;}
+.proj-resume-sub{font-size:12px;color:var(--ts);margin-top:3px;}
+.proj-resume-cta{font-size:12px;font-weight:700;color:var(--blue);white-space:nowrap;flex-shrink:0;}
+
+/* "last worked on" line on project cards */
+.proj-card-lastworked{
+  display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--ts);
+  margin-top:8px;padding-top:8px;border-top:1px solid var(--bd);
+}
+
 /* PROJECT CARD */
 .proj-card{
   background:var(--bg-card);border:1px solid var(--bd);
@@ -865,6 +885,299 @@ textarea.fi{resize:vertical;min-height:52px;}
 .proj-drawer{transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 40px rgba(0,0,0,0.12);}
 .proj-drawer-overlay{backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
 .proj-drawer-footer{background:var(--bg-h);}
+
+/* ═══════════════════════════════════════════
+   PROJECT DASHBOARD MODAL
+═══════════════════════════════════════════ */
+.pdb-overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,0.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:none;align-items:flex-start;justify-content:center;
+  padding:20px;overflow-y:auto;
+}
+.pdb-overlay.open{display:flex;animation:pdbFadeIn .2s ease both;}
+@keyframes pdbFadeIn{from{opacity:0;}to{opacity:1;}}
+.pdb-modal{
+  width:100%;max-width:820px;min-height:88vh;
+  background:var(--bg-card);border-radius:22px;
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 32px 100px rgba(0,0,0,0.35),0 0 0 1px rgba(255,255,255,0.06);
+  margin:auto;animation:pdbSlideUp .3s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pdbSlideUp{from{opacity:0;transform:translateY(40px) scale(0.96);}to{opacity:1;transform:none;}}
+
+/* HERO HEADER */
+.pdb-hero{
+  padding:28px 30px 22px;flex-shrink:0;position:relative;overflow:hidden;
+}
+.pdb-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:220px;height:220px;border-radius:50%;
+  background:rgba(255,255,255,0.07);pointer-events:none;
+}
+.pdb-hero::after{
+  content:'';position:absolute;bottom:-60px;right:80px;
+  width:160px;height:160px;border-radius:50%;
+  background:rgba(255,255,255,0.04);pointer-events:none;
+}
+.pdb-hero-close{
+  position:absolute;top:16px;right:16px;
+  width:34px;height:34px;border-radius:50%;
+  border:none;background:rgba(255,255,255,0.18);
+  color:#fff;font-size:15px;cursor:pointer;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);transition:background .15s,transform .15s;
+}
+.pdb-hero-close:hover{background:rgba(255,255,255,0.28);transform:scale(1.1);}
+.pdb-hero-top{display:flex;align-items:flex-start;gap:18px;position:relative;z-index:1;}
+.pdb-hero-ring-wrap{flex-shrink:0;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.2));}
+.pdb-hero-info{flex:1;padding-top:2px;}
+.pdb-hero-name{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.025em;line-height:1.2;}
+.pdb-hero-cat{font-size:12px;color:rgba(255,255,255,0.7);margin-top:5px;font-weight:500;}
+.pdb-hero-badges{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+.pdb-hero-badge{
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;
+  background:rgba(255,255,255,0.2);color:#fff;backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,0.15);
+}
+.pdb-hero-badge.deadline{background:rgba(255,82,82,0.3);border-color:rgba(255,82,82,0.4);}
+.pdb-hero-badge.overdue{background:rgba(255,59,48,0.5);border-color:rgba(255,59,48,0.6);animation:pdbPulse 2s infinite;}
+@keyframes pdbPulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
+.pdb-lastworked{
+  margin-top:12px;font-size:11.5px;font-weight:600;color:rgba(255,255,255,0.85);
+  display:flex;align-items:center;gap:6px;position:relative;z-index:1;
+}
+.pdb-stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  margin-top:20px;position:relative;z-index:1;
+}
+.pdb-stat{
+  background:rgba(255,255,255,0.15);border-radius:14px;
+  padding:12px 14px;backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.12);
+}
+.pdb-stat-val{font-size:21px;font-weight:800;color:#fff;line-height:1;letter-spacing:-0.02em;}
+.pdb-stat-lbl{font-size:9.5px;color:rgba(255,255,255,0.65);margin-top:4px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;}
+
+/* DASHBOARD QUICK-JUMP NAV (all sections render on one scrollable page; these jump-scroll to a section) */
+.pdb-tabs{
+  display:flex;gap:0;border-bottom:1px solid var(--bd);
+  padding:0 24px;background:var(--bg-card);flex-shrink:0;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.pdb-tabs::-webkit-scrollbar{display:none;}
+.pdb-tab{
+  background:none;border:none;padding:13px 16px;
+  font-size:12px;font-weight:600;color:var(--ts);
+  cursor:pointer;border-bottom:2.5px solid transparent;
+  white-space:nowrap;font-family:var(--font);transition:color .12s;
+  display:flex;align-items:center;gap:5px;
+}
+.pdb-tab:hover{color:var(--t);}
+.pdb-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.pdb-tab-cnt{
+  background:var(--bg-tag);color:var(--ts);
+  font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:10px;
+}
+.pdb-tab.active .pdb-tab-cnt{background:var(--bbg);color:var(--blue);}
+
+/* DASHBOARD BODY — single continuous scrollable page */
+.pdb-body{flex:1;overflow-y:auto;padding:24px 30px;-webkit-overflow-scrolling:touch;}
+.pdb-tab-content{display:block;scroll-margin-top:14px;}
+.pdb-section-hdr{
+  display:flex;align-items:center;gap:10px;
+  font-size:15px;font-weight:800;color:var(--t);letter-spacing:-0.01em;
+  margin:32px 0 16px;padding-top:20px;border-top:1px solid var(--bd);
+  scroll-margin-top:14px;
+}
+.pdb-section-hdr:first-child{margin-top:4px;padding-top:0;border-top:none;}
+
+/* OVERVIEW: METRICS GRID */
+.pdb-metric-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:24px;}
+.pdb-metric{
+  background:var(--bg-in);border:1px solid var(--bd);
+  border-radius:16px;padding:16px 14px;
+  transition:transform .15s,box-shadow .15s;
+}
+.pdb-metric:hover{transform:translateY(-2px);box-shadow:var(--sh-md);}
+.pdb-metric-icon{font-size:20px;margin-bottom:8px;}
+.pdb-metric-val{font-size:24px;font-weight:800;color:var(--t);letter-spacing:-0.025em;line-height:1;}
+.pdb-metric-lbl{font-size:10px;color:var(--ts);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;}
+.pdb-metric-sub{font-size:11px;color:var(--ts);margin-top:2px;}
+
+/* HEALTH SCORE */
+.pdb-health-row{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:14px 16px;background:var(--bg-in);border-radius:14px;border:1px solid var(--bd);}
+.pdb-health-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+.pdb-health-badge.great{background:var(--gbg);color:var(--green);}
+.pdb-health-badge.good{background:var(--bbg);color:var(--blue);}
+.pdb-health-badge.warn{background:var(--abg);color:var(--amber);}
+.pdb-health-badge.risk{background:var(--rbg);color:var(--red);}
+.pdb-health-label{font-size:12px;color:var(--ts);}
+
+/* KANBAN */
+.pdb-kanban{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;}
+.pdb-kanban::-webkit-scrollbar{height:4px;}
+.pdb-kanban::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
+.pdb-kcol{flex:0 0 230px;}
+.pdb-kcol-hdr{
+  font-size:10.5px;font-weight:800;color:var(--ts);
+  text-transform:uppercase;letter-spacing:0.09em;
+  margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 2px;
+}
+.pdb-kcol-hdr .k-cnt{
+  background:var(--bg-tag);color:var(--ts);
+  font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700;
+}
+.pdb-kcol-body{
+  background:var(--bg-in);border-radius:14px;padding:8px;
+  min-height:140px;border:1.5px solid var(--bd);
+}
+.pdb-ktask{
+  background:var(--bg-card);border:1px solid var(--bd);border-radius:10px;
+  padding:10px 12px;margin-bottom:7px;cursor:pointer;
+  transition:transform .12s,box-shadow .12s,border-color .12s;
+  position:relative;overflow:hidden;
+}
+.pdb-ktask::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3.5px;border-radius:3px 0 0 3px;}
+.pdb-ktask.pri-high::before{background:var(--red);}
+.pdb-ktask.pri-med::before{background:var(--amber);}
+.pdb-ktask.pri-low::before{background:var(--bd2);}
+.pdb-ktask:hover{transform:translateY(-2px);box-shadow:var(--sh-md);border-color:var(--bd2);}
+.pdb-ktask-name{font-size:12.5px;color:var(--t);font-weight:500;line-height:1.45;word-break:break-word;}
+.pdb-ktask.done-task .pdb-ktask-name{text-decoration:line-through;color:var(--ts);}
+.pdb-ktask-meta{display:flex;align-items:center;gap:5px;margin-top:7px;}
+.pdb-ktask-pri{font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;}
+.pdb-ktask-pri.high{background:var(--rbg);color:var(--red);}
+.pdb-ktask-pri.med{background:var(--abg);color:var(--amber);}
+.pdb-ktask-pri.low{background:var(--bg-tag);color:var(--ts);}
+.pdb-kmove-btn{
+  font-size:10px;padding:2px 8px;border-radius:6px;
+  border:1px solid var(--bd);background:var(--bg-in);
+  color:var(--ts);cursor:pointer;font-family:var(--font);
+  transition:all .1s;margin-top:6px;display:inline-block;
+}
+.pdb-kmove-btn:hover{background:var(--bg-h);color:var(--t);}
+.pdb-kdel-btn{
+  font-size:10px;padding:2px 6px;border-radius:6px;
+  border:1px solid transparent;background:transparent;
+  color:var(--th);cursor:pointer;font-family:var(--font);
+  transition:all .1s;margin-top:6px;display:inline-block;
+}
+.pdb-kdel-btn:hover{background:var(--rbg);color:var(--red);border-color:var(--red);}
+.pdb-kadd-btn{
+  font-size:11.5px;color:var(--ts);cursor:pointer;
+  padding:8px;border-radius:10px;text-align:center;
+  border:1.5px dashed var(--bd);transition:all .15s;
+  font-family:var(--font);background:none;width:100%;
+}
+.pdb-kadd-btn:hover{background:var(--bg-h);color:var(--t);border-color:var(--bd2);}
+
+/* TASK PRIORITY INLINE EDIT */
+.pdb-ktask-pri-sel{
+  font-size:10px;border:1px solid var(--bd);background:var(--bg-in);
+  color:var(--ts);border-radius:6px;padding:2px 4px;cursor:pointer;
+  font-family:var(--font);outline:none;margin-top:4px;
+}
+
+/* ROADMAP TIMELINE */
+.pdb-timeline{position:relative;padding-left:32px;}
+.pdb-timeline::before{
+  content:'';position:absolute;left:9px;top:12px;bottom:12px;
+  width:2px;background:linear-gradient(to bottom,var(--blue) 0%,var(--bd) 100%);
+  border-radius:2px;
+}
+.pdb-tl-item{position:relative;padding:0 0 20px 0;}
+.pdb-tl-item:last-child{padding-bottom:0;}
+.pdb-tl-dot{
+  position:absolute;left:-29px;top:14px;
+  width:20px;height:20px;border-radius:50%;
+  border:2.5px solid var(--bg-card);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;transition:all .2s;
+}
+.pdb-tl-dot.todo{background:var(--bg-tag);box-shadow:0 0 0 2px var(--bd);}
+.pdb-tl-dot.active{background:var(--blue);box-shadow:0 0 0 4px var(--bbg);}
+.pdb-tl-dot.done{background:var(--green);box-shadow:0 0 0 3px var(--gbg);}
+.pdb-tl-dot.blocked{background:var(--red);box-shadow:0 0 0 3px var(--rbg);animation:pdbPulse 2s infinite;}
+.pdb-tl-card{
+  background:var(--bg-in);border:1px solid var(--bd);
+  border-radius:14px;padding:14px 16px;
+  transition:border-color .15s;
+}
+.pdb-tl-card.active{border-color:var(--blue);background:var(--bbg);}
+.pdb-tl-card.done{border-color:var(--green);background:var(--gbg);}
+.pdb-tl-card.blocked{border-color:var(--red);}
+.pdb-tl-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.pdb-tl-name{font-size:13.5px;font-weight:700;color:var(--t);}
+.pdb-tl-due{font-size:11px;color:var(--ts);margin-top:3px;}
+.pdb-tl-status-sel{
+  font-size:11px;border:1px solid var(--bd);background:var(--bg-card);
+  color:var(--t);border-radius:8px;padding:3px 6px;cursor:pointer;
+  font-family:var(--font);outline:none;
+}
+.pdb-tl-del{
+  background:none;border:none;cursor:pointer;color:var(--th);
+  font-size:13px;padding:2px 6px;border-radius:6px;transition:all .1s;
+}
+.pdb-tl-del:hover{background:var(--rbg);color:var(--red);}
+.pdb-tl-add-btn{
+  display:flex;align-items:center;gap:8px;padding:12px 16px;
+  border-radius:14px;border:1.5px dashed var(--bd);
+  background:none;cursor:pointer;color:var(--ts);font-family:var(--font);
+  font-size:12.5px;width:100%;text-align:left;transition:all .15s;
+}
+.pdb-tl-add-btn:hover{background:var(--bg-in);color:var(--t);border-color:var(--bd2);}
+
+/* BUDGET SECTION */
+.pdb-budget-gauge{height:14px;background:var(--bg-tag);border-radius:10px;overflow:hidden;margin:14px 0;}
+.pdb-budget-fill{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.pdb-budget-fill.ok{background:linear-gradient(90deg,var(--green),#34d058);}
+.pdb-budget-fill.warn{background:linear-gradient(90deg,var(--amber),#f59e0b);}
+.pdb-budget-fill.over{background:linear-gradient(90deg,var(--red),#ff6b6b);}
+.pdb-exp-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;border-bottom:1px solid var(--bd);font-size:12.5px;color:var(--t);
+}
+.pdb-exp-amt{font-weight:700;color:var(--red);}
+
+/* NOTES */
+.pdb-notes-ta{
+  width:100%;min-height:240px;border-radius:14px;
+  border:1px solid var(--bd);background:var(--bg-in);
+  color:var(--t);font-family:var(--font);font-size:13.5px;
+  padding:16px;line-height:1.7;resize:vertical;
+  transition:border-color .15s,box-shadow .15s;outline:none;
+  box-sizing:border-box;
+}
+.pdb-notes-ta:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--bbg);}
+
+/* DASHBOARD FOOTER */
+.pdb-footer{
+  padding:14px 30px;border-top:1px solid var(--bd);
+  flex-shrink:0;background:var(--bg-h);
+  display:flex;gap:8px;align-items:center;
+}
+.pdb-footer .fi{margin:0;flex:1;}
+
+/* Section headers in dashboard */
+.pdb-sh{font-size:11.5px;font-weight:800;color:var(--ts);text-transform:uppercase;letter-spacing:0.08em;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+.pdb-sh-line{flex:1;height:1px;background:var(--bd);}
+
+/* Responsive */
+@media(max-width:620px){
+  .pdb-overlay{padding:0;align-items:flex-end;}
+  .pdb-modal{max-height:96vh;border-radius:20px 20px 0 0;min-height:80vh;}
+  .pdb-hero{padding:20px 18px 16px;}
+  .pdb-body{padding:16px 18px;}
+  .pdb-footer{padding:12px 18px;}
+  .pdb-hero-name{font-size:18px;}
+  .pdb-stats-row{grid-template-columns:repeat(2,1fr);}
+  .pdb-kanban{gap:10px;}
+  .pdb-kcol{flex:0 0 190px;}
+  .pdb-tabs{padding:0 14px;}
+  .pdb-tab{padding:12px 12px;}
+}
 
 /* EDIT MODE BAR */
 .exit-edit-btn{border-radius:20px;font-weight:700;}
@@ -2930,6 +3243,7 @@ html,body{background:var(--bg);}
     <div class="tb-acts">
       <button class="tb-cmd-btn" onclick="openCmdPalette()" title="Command palette (⌘K)" aria-label="Open command palette">🔍 <span class="cmd-kbd" style="font-size:10px;">⌘K</span></button>
       <button class="ic-btn" onclick="toggleDark()" title="Toggle dark mode" style="font-size:16px;">◑</button>
+      <span id="sync-status" title="Cloud sync status" style="font-size:10px;font-weight:700;color:var(--ts);padding:2px 8px;border-radius:10px;background:var(--bg-in);border:1px solid var(--bd);cursor:default;letter-spacing:0.03em;">Synced</span>
       <button class="tb-btn pri" id="new-btn" style="display:none;" onclick="triggerAdd()">＋ New</button>
     </div>
   </div>
@@ -3880,6 +4194,7 @@ html,body{background:var(--bg);}
 
       <!-- PROJECTS TAB -->
       <div class="planning-tab-body" id="ptab-projects-body">
+        <div id="proj-resume-widget"></div>
         <div class="summary-bar" id="proj-summary" style="margin-top:12px;"></div>
         <div class="nf" style="margin:12px 0;">
           <div class="nf-ttl">＋ New project</div>
@@ -4183,22 +4498,48 @@ html,body{background:var(--bg);}
   <span id="ptr-label">Pull down to refresh</span>
 </div>
 
-<!-- PROJECT DETAIL DRAWER -->
-<div class="proj-drawer-overlay" id="proj-drawer-overlay" onclick="closeProjectDrawer()"></div>
-<div class="proj-drawer" id="proj-drawer">
-  <div class="proj-drawer-header">
-    <button class="proj-drawer-close" onclick="closeProjectDrawer()">✕</button>
-    <div style="flex:1;">
-      <div style="font-size:15px;font-weight:600;color:var(--t);" id="drawer-title">Project</div>
-      <div style="font-size:12px;color:var(--ts);" id="drawer-sub"></div>
+<!-- PROJECT DASHBOARD MODAL -->
+<div class="pdb-overlay" id="pdb-overlay" onclick="handlePdbOverlayClick(event)">
+  <div class="pdb-modal" id="pdb-modal">
+    <!-- HERO -->
+    <div class="pdb-hero" id="pdb-hero">
+      <button class="pdb-hero-close" onclick="closeProjectDrawer()">✕</button>
+      <div class="pdb-hero-top">
+        <div class="pdb-hero-ring-wrap" id="pdb-ring"></div>
+        <div class="pdb-hero-info">
+          <div class="pdb-hero-name" id="pdb-name">Project</div>
+          <div class="pdb-hero-cat" id="pdb-cat"></div>
+          <div class="pdb-hero-badges" id="pdb-badges"></div>
+          <div class="pdb-lastworked" id="pdb-lastworked"></div>
+        </div>
+      </div>
+      <div class="pdb-stats-row" id="pdb-stats"></div>
     </div>
-    <button class="btn xs" onclick="deleteCurrentProject()" style="color:var(--red);border-color:var(--red);">Delete</button>
-  </div>
-  <div class="proj-drawer-body" id="drawer-body"></div>
-  <div class="proj-drawer-footer">
-    <div class="fr">
-      <input class="fi" type="text" id="drawer-task-inp" placeholder="Add task to project..." style="margin:0;" onkeydown="if(event.key==='Enter')addProjectTask()">
-      <button class="btn pri" onclick="addProjectTask()" style="margin:0;">+ Task</button>
+    <!-- QUICK-JUMP NAV (scrolls the one-page dashboard below, doesn't switch views) -->
+    <div class="pdb-tabs" id="pdb-tabs">
+      <button class="pdb-tab active" id="pdbtab-overview" onclick="switchProjTab('overview',this)">🏠 Overview</button>
+      <button class="pdb-tab" id="pdbtab-tasks" onclick="switchProjTab('tasks',this)">✅ Tasks <span class="pdb-tab-cnt" id="pdb-task-cnt">0</span></button>
+      <button class="pdb-tab" id="pdbtab-roadmap" onclick="switchProjTab('roadmap',this)">🗺️ Roadmap <span class="pdb-tab-cnt" id="pdb-phase-cnt">0</span></button>
+      <button class="pdb-tab" id="pdbtab-budget" onclick="switchProjTab('budget',this)">💰 Budget</button>
+      <button class="pdb-tab" id="pdbtab-notes" onclick="switchProjTab('notes',this)">📝 Notes</button>
+    </div>
+    <!-- BODY — every section renders together as one continuous page -->
+    <div class="pdb-body" id="pdb-body">
+      <div class="pdb-section-hdr" id="pdb-sec-overview">🏠 Overview</div>
+      <div class="pdb-tab-content active" id="pdb-overview"></div>
+      <div class="pdb-section-hdr" id="pdb-sec-tasks">✅ Tasks</div>
+      <div class="pdb-tab-content" id="pdb-tasks"></div>
+      <div class="pdb-section-hdr" id="pdb-sec-roadmap">🗺️ Roadmap</div>
+      <div class="pdb-tab-content" id="pdb-roadmap"></div>
+      <div class="pdb-section-hdr" id="pdb-sec-budget">💰 Budget</div>
+      <div class="pdb-tab-content" id="pdb-budget"></div>
+      <div class="pdb-section-hdr" id="pdb-sec-notes">📝 Notes</div>
+      <div class="pdb-tab-content" id="pdb-notes"></div>
+    </div>
+    <!-- FOOTER -->
+    <div class="pdb-footer">
+      <input class="fi" type="text" id="drawer-task-inp" placeholder="Quick-add task to this project..." onkeydown="if(event.key==='Enter')addProjectTask()">
+      <button class="btn pri" onclick="addProjectTask()" style="margin:0;white-space:nowrap;">+ Task</button>
     </div>
   </div>
 </div>
@@ -4296,7 +4637,55 @@ if(!S.liveCategories.length){
     {id:Date.now()+4,name:'Laundry',budget:30,icon:'🧺'}
   ];
 }
-const save=()=>{try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}};
+// ─── CLOUD SYNC ─────────────────────────────────────
+const SYNC_KEY='lifeos-sync-2026';
+const SYNC_URL='/api/lifeos';
+let syncTimer=null;
+
+function setSyncStatus(s){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  const map={idle:{t:'Synced ✓',c:'var(--green)'},syncing:{t:'Saving…',c:'var(--amber)'},pulling:{t:'Loading…',c:'var(--blue)'},error:{t:'Offline',c:'var(--red)'}};
+  const m=map[s]||map.idle;
+  el.textContent=m.t;el.style.color=m.c;
+}
+
+async function pushToCloud(){
+  try{
+    setSyncStatus('syncing');
+    const r=await fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json','X-API-Key':SYNC_KEY},body:JSON.stringify({data:S})});
+    if(r.ok){setSyncStatus('idle');}
+    else{console.warn('[LifeOS] Push failed:',r.status,r.statusText);setSyncStatus('error');}
+  }catch(e){console.warn('[LifeOS] Push error:',e.message);setSyncStatus('error');}
+}
+
+async function pullFromCloud(){
+  try{
+    setSyncStatus('pulling');
+    const r=await fetch(SYNC_URL,{headers:{'X-API-Key':SYNC_KEY}});
+    if(!r.ok){setSyncStatus('error');return;}
+    const {data}=await r.json();
+    if(!data){
+      // Nothing on server yet — push local data up to seed it
+      await pushToCloud();
+      return;
+    }
+    // Postgres is source of truth — always load it
+    S=Object.assign(S,data);
+    try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
+    if(typeof renderAll==='function')renderAll();
+    setSyncStatus('idle');
+  }catch(e){
+    console.warn('[LifeOS] Pull error:',e.message);
+    setSyncStatus('error');
+  }
+}
+
+const save=()=>{
+  try{localStorage.setItem('lifeOS_v3',JSON.stringify(S));}catch(e){}
+  clearTimeout(syncTimer);
+  syncTimer=setTimeout(pushToCloud,1500);
+};
 // Current month key (YYYY-MM) and bill calendar state
 const currentMonth=today.slice(0,7);
 let blCalYear=new Date().getFullYear(),blCalMon=new Date().getMonth();
@@ -7602,6 +7991,24 @@ const ACCENT_COLORS=['#2d78a4','#0a7c6e','#c58c1e','#8a5fae','#c0342c','#2c5364'
 let projFilter='all';
 let openProjId=null;
 
+// Marks a project as "last worked on" — call this from any real edit (not just opening/viewing)
+function touchProject(p,label){
+  if(!p)return;
+  p.lastWorked={ts:Date.now(),label};
+  save();
+}
+
+function timeAgo(ts){
+  if(!ts)return'';
+  const s=Math.max(0,Math.floor((Date.now()-ts)/1000));
+  if(s<60)return'just now';
+  const m=Math.floor(s/60);if(m<60)return m+'m ago';
+  const h=Math.floor(m/60);if(h<24)return h+'h ago';
+  const d=Math.floor(h/24);if(d<7)return d+'d ago';
+  const w=Math.floor(d/7);if(w<5)return w+'w ago';
+  return new Date(ts).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
 function addProject(){
   const name=G('proj-name').value.trim();if(!name)return;
   const id='proj-'+Date.now();
@@ -7617,6 +8024,7 @@ function addProject(){
     phases:[],
     notes:'',
     created:today,
+    lastWorked:null,
     color:getAccentColors()[S.projects.length%7],
   });
   G('proj-name').value='';G('proj-desc').value='';G('proj-budget').value='';
@@ -7649,6 +8057,24 @@ function renderProjects(){
   const active=S.projects.filter(p=>p.status==='active').length;
   const done=S.projects.filter(p=>p.status==='done').length;
   const blocked=S.projects.filter(p=>p.status==='blocked').length;
+
+  // "Continue where you left off" — surfaces whichever project was most recently worked on
+  const resumeEl=G('proj-resume-widget');
+  if(resumeEl){
+    const withActivity=S.projects.filter(p=>p.lastWorked&&p.lastWorked.ts);
+    const last=withActivity.sort((a,b)=>b.lastWorked.ts-a.lastWorked.ts)[0];
+    resumeEl.innerHTML=last?`
+      <div class="proj-resume" onclick="openProjectDrawer('${last.id}')">
+        <div class="proj-resume-dot" style="background:${last.color};"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="proj-resume-lbl">Continue where you left off</div>
+          <div class="proj-resume-name">${last.name}</div>
+          <div class="proj-resume-sub">${last.lastWorked.label} · ${timeAgo(last.lastWorked.ts)}</div>
+        </div>
+        <div class="proj-resume-cta">Resume →</div>
+      </div>`:'';
+  }
+
   const sumEl=G('proj-summary');
   if(sumEl)sumEl.innerHTML=`
     <div class="sum-item"><div class="sum-lb">Total</div><div class="sum-vl">${total}</div></div>
@@ -7718,6 +8144,8 @@ function renderProjects(){
           </div>
           <div class="budget-bar"><div class="budget-fill ${overBudget?'over':nearBudget?'warn':''}" style="width:${Math.min(p.budget>0?p.spent/p.budget*100:0,100)}%;"></div></div>
         </div>`:''}
+
+        ${p.lastWorked?`<div class="proj-card-lastworked">🕐 ${p.lastWorked.label} · ${timeAgo(p.lastWorked.ts)}</div>`:''}
       </div>
       <div class="proj-card-footer">
         ${p.deadline?`<span class="proj-due-chip" style="background:${isOverdue?'var(--rbg)':'var(--bg-in)'};color:${isOverdue?'var(--red)':'var(--ts)'};">
@@ -7738,131 +8166,571 @@ function renderProjects(){
   }).join('');
 }
 
+// ═══════════════════════════════════════════════════
+// PROJECT DASHBOARD — open / close / tab switching
+// ═══════════════════════════════════════════════════
+let openProjTab='overview';
+
+function handlePdbOverlayClick(e){
+  if(e.target===G('pdb-overlay'))closeProjectDrawer();
+}
+
 function openProjectDrawer(id){
   const p=S.projects.find(p=>p.id===id);if(!p)return;
   openProjId=id;
-  G('proj-drawer').classList.add('open');
-  G('proj-drawer-overlay').classList.add('open');
-  renderProjectDrawer(p);
+  openProjTab='overview';
+  document.body.style.overflow='hidden';
+  G('pdb-overlay').classList.add('open');
+  renderProjectDashboard(p);
+  const body=G('pdb-body');if(body)body.scrollTop=0;
+  document.querySelectorAll('.pdb-tab').forEach(t=>t.classList.remove('active'));
+  const ov=G('pdbtab-overview');if(ov)ov.classList.add('active');
 }
 
 function closeProjectDrawer(){
-  G('proj-drawer').classList.remove('open');
-  G('proj-drawer-overlay').classList.remove('open');
+  G('pdb-overlay').classList.remove('open');
+  document.body.style.overflow='';
   openProjId=null;
 }
 
-function renderProjectDrawer(p){
+// The dashboard is one continuous scrollable page — tabs just jump-scroll to a section, they don't hide/show content
+function switchProjTab(tab,el){
+  openProjTab=tab;
+  document.querySelectorAll('.pdb-tab').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const sec=G('pdb-sec-'+tab);
+  if(sec)sec.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderProjectDashboard(p){
   if(!p)p=S.projects.find(x=>x.id===openProjId);if(!p)return;
-  const sm=STATUS_META[p.status]||STATUS_META.active;
-  G('drawer-title').textContent=p.name;
-  G('drawer-sub').textContent=(p.cat||'')+(p.deadline?' · Due '+p.deadline:'');
 
   const tasks=p.tasks||[];
-  const doneTasks=tasks.filter(t=>t.done).length;
-  const pct=tasks.length?Math.round(doneTasks/tasks.length*100):0;
-  const priOrder={high:0,med:1,low:2};
+  const doneCnt=tasks.filter(t=>t.done).length;
+  const pct=tasks.length?Math.round(doneCnt/tasks.length*100):0;
+  const phases=p.phases||[];
+  const daysLeft=p.deadline?Math.ceil((new Date(p.deadline)-new Date())/(864e5)):null;
+  const isOverdue=daysLeft!==null&&daysLeft<0&&p.status!=='done';
+  const sm=STATUS_META[p.status]||STATUS_META.active;
+  const c=p.color||'#007AFF';
 
-  G('drawer-body').innerHTML=`
-    <!-- STATUS + QUICK EDITS -->
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;">
-      <select class="fi" style="max-width:130px;margin:0;" onchange="updateProjField('${p.id}','status',this.value)">
+  // Hero gradient
+  const hero=G('pdb-hero');
+  hero.style.background=`linear-gradient(135deg,${c} 0%,${hexDarken(c,40)} 100%)`;
+
+  // Ring SVG
+  const R=38,circ=2*Math.PI*R;
+  const dash=circ*(pct/100);
+  G('pdb-ring').innerHTML=`
+    <svg width="86" height="86" viewBox="0 0 86 86">
+      <circle cx="43" cy="43" r="${R}" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="7"/>
+      <circle cx="43" cy="43" r="${R}" fill="none" stroke="rgba(255,255,255,0.95)" stroke-width="7"
+        stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}"
+        stroke-linecap="round" transform="rotate(-90 43 43)"/>
+      <text x="43" y="47" text-anchor="middle" font-size="16" font-weight="900" fill="white">${pct}%</text>
+    </svg>`;
+
+  // Name & category
+  G('pdb-name').textContent=p.name;
+  G('pdb-cat').textContent=[(p.cat||''),(p.desc||'')].filter(Boolean).join(' · ')||'No description';
+
+  // Badges
+  let badges=`<span class="pdb-hero-badge">${sm.label}</span>`;
+  if(p.deadline){
+    badges+=isOverdue
+      ?`<span class="pdb-hero-badge overdue">⚠ Overdue ${Math.abs(daysLeft)}d</span>`
+      :`<span class="pdb-hero-badge deadline">📅 ${daysLeft}d left</span>`;
+  }
+  G('pdb-badges').innerHTML=badges;
+
+  // Last worked on
+  const lw=G('pdb-lastworked');
+  if(lw)lw.innerHTML=p.lastWorked?`🕐 Last worked on: ${p.lastWorked.label} · ${timeAgo(p.lastWorked.ts)}`:'✨ No activity yet — get started below';
+
+  // Stats
+  const inProg=tasks.filter(t=>!t.done&&(t.status==='inprogress')).length;
+  const blocked=tasks.filter(t=>t.p==='high'&&!t.done).length;
+  G('pdb-stats').innerHTML=`
+    <div class="pdb-stat">
+      <div class="pdb-stat-val">${tasks.length-doneCnt}</div>
+      <div class="pdb-stat-lbl">Remaining</div>
+    </div>
+    <div class="pdb-stat">
+      <div class="pdb-stat-val">${doneCnt}</div>
+      <div class="pdb-stat-lbl">Done</div>
+    </div>
+    <div class="pdb-stat">
+      <div class="pdb-stat-val">${phases.filter(ph=>ph.status==='done').length}/${phases.length||'—'}</div>
+      <div class="pdb-stat-lbl">Phases</div>
+    </div>
+    <div class="pdb-stat">
+      <div class="pdb-stat-val">${daysLeft!==null?(isOverdue?'−'+Math.abs(daysLeft):daysLeft):'∞'}</div>
+      <div class="pdb-stat-lbl">${daysLeft!==null?(isOverdue?'Days Late':'Days Left'):'No Deadline'}</div>
+    </div>`;
+
+  // Tab counts
+  const tcnt=G('pdb-task-cnt');if(tcnt)tcnt.textContent=tasks.length;
+  const pcnt=G('pdb-phase-cnt');if(pcnt)pcnt.textContent=phases.length;
+
+  // One-page dashboard: every section renders together (nav bar just jump-scrolls between them)
+  renderProjOverview(p);
+  renderProjTasks(p);
+  renderProjRoadmap(p);
+  renderProjBudget(p);
+  renderProjNotes(p);
+}
+
+// Darken hex color for gradient
+function hexDarken(hex,pct){
+  if(!hex||!hex.startsWith('#'))return hex||'#1a1a2e';
+  hex=hex.replace('#','');
+  if(hex.length===3)hex=hex.split('').map(c=>c+c).join('');
+  const num=parseInt(hex,16);if(isNaN(num))return '#1a1a2e';
+  const r=Math.max(0,((num>>16)&0xff)-Math.round(((num>>16)&0xff)*pct/100));
+  const g=Math.max(0,((num>>8)&0xff)-Math.round(((num>>8)&0xff)*pct/100));
+  const b=Math.max(0,(num&0xff)-Math.round((num&0xff)*pct/100));
+  return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+// ─── OVERVIEW TAB ───────────────────────────────────
+function renderProjOverview(p){
+  const tasks=p.tasks||[];
+  const doneCnt=tasks.filter(t=>t.done).length;
+  const pct=tasks.length?Math.round(doneCnt/tasks.length*100):0;
+  const highTasks=tasks.filter(t=>t.p==='high'&&!t.done);
+  const phases=p.phases||[];
+  const daysLeft=p.deadline?Math.ceil((new Date(p.deadline)-new Date())/(864e5)):null;
+  const isOverdue=daysLeft!==null&&daysLeft<0&&p.status!=='done';
+
+  // Health score
+  let health=100,healthIssues=[];
+  if(isOverdue){health-=40;healthIssues.push('Project is past deadline');}
+  else if(daysLeft!==null&&daysLeft<7){health-=20;healthIssues.push('Deadline within 7 days');}
+  if(highTasks.length>0){health-=highTasks.length*8;healthIssues.push(`${highTasks.length} high-priority task${highTasks.length>1?'s':''} pending`);}
+  if(p.status==='blocked'){health-=30;healthIssues.push('Project is blocked');}
+  if(p.budget>0&&p.spent>p.budget){health-=20;healthIssues.push('Over budget');}
+  health=Math.max(0,Math.min(100,health));
+  const healthCls=health>=80?'great':health>=60?'good':health>=35?'warn':'risk';
+  const healthLabel=health>=80?'On Track':health>=60?'Good':health>=35?'At Risk':'Critical';
+
+  const el=G('pdb-overview');
+  el.innerHTML=`
+    <!-- QUICK EDIT CONTROLS -->
+    <div class="pdb-sh">Settings <div class="pdb-sh-line"></div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+      <select class="fi" style="margin:0;flex:1;min-width:130px;" onchange="updateProjField('${p.id}','status',this.value)">
         ${Object.entries(STATUS_META).map(([k,v])=>`<option value="${k}" ${p.status===k?'selected':''}>${v.label}</option>`).join('')}
       </select>
-      <input class="fi" type="date" value="${p.deadline||''}" style="max-width:150px;margin:0;" onchange="updateProjField('${p.id}','deadline',this.value)" placeholder="Deadline">
-      <select class="fi" style="max-width:130px;margin:0;" onchange="updateProjField('${p.id}','cat',this.value)">
+      <select class="fi" style="margin:0;flex:1;min-width:120px;" onchange="updateProjField('${p.id}','cat',this.value)">
         ${['Personal','Work','Financial','Health','Home','Creative','Learning','Business','Other'].map(c=>`<option ${p.cat===c?'selected':''}>${c}</option>`).join('')}
       </select>
+      <input class="fi" type="date" value="${p.deadline||''}" style="margin:0;flex:1;min-width:140px;" onchange="updateProjField('${p.id}','deadline',this.value)" placeholder="Set deadline">
+      <button class="btn xs" onclick="deleteCurrentProject()" style="color:var(--red);border-color:var(--red);flex-shrink:0;margin:0;">Delete</button>
     </div>
 
-    ${p.desc?`<div style="font-size:13px;color:var(--ts);margin-bottom:14px;padding:10px;background:var(--bg-in);border-radius:var(--r);line-height:1.6;">${p.desc}</div>`:''}
-
-    <!-- PROGRESS RING + STATS -->
-    <div class="ring-wrap">
-      <svg class="ring-svg" width="70" height="70" viewBox="0 0 70 70">
-        <circle cx="35" cy="35" r="28" fill="none" stroke="var(--bg-tag)" stroke-width="6"/>
-        <circle cx="35" cy="35" r="28" fill="none" stroke="${p.color}" stroke-width="6"
-          stroke-dasharray="${(2*Math.PI*28*pct/100).toFixed(1)} ${(2*Math.PI*28).toFixed(1)}"
-          stroke-linecap="round" transform="rotate(-90 35 35)"/>
-        <text x="35" y="40" text-anchor="middle" font-size="16" font-weight="700" fill="${p.color}">${pct}%</text>
+    <!-- HEALTH SCORE -->
+    <div class="pdb-sh">Project Health <div class="pdb-sh-line"></div></div>
+    <div class="pdb-health-row">
+      <div>
+        <div class="pdb-health-badge ${healthCls}">${health>=80?'✅':health>=60?'🟢':health>=35?'⚠️':'🔴'} ${healthLabel} — ${health}%</div>
+        ${healthIssues.length?`<div style="font-size:11.5px;color:var(--ts);margin-top:8px;line-height:1.7;">${healthIssues.map(i=>`• ${i}`).join('<br>')}</div>`:
+        `<div style="font-size:11.5px;color:var(--ts);margin-top:6px;">All systems go — great work!</div>`}
+      </div>
+      <svg width="60" height="60" viewBox="0 0 60 60" style="flex-shrink:0;">
+        <circle cx="30" cy="30" r="24" fill="none" stroke="var(--bg-tag)" stroke-width="5"/>
+        <circle cx="30" cy="30" r="24" fill="none" stroke="${health>=80?'var(--green)':health>=60?'var(--blue)':health>=35?'var(--amber)':'var(--red)'}" stroke-width="5"
+          stroke-dasharray="${(2*Math.PI*24*health/100).toFixed(1)} ${(2*Math.PI*24).toFixed(1)}"
+          stroke-linecap="round" transform="rotate(-90 30 30)"/>
+        <text x="30" y="35" text-anchor="middle" font-size="13" font-weight="800" fill="${health>=80?'var(--green)':health>=60?'var(--blue)':health>=35?'var(--amber)':'var(--red)'}">${health}</text>
       </svg>
-      <div class="ring-info">
-        <div class="ring-pct">${doneTasks}/${tasks.length} tasks done</div>
-        <div class="ring-lbl">${p.status==='done'?'✅ Completed':'In progress · '+sm.label}</div>
-        ${p.deadline?`<div class="ring-lbl" style="margin-top:4px;">📅 Deadline: ${p.deadline}</div>`:''}
+    </div>
+
+    <!-- METRICS -->
+    <div class="pdb-sh" style="margin-top:20px;">Metrics <div class="pdb-sh-line"></div></div>
+    <div class="pdb-metric-grid">
+      <div class="pdb-metric">
+        <div class="pdb-metric-icon">✅</div>
+        <div class="pdb-metric-val" style="color:var(--green);">${pct}%</div>
+        <div class="pdb-metric-lbl">Complete</div>
+        <div class="pdb-metric-sub">${doneCnt}/${tasks.length} tasks</div>
+      </div>
+      <div class="pdb-metric">
+        <div class="pdb-metric-icon">🔥</div>
+        <div class="pdb-metric-val" style="color:${highTasks.length>0?'var(--red)':'var(--t)'};">${highTasks.length}</div>
+        <div class="pdb-metric-lbl">High Priority</div>
+        <div class="pdb-metric-sub">tasks pending</div>
+      </div>
+      <div class="pdb-metric">
+        <div class="pdb-metric-icon">🗺️</div>
+        <div class="pdb-metric-val">${phases.filter(ph=>ph.status==='done').length}</div>
+        <div class="pdb-metric-lbl">Phases Done</div>
+        <div class="pdb-metric-sub">of ${phases.length} total</div>
+      </div>
+      <div class="pdb-metric">
+        <div class="pdb-metric-icon">📅</div>
+        <div class="pdb-metric-val" style="color:${isOverdue?'var(--red)':daysLeft!==null&&daysLeft<7?'var(--amber)':'var(--t)'};">${daysLeft!==null?(isOverdue?'-'+Math.abs(daysLeft):daysLeft):'—'}</div>
+        <div class="pdb-metric-lbl">${daysLeft!==null?(isOverdue?'Days Late':'Days Left'):'No Deadline'}</div>
+        <div class="pdb-metric-sub">${p.deadline||'No deadline set'}</div>
+      </div>
+      ${p.budget>0?`<div class="pdb-metric">
+        <div class="pdb-metric-icon">💰</div>
+        <div class="pdb-metric-val" style="color:${p.spent>p.budget?'var(--red)':p.spent/p.budget>0.8?'var(--amber)':'var(--t)'};">${Math.round((p.spent||0)/p.budget*100)}%</div>
+        <div class="pdb-metric-lbl">Budget Used</div>
+        <div class="pdb-metric-sub">${fmt(p.spent||0)} / ${fmt(p.budget)}</div>
+      </div>`:''}
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div style="margin:4px 0 20px;">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ts);margin-bottom:6px;">
+        <span>Overall Progress</span><span style="font-weight:700;color:var(--t);">${pct}%</span>
+      </div>
+      <div style="height:10px;background:var(--bg-tag);border-radius:8px;overflow:hidden;">
+        <div style="height:100%;border-radius:8px;background:${p.status==='done'?'var(--green)':p.color};width:${pct}%;transition:width .6s cubic-bezier(.34,1.56,.64,1);"></div>
       </div>
     </div>
 
-    ${p.budget>0?`
-    <!-- BUDGET -->
-    <div class="bh3" style="margin-bottom:8px;">💰 Budget</div>
-    <div style="display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
-      <div class="mc" style="flex:1;min-width:100px;"><div class="mc-lb">Budget</div><div class="mc-vl">${fmt(p.budget)}</div></div>
-      <div class="mc" style="flex:1;min-width:100px;"><div class="mc-lb">Spent</div><div class="mc-vl ${p.spent>p.budget?'red':''}">${fmt(p.spent)}</div></div>
-      <div class="mc" style="flex:1;min-width:100px;"><div class="mc-lb">Remaining</div><div class="mc-vl ${p.budget-p.spent<0?'red':'green'}">${fmt(p.budget-p.spent)}</div></div>
-    </div>
-    <div class="budget-bar" style="height:10px;margin-bottom:6px;"><div class="budget-fill ${p.spent>p.budget?'over':p.spent/p.budget>0.8?'warn':''}" style="width:${Math.min(p.spent/p.budget*100,100).toFixed(0)}%;"></div></div>
-    <div class="fr" style="margin-bottom:14px;">
-      <input class="fi" type="number" id="drawer-spent" placeholder="Log expense $" step="0.01" style="margin:0;">
-      <button class="btn xs" onclick="logProjExpense('${p.id}')" style="margin:0;">Log</button>
+    <!-- HIGH PRI TASKS -->
+    ${highTasks.length?`
+    <div class="pdb-sh">Urgent Tasks <div class="pdb-sh-line"></div></div>
+    <div style="margin-bottom:20px;">
+      ${highTasks.slice(0,5).map((t,i)=>{
+        const idx=tasks.indexOf(t);
+        return`<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--rbg);border:1px solid var(--red);border-radius:12px;margin-bottom:6px;">
+          <span style="font-size:16px;">🔴</span>
+          <div style="flex:1;font-size:13px;font-weight:500;color:var(--t);">${t.t}</div>
+          <button onclick="toggleProjTask('${p.id}',${idx},true)" style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid var(--red);background:var(--red);color:#fff;cursor:pointer;font-family:var(--font);">Done</button>
+        </div>`;
+      }).join('')}
     </div>`:''}
 
-    <!-- PHASES / MILESTONES -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div class="bh3" style="margin:0;">📍 Phases</div>
-      <button class="subtask-toggle" onclick="addPhase('${p.id}')">＋ Add phase</button>
-    </div>
-    <div id="drawer-phases">
-    ${(p.phases||[]).length?p.phases.map((ph,i)=>`
-      <div class="phase-track">
-        <div class="phase-node ${ph.status==='done'?'done':ph.status==='active'?'active':ph.status==='blocked'?'blocked':''}"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div>
-            <div class="phase-label">${ph.name}</div>
-            ${ph.due?`<div class="phase-sub">Due: ${ph.due}</div>`:''}
-          </div>
-          <div style="display:flex;gap:4px;align-items:center;">
-            <select class="fi" style="font-size:11px;padding:2px 4px;margin:0;max-width:90px;" onchange="updatePhaseStatus('${p.id}',${i},this.value)">
-              <option ${ph.status==='todo'?'selected':''} value="todo">Todo</option>
-              <option ${ph.status==='active'?'selected':''} value="active">Active</option>
-              <option ${ph.status==='done'?'selected':''} value="done">Done</option>
-              <option ${ph.status==='blocked'?'selected':''} value="blocked">Blocked</option>
-            </select>
-            <button class="del" onclick="delPhase('${p.id}',${i})">✕</button>
-          </div>
-        </div>
-      </div>`).join(''):`<div class="empty">No phases yet — add milestones to track progress</div>`}
-    </div>
+    <!-- RECENT PHASES -->
+    ${phases.length?`
+    <div class="pdb-sh">Phase Progress <div class="pdb-sh-line"></div></div>
+    <div style="margin-bottom:20px;">
+      ${phases.slice(0,3).map((ph,i)=>{
+        const dotClr=ph.status==='done'?'var(--green)':ph.status==='active'?'var(--blue)':ph.status==='blocked'?'var(--red)':'var(--bd2)';
+        return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bd);">
+          <div style="width:12px;height:12px;border-radius:50%;background:${dotClr};flex-shrink:0;"></div>
+          <div style="flex:1;font-size:13px;font-weight:500;color:var(--t);">${ph.name}</div>
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--bg-tag);color:var(--ts);">${ph.status}</span>
+        </div>`;
+      }).join('')}
+      ${phases.length>3?`<div style="font-size:12px;color:var(--ts);padding:8px 0;cursor:pointer;" onclick="switchProjTab('roadmap',G('pdbtab-roadmap'))">View all ${phases.length} phases →</div>`:''}
+    </div>`:''}
 
-    <div class="divider"></div>
-
-    <!-- TASKS -->
-    <div class="bh3" style="margin-bottom:8px;">✅ Tasks</div>
-    <div id="drawer-tasks">
-    ${tasks.length?[...tasks].sort((a,b)=>priOrder[a.p||'med']-priOrder[b.p||'med']).map((t,i)=>`
-      <div class="ci" style="padding:6px 2px;">
-        <input type="checkbox" ${t.done?'checked':''} onchange="toggleProjTask('${p.id}',${i},this.checked)" style="accent-color:var(--blue);width:14px;height:14px;flex-shrink:0;">
-        <div style="flex:1;">
-          <div class="ci-lb ${t.done?'done':''}">${t.t}</div>
-          <div class="ci-meta"><span class="tag ${t.p==='high'?'red':t.p==='low'?'gray':'amber'}" style="font-size:10px;">${t.p==='high'?'🔴 High':t.p==='low'?'⚪ Low':'🟡 Med'}</span></div>
-        </div>
-        <button class="del" onclick="delProjTask('${p.id}',${i})">✕</button>
-      </div>`).join(''):`<div class="empty">No tasks yet — add one below</div>`}
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- NOTES -->
-    <div class="bh3" style="margin-bottom:6px;">📝 Notes</div>
-    <textarea class="fi" placeholder="Project notes, blockers, ideas..." style="min-height:80px;" onblur="updateProjField('${p.id}','notes',this.value)">${p.notes||''}</textarea>
+    <!-- DESCRIPTION EDIT -->
+    <div class="pdb-sh">Description <div class="pdb-sh-line"></div></div>
+    <textarea class="pdb-notes-ta" style="min-height:80px;" placeholder="What is this project about? What's the goal?" onblur="updateProjField('${p.id}','desc',this.value)">${p.desc||''}</textarea>
   `;
+}
+
+// ─── TASKS TAB (KANBAN) ─────────────────────────────
+function renderProjTasks(p){
+  const tasks=p.tasks||[];
+  const todo=tasks.map((t,i)=>({...t,_i:i})).filter(t=>!t.done&&t.status!=='inprogress');
+  const inProg=tasks.map((t,i)=>({...t,_i:i})).filter(t=>!t.done&&t.status==='inprogress');
+  const done=tasks.map((t,i)=>({...t,_i:i})).filter(t=>t.done);
+
+  const taskCard=(t,i)=>`
+    <div class="pdb-ktask pri-${t.p||'med'} ${t.done?'done-task':''}">
+      <div class="pdb-ktask-name">${t.t}</div>
+      <div class="pdb-ktask-meta">
+        <select class="pdb-ktask-pri-sel" onchange="updateProjTaskPri('${p.id}',${i},this.value)" onclick="event.stopPropagation()">
+          <option value="high" ${t.p==='high'?'selected':''}>🔴 High</option>
+          <option value="med" ${(t.p||'med')==='med'?'selected':''}>🟡 Med</option>
+          <option value="low" ${t.p==='low'?'selected':''}>⚪ Low</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
+        ${!t.done&&t.status!=='inprogress'?`<button class="pdb-kmove-btn" onclick="moveKanbanTask('${p.id}',${i},'inprogress')">→ In Progress</button>`:''}
+        ${!t.done?`<button class="pdb-kmove-btn" onclick="moveKanbanTask('${p.id}',${i},'done')">✓ Done</button>`:''}
+        ${t.done||t.status==='inprogress'?`<button class="pdb-kmove-btn" onclick="moveKanbanTask('${p.id}',${i},'todo')">← Back</button>`:''}
+        <button class="pdb-kdel-btn" onclick="delProjTask('${p.id}',${i})">✕</button>
+      </div>
+    </div>`;
+
+  G('pdb-tasks').innerHTML=`
+    <div class="pdb-kanban">
+      <div class="pdb-kcol">
+        <div class="pdb-kcol-hdr">📋 Todo <span class="k-cnt">${todo.length}</span></div>
+        <div class="pdb-kcol-body">
+          ${todo.map(t=>taskCard(t,t._i)).join('')||'<div style="font-size:12px;color:var(--th);text-align:center;padding:16px 0;">No tasks here</div>'}
+        </div>
+      </div>
+      <div class="pdb-kcol">
+        <div class="pdb-kcol-hdr" style="color:var(--blue);">⚡ In Progress <span class="k-cnt">${inProg.length}</span></div>
+        <div class="pdb-kcol-body" style="border-color:var(--blue);">
+          ${inProg.map(t=>taskCard(t,t._i)).join('')||'<div style="font-size:12px;color:var(--th);text-align:center;padding:16px 0;">Nothing in progress</div>'}
+        </div>
+      </div>
+      <div class="pdb-kcol">
+        <div class="pdb-kcol-hdr" style="color:var(--green);">✅ Done <span class="k-cnt">${done.length}</span></div>
+        <div class="pdb-kcol-body" style="border-color:var(--green);">
+          ${done.map(t=>taskCard(t,t._i)).join('')||'<div style="font-size:12px;color:var(--th);text-align:center;padding:16px 0;">Nothing completed yet</div>'}
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--bg-in);border-radius:12px;border:1px solid var(--bd);">
+      <div style="font-size:11px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;">Quick Add Task</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input class="fi" type="text" id="pdb-task-name-inp" placeholder="Task description..." style="margin:0;flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')addPdbTask('${p.id}')">
+        <select class="fi" id="pdb-task-pri-sel" style="margin:0;max-width:110px;">
+          <option value="med">🟡 Med</option>
+          <option value="high">🔴 High</option>
+          <option value="low">⚪ Low</option>
+        </select>
+        <button class="btn pri" onclick="addPdbTask('${p.id}')" style="margin:0;">+ Add</button>
+      </div>
+    </div>
+  `;
+}
+
+function moveKanbanTask(id,idx,dest){
+  const p=S.projects.find(p=>p.id===id);if(!p||!p.tasks[idx])return;
+  const t=p.tasks[idx];
+  if(dest==='done'){t.done=true;t.status='done';}
+  else if(dest==='inprogress'){t.done=false;t.status='inprogress';}
+  else{t.done=false;t.status='todo';}
+  touchProject(p,dest==='done'?`Completed task "${t.t}"`:`Moved task "${t.t}" to ${dest==='inprogress'?'In Progress':'Todo'}`);
+  renderProjects();renderProjectDashboard(p);
+}
+
+function addPdbTask(id){
+  const inp=G('pdb-task-name-inp');
+  const priSel=G('pdb-task-pri-sel');
+  const txt=inp.value.trim();if(!txt)return;
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  if(!p.tasks)p.tasks=[];
+  p.tasks.push({t:txt,done:false,p:priSel?priSel.value:'med',status:'todo',id:Date.now()});
+  inp.value='';touchProject(p,`Added task "${txt}"`);renderProjects();
+  renderProjectDashboard(p);
+  setTimeout(()=>switchProjTab('tasks',G('pdbtab-tasks')),50);
+}
+
+function updateProjTaskPri(id,idx,pri){
+  const p=S.projects.find(p=>p.id===id);if(!p||!p.tasks[idx])return;
+  p.tasks[idx].p=pri;touchProject(p,`Updated priority for "${p.tasks[idx].t}"`);
+}
+
+// ─── ROADMAP TAB ────────────────────────────────────
+function renderProjRoadmap(p){
+  const phases=p.phases||[];
+  const phaseHtml=phases.length?phases.map((ph,i)=>`
+    <div class="pdb-tl-item">
+      <div class="pdb-tl-dot ${ph.status||'todo'}">${ph.status==='done'?'✓':ph.status==='blocked'?'!':i+1}</div>
+      <div class="pdb-tl-card ${ph.status||'todo'}">
+        <div class="pdb-tl-hdr">
+          <div>
+            <div class="pdb-tl-name">${ph.name}</div>
+            ${ph.due?`<div class="pdb-tl-due">📅 Due: ${ph.due}</div>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <select class="pdb-tl-status-sel" onchange="updatePhaseStatus('${p.id}',${i},this.value)">
+              <option ${ph.status==='todo'?'selected':''} value="todo">📋 Todo</option>
+              <option ${ph.status==='active'?'selected':''} value="active">⚡ Active</option>
+              <option ${ph.status==='done'?'selected':''} value="done">✅ Done</option>
+              <option ${ph.status==='blocked'?'selected':''} value="blocked">🚫 Blocked</option>
+            </select>
+            <button class="pdb-tl-del" onclick="delPhase('${p.id}',${i})">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join(''):'<div style="font-size:13px;color:var(--ts);padding:16px 0;">No phases yet — add one below to track milestones</div>';
+
+  // Phase completion bar
+  const donePhases=phases.filter(ph=>ph.status==='done').length;
+  const phasePct=phases.length?Math.round(donePhases/phases.length*100):0;
+
+  G('pdb-roadmap').innerHTML=`
+    ${phases.length?`
+    <div style="margin-bottom:20px;padding:14px 16px;background:var(--bg-in);border-radius:14px;border:1px solid var(--bd);">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ts);margin-bottom:8px;">
+        <span style="font-weight:700;">Roadmap Completion</span>
+        <span style="font-weight:700;color:var(--t);">${donePhases}/${phases.length} phases</span>
+      </div>
+      <div class="pdb-budget-gauge" style="height:8px;">
+        <div class="pdb-budget-fill ok" style="width:${phasePct}%;"></div>
+      </div>
+      <div style="font-size:10px;color:var(--ts);margin-top:4px;">
+        ${phases.filter(ph=>ph.status==='active').length} active · ${phases.filter(ph=>ph.status==='blocked').length} blocked
+      </div>
+    </div>`:''}
+
+    <div class="pdb-timeline">${phaseHtml}</div>
+
+    <div style="margin-top:20px;">
+      <button class="pdb-tl-add-btn" onclick="addPhase('${p.id}')">
+        ＋ Add phase or milestone
+      </button>
+    </div>
+  `;
+}
+
+// ─── BUDGET TAB ─────────────────────────────────────
+function renderProjBudget(p){
+  const budget=p.budget||0;
+  const spent=p.spent||0;
+  const remaining=budget-spent;
+  const spentPct=budget>0?Math.min(spent/budget*100,100):0;
+  const overBudget=spent>budget&&budget>0;
+  const nearBudget=spent/budget>0.8&&budget>0;
+  const expenses=p.expenses||[];
+
+  G('pdb-budget').innerHTML=`
+    ${!budget?`
+    <div style="padding:32px;text-align:center;background:var(--bg-in);border-radius:16px;border:1.5px dashed var(--bd);margin-bottom:20px;">
+      <div style="font-size:36px;margin-bottom:12px;">💰</div>
+      <div style="font-size:14px;font-weight:700;color:var(--t);margin-bottom:6px;">No budget set</div>
+      <div style="font-size:12px;color:var(--ts);margin-bottom:16px;">Track spending by setting a project budget</div>
+    </div>
+    <div class="pdb-sh">Set Budget <div class="pdb-sh-line"></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <input class="fi" type="number" id="pdb-set-budget" placeholder="Budget amount $" step="0.01" style="margin:0;flex:1;">
+      <button class="btn pri" onclick="setProjBudget('${p.id}')" style="margin:0;">Set Budget</button>
+    </div>`:`
+    <!-- BUDGET OVERVIEW -->
+    <div class="pdb-sh">Budget Overview <div class="pdb-sh-line"></div></div>
+    <div class="pdb-metric-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px;">
+      <div class="pdb-metric" style="border-color:var(--blue);">
+        <div class="pdb-metric-icon">🎯</div>
+        <div class="pdb-metric-val" style="color:var(--blue);font-size:19px;">${fmt(budget)}</div>
+        <div class="pdb-metric-lbl">Budget</div>
+      </div>
+      <div class="pdb-metric" style="${overBudget?'border-color:var(--red);':''}">
+        <div class="pdb-metric-icon">💸</div>
+        <div class="pdb-metric-val" style="color:${overBudget?'var(--red)':nearBudget?'var(--amber)':'var(--t)'};font-size:19px;">${fmt(spent)}</div>
+        <div class="pdb-metric-lbl">Spent</div>
+      </div>
+      <div class="pdb-metric" style="${remaining<0?'border-color:var(--red);':'border-color:var(--green);'}">
+        <div class="pdb-metric-icon">${remaining<0?'⚠️':'✅'}</div>
+        <div class="pdb-metric-val" style="color:${remaining<0?'var(--red)':'var(--green)'};font-size:19px;">${fmt(Math.abs(remaining))}</div>
+        <div class="pdb-metric-lbl">${remaining<0?'Over Budget':'Remaining'}</div>
+      </div>
+    </div>
+
+    <!-- GAUGE -->
+    <div style="margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--ts);margin-bottom:8px;">
+        <span>Budget Utilized</span>
+        <span style="font-weight:700;color:${overBudget?'var(--red)':nearBudget?'var(--amber)':'var(--t)'};">${Math.round(spentPct)}%${overBudget?' — OVER BUDGET':''}</span>
+      </div>
+      <div class="pdb-budget-gauge">
+        <div class="pdb-budget-fill ${overBudget?'over':nearBudget?'warn':'ok'}" style="width:${spentPct}%;"></div>
+      </div>
+      ${overBudget?`<div style="font-size:12px;color:var(--red);margin-top:6px;font-weight:600;">⚠ You are ${fmt(Math.abs(remaining))} over budget</div>`:''}
+    </div>
+
+    <!-- LOG EXPENSE -->
+    <div class="pdb-sh">Log Expense <div class="pdb-sh-line"></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+      <input class="fi" type="number" id="drawer-spent" placeholder="Amount $" step="0.01" style="margin:0;flex:1;min-width:120px;">
+      <input class="fi" type="text" id="pdb-exp-label" placeholder="Label (optional)" style="margin:0;flex:2;min-width:160px;">
+      <button class="btn pri" onclick="logProjExpense('${p.id}')" style="margin:0;">Log</button>
+    </div>
+
+    <!-- EXPENSE LOG -->
+    ${expenses.length?`
+    <div class="pdb-sh">Expense History <div class="pdb-sh-line"></div></div>
+    <div style="margin-bottom:16px;">
+      ${expenses.slice().reverse().map((e,i)=>`
+        <div class="pdb-exp-row">
+          <div>
+            <div style="font-weight:500;">${e.label||'Expense'}</div>
+            <div style="font-size:11px;color:var(--ts);">${e.date||''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span class="pdb-exp-amt">-${fmt(e.amt)}</span>
+            <button onclick="delProjExpense('${p.id}',${expenses.length-1-i})" style="background:none;border:none;cursor:pointer;color:var(--th);font-size:13px;padding:2px 6px;border-radius:6px;" title="Remove">✕</button>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    <!-- UPDATE BUDGET -->
+    <div class="pdb-sh">Update Budget <div class="pdb-sh-line"></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;">
+      <input class="fi" type="number" id="pdb-set-budget" placeholder="New budget $" step="0.01" style="margin:0;flex:1;" value="${budget}">
+      <button class="btn xs" onclick="setProjBudget('${p.id}')" style="margin:0;">Update</button>
+    </div>`}
+  `;
+}
+
+// ─── NOTES TAB ──────────────────────────────────────
+function renderProjNotes(p){
+  G('pdb-notes').innerHTML=`
+    <div style="margin-bottom:20px;">
+      <div class="pdb-sh">Project Notes <div class="pdb-sh-line"></div></div>
+      <textarea class="pdb-notes-ta" id="pdb-notes-ta" placeholder="Write notes, ideas, blockers, decisions, links… anything relevant to this project.">${p.notes||''}</textarea>
+      <div style="display:flex;justify-content:flex-end;margin-top:8px;gap:8px;">
+        <div id="pdb-notes-saved" style="font-size:12px;color:var(--green);align-self:center;min-width:80px;"></div>
+        <button class="btn pri" onclick="saveProjNotes('${p.id}')">Save Notes</button>
+      </div>
+    </div>
+
+    <div class="pdb-sh" style="margin-top:4px;">Links & Resources <div class="pdb-sh-line"></div></div>
+    <div id="pdb-links-list" style="margin-bottom:12px;">
+      ${(p.links||[]).map((l,i)=>`
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--bg-in);border-radius:10px;border:1px solid var(--bd);margin-bottom:6px;">
+          <span style="font-size:16px;">🔗</span>
+          <div style="flex:1;overflow:hidden;">
+            <div style="font-size:13px;font-weight:600;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.label||l.url}</div>
+            <div style="font-size:11px;color:var(--ts);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.url}</div>
+          </div>
+          <button onclick="window.open('${l.url}','_blank')" style="font-size:11px;padding:3px 10px;border-radius:8px;border:1px solid var(--bd);background:var(--bg-h);color:var(--t);cursor:pointer;font-family:var(--font);">Open</button>
+          <button onclick="delProjLink('${p.id}',${i})" style="background:none;border:none;cursor:pointer;color:var(--th);font-size:14px;padding:2px 6px;border-radius:6px;">✕</button>
+        </div>`).join('')||'<div style="font-size:12px;color:var(--ts);padding:8px 0;">No links saved yet</div>'}
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input class="fi" type="url" id="pdb-link-url" placeholder="https://..." style="margin:0;flex:2;min-width:180px;">
+      <input class="fi" type="text" id="pdb-link-label" placeholder="Label" style="margin:0;flex:1;min-width:120px;">
+      <button class="btn xs" onclick="addProjLink('${p.id}')" style="margin:0;">+ Link</button>
+    </div>
+  `;
+}
+
+// ─── HELPER FUNCTIONS ───────────────────────────────
+function saveProjNotes(id){
+  const ta=G('pdb-notes-ta');if(!ta)return;
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  p.notes=ta.value;touchProject(p,'Updated notes');
+  const saved=G('pdb-notes-saved');
+  if(saved){saved.textContent='✓ Saved';setTimeout(()=>saved.textContent='',2000);}
+}
+
+function setProjBudget(id){
+  const inp=G('pdb-set-budget');
+  const amt=parseFloat(inp.value);if(!amt)return;
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  p.budget=amt;touchProject(p,'Updated budget');renderProjects();renderProjectDashboard(p);
+}
+
+function addProjLink(id){
+  const url=G('pdb-link-url').value.trim();if(!url)return;
+  const label=G('pdb-link-label').value.trim();
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  if(!p.links)p.links=[];
+  p.links.push({url,label:label||url,date:today});
+  G('pdb-link-url').value='';G('pdb-link-label').value='';
+  touchProject(p,`Added link "${label||url}"`);renderProjNotes(p);
+}
+
+function delProjLink(id,idx){
+  const p=S.projects.find(p=>p.id===id);if(!p||!p.links)return;
+  p.links.splice(idx,1);touchProject(p,'Removed link');renderProjNotes(p);
+}
+
+function delProjExpense(id,idx){
+  const p=S.projects.find(p=>p.id===id);if(!p||!p.expenses)return;
+  const exp=p.expenses[idx];
+  if(exp)p.spent=Math.max(0,(p.spent||0)-exp.amt);
+  p.expenses.splice(idx,1);
+  touchProject(p,'Removed expense');renderProjects();renderProjBudget(p);
 }
 
 function updateProjField(id,field,val){
   const p=S.projects.find(p=>p.id===id);if(!p)return;
-  p[field]=val;save();
-  renderProjects();
-  if(openProjId===id)renderProjectDrawer(p);
+  p[field]=val;touchProject(p,`Updated ${field}`);renderProjects();
+  renderProjectDashboard(p);
 }
 
 function addProjectTask(){
@@ -7870,18 +8738,24 @@ function addProjectTask(){
   const txt=inp.value.trim();if(!txt||!openProjId)return;
   const p=S.projects.find(p=>p.id===openProjId);if(!p)return;
   if(!p.tasks)p.tasks=[];
-  p.tasks.push({t:txt,done:false,p:'med',id:Date.now()});
-  inp.value='';save();renderProjects();renderProjectDrawer(p);
+  p.tasks.push({t:txt,done:false,p:'med',status:'todo',id:Date.now()});
+  inp.value='';touchProject(p,`Added task "${txt}"`);renderProjects();
+  renderProjectDashboard(p);
+  setTimeout(()=>switchProjTab('tasks',G('pdbtab-tasks')),50);
 }
 
 function toggleProjTask(id,idx,checked){
   const p=S.projects.find(p=>p.id===id);if(!p||!p.tasks[idx])return;
-  p.tasks[idx].done=checked;save();renderProjects();renderProjectDrawer(p);
+  p.tasks[idx].done=checked;
+  p.tasks[idx].status=checked?'done':'todo';
+  touchProject(p,checked?`Completed task "${p.tasks[idx].t}"`:`Reopened task "${p.tasks[idx].t}"`);
+  renderProjects();renderProjectDashboard(p);
 }
 
 function delProjTask(id,idx){
   const p=S.projects.find(p=>p.id===id);if(!p)return;
-  p.tasks.splice(idx,1);save();renderProjects();renderProjectDrawer(p);
+  const t=p.tasks[idx];
+  p.tasks.splice(idx,1);touchProject(p,t?`Removed task "${t.t}"`:'Removed task');renderProjects();renderProjectDashboard(p);
 }
 
 function addPhase(id){
@@ -7890,26 +8764,38 @@ function addPhase(id){
   const p=S.projects.find(p=>p.id===id);if(!p)return;
   if(!p.phases)p.phases=[];
   p.phases.push({name,due:due||'',status:'todo',id:Date.now()});
-  save();renderProjectDrawer(p);
+  touchProject(p,`Added phase "${name}"`);renderProjectDashboard(p);
+  setTimeout(()=>switchProjTab('roadmap',G('pdbtab-roadmap')),50);
 }
 
 function updatePhaseStatus(id,idx,status){
   const p=S.projects.find(p=>p.id===id);if(!p||!p.phases[idx])return;
-  p.phases[idx].status=status;save();renderProjectDrawer(p);
+  p.phases[idx].status=status;touchProject(p,`Updated phase "${p.phases[idx].name}" to ${status}`);renderProjRoadmap(p);
+  const pcnt=G('pdb-phase-cnt');if(pcnt)pcnt.textContent=p.phases.length;
 }
 
 function delPhase(id,idx){
   const p=S.projects.find(p=>p.id===id);if(!p)return;
-  p.phases.splice(idx,1);save();renderProjectDrawer(p);
+  const ph=p.phases[idx];
+  p.phases.splice(idx,1);touchProject(p,ph?`Removed phase "${ph.name}"`:'Removed phase');renderProjRoadmap(p);
+  const pcnt=G('pdb-phase-cnt');if(pcnt)pcnt.textContent=p.phases.length;
 }
 
 function logProjExpense(id){
   const inp=G('drawer-spent');
-  const amt=parseFloat(inp.value);if(!amt)return;
+  const amt=parseFloat(inp?inp.value:0);if(!amt)return;
   const p=S.projects.find(p=>p.id===id);if(!p)return;
-  p.spent=(p.spent||0)+amt;inp.value='';
-  save();renderProjectDrawer(p);renderProjects();
+  const labelEl=G('pdb-exp-label');
+  const label=labelEl?labelEl.value.trim():'';
+  if(!p.expenses)p.expenses=[];
+  p.expenses.push({amt,label,date:today});
+  p.spent=(p.spent||0)+amt;
+  if(inp)inp.value='';if(labelEl)labelEl.value='';
+  touchProject(p,`Logged expense ${fmt(amt)}${label?' — '+label:''}`);renderProjects();renderProjBudget(p);
 }
+
+// Legacy alias (openProjId already used elsewhere)
+function renderProjectDrawer(p){renderProjectDashboard(p);}
 
 // ════════════════════════════════════════════════════
 // 3D HUMAN AVATAR (Three.js) — Streetwear floating pose
@@ -9546,6 +10432,8 @@ function saveEM(){
 // ── RENDER ALL ──
 function renderAll(){renderFinance();renderTrades();renderGoals();renderTodos();renderHabits();renderHabitStacks();renderHome();updateSidebarStats();renderRecurring();renderProjects();renderSettings();renderRoutines();renderMilestones();renderWantsNeeds();renderSavingsAccounts();renderPlanInlineTodos();renderPlanInlineProjects();}
 renderAll();
+// On startup: pull from Postgres (source of truth), then keep in sync on every save
+pullFromCloud();
 // Init QA money category dropdown
 setTimeout(()=>{if(typeof buildCatSelect==='function')buildCatSelect('qa-money-cat','expense');},80);
 // Init category dropdowns for the transactions form and bills quick-log (default: expense)
@@ -11789,7 +12677,8 @@ function wcalSaveEvent(){
   if(!isAllDay){
     startHour=wcalTimeToHour(G('wcal-ev-start').value);
     endHour=wcalTimeToHour(G('wcal-ev-end').value);
-    if(isNaN(startHour)||isNaN(endHour)||endHour<=startHour){alert('Set a valid time range.');return;}
+    if(isNaN(startHour)||isNaN(endHour)){alert('Set a valid time range.');return;}
+    if(endHour<=startHour) endHour+=24; // overnight event
   }
   const color=G('wcal-ev-color').value;
   const cat=G('wcal-ev-cat').value;
@@ -12192,11 +13081,11 @@ function wcalSaveBlock(){
   if(!startVal||!endVal){alert('Please set start and end times.');return;}
 
   const startHour=wcalTimeToHour(startVal);
-  const endHour=wcalTimeToHour(endVal);
+  let endHour=wcalTimeToHour(endVal);
 
-  if(isNaN(startHour)||isNaN(endHour)||endHour<=startHour){
-    alert('End time must be after start time.');return;
-  }
+  if(isNaN(startHour)||isNaN(endHour)){alert('Please set valid start and end times.');return;}
+  // If end <= start, treat as next-day (overnight block)
+  if(endHour<=startHour) endHour+=24;
 
   // Collect recurrence settings
   const recur=recurEl?recurEl.value:'none';
@@ -13165,35 +14054,71 @@ if (_origTaskCheck) {
   function buildDayEvents(dStr,isWeek){
     let html='';
     const items=apItemsForDay(dStr);
-    // Time blocks — calendar color at 50% opacity, full-opacity border
-    items.blocks.forEach(b=>{
-      const top=b.startHour*SLOT_H;
-      const height=Math.max((b.endHour-b.startHour)*SLOT_H,20);
+    // Also get events from previous day that spill past midnight into this day
+    const prevDStr=dateStr(addDays(new Date(dStr+'T12:00:00'),-1));
+    const prevItems=apItemsForDay(prevDStr);
+
+    // Helper: render a block segment (handles overnight wrapping)
+    function blockSegment(b,segStart,segEnd,continued,continues){
       const calC=calColor(b.calendarId)||WCAL_TYPE_COLORS[b.type||'work']||'#3b82f6';
       const taskAccent=b.taskAccentColor||'rgba(255,255,255,0.9)';
       const bgColor=hexToRgba(calC,0.5);
+      const top=segStart*SLOT_H;
+      const height=Math.max((segEnd-segStart)*SLOT_H,20);
       const bTasks=b.tasks||[];
       const timed=bTasks.filter(t=>t.scheduledTime).sort((a,z)=>a.scheduledTime.localeCompare(z.scheduledTime));
       const untimed=bTasks.filter(t=>!t.scheduledTime);
-      let inner=`<div class="apcal-event-title" style="text-shadow:0 1px 3px rgba(0,0,0,0.4);">${b.title||'Untitled'}</div>`;
-      if(height>32)inner+=`<div class="apcal-event-time-lbl" style="opacity:.85;">${fmtHour(Math.floor(b.startHour))} – ${fmtHour(Math.floor(b.endHour))}</div>`;
-      if(height>52){
+      const borderR=continues?'6px 6px 0 0':'6px';
+      const borderB=continued?'0 0 6px 6px':'6px';
+      let inner='';
+      if(continued)inner+=`<div style="font-size:9px;font-weight:700;opacity:0.75;letter-spacing:0.04em;margin-bottom:2px;">↩ continued</div>`;
+      inner+=`<div class="apcal-event-title" style="text-shadow:0 1px 3px rgba(0,0,0,0.4);">${b.title||'Untitled'}</div>`;
+      if(height>32)inner+=`<div class="apcal-event-time-lbl" style="opacity:.85;">${fmtHour(Math.floor(b.startHour))} – ${fmtHour(Math.floor(b.endHour>24?b.endHour-24:b.endHour))}${b.endHour>24?' (+1)':''}</div>`;
+      if(height>52&&!continued){
         timed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="border-left:2px solid ${taskAccent};background:${hexToRgba(calC,0.4)};">⏰ ${t.scheduledTime} ${t.text}</div>`;});
         untimed.slice(0,2).forEach(t=>{inner+=`<div class="apcal-event-subtask" style="background:${hexToRgba(calC,0.35)};">${t.done?'✓ ':''}${t.text}</div>`;});
       }
-      html+=`<div class="apcal-event" data-id="${b.id}" data-type="block" data-start="${b.startHour}" data-end="${b.endHour}" data-color="${calC}" data-title="${(b.title||'Untitled').replace(/"/g,'&quot;')}" style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};color:#fff;left:2px;right:2px;"
+      if(continues)inner+=`<div style="font-size:9px;font-weight:700;opacity:0.75;letter-spacing:0.04em;margin-top:auto;padding-top:4px;">→ midnight</div>`;
+      const contBorder=continues?`border-bottom:2px dashed ${calC};`:'';
+      return`<div class="apcal-event" data-id="${b.id}" data-type="block" data-start="${b.startHour}" data-end="${b.endHour}" data-color="${calC}" data-title="${(b.title||'Untitled').replace(/"/g,'&quot;')}"
+        style="top:${top}px;height:${height}px;background:${bgColor};border:1.5px solid ${calC};border-left:3px solid ${calC};${contBorder}color:#fff;left:2px;right:2px;border-radius:${continued?'0 0 ':''} 6px 6px${continues?' 0 0':''};"
         onclick="event.stopPropagation();if(!window._apCalDragMoved)wcalOpenDetail('${b.id}')">${inner}</div>`;
-    });
-    // Events (skip all-day — those appear in the allday row)
-    items.events.filter(e=>e.startHour!=null).forEach(e=>{
-      const top=e.startHour*SLOT_H;
-      const height=Math.max((e.endHour-e.startHour)*SLOT_H,22);
+    }
+
+    function eventSegment(e,segStart,segEnd,continued,continues){
       const catIcons={meeting:'📋',appointment:'🏥',social:'🎉',travel:'✈️',reminder:'🔔',other:'📌'};
       const eColor=resolveColor(e,'#8b5cf6');
-      let inner=`<div class="apcal-event-title">${catIcons[e.cat]||'📌'} ${e.title}</div>`;
-      if(height>32)inner+=`<div class="apcal-event-time-lbl">${fmtHour(Math.floor(e.startHour))} – ${fmtHour(Math.floor(e.endHour))}</div>`;
-      html+=`<div class="apcal-event" data-id="${e.id}" data-type="event" data-start="${e.startHour}" data-end="${e.endHour}" data-color="${eColor}" data-title="${(e.title||'').replace(/"/g,'&quot;')}" style="top:${top}px;height:${height}px;background:${eColor}cc;color:#fff;left:2px;right:2px;border-left:3px solid ${eColor};"
+      const top=segStart*SLOT_H;
+      const height=Math.max((segEnd-segStart)*SLOT_H,22);
+      const contBorder=continues?`border-bottom:2px dashed ${eColor};`:'';
+      let inner='';
+      if(continued)inner+=`<div style="font-size:9px;font-weight:700;opacity:0.75;margin-bottom:2px;">↩ continued</div>`;
+      inner+=`<div class="apcal-event-title">${catIcons[e.cat]||'📌'} ${e.title}</div>`;
+      if(height>32)inner+=`<div class="apcal-event-time-lbl">${fmtHour(Math.floor(e.startHour))} – ${fmtHour(Math.floor(e.endHour>24?e.endHour-24:e.endHour))}${e.endHour>24?' (+1)':''}</div>`;
+      if(continues)inner+=`<div style="font-size:9px;font-weight:700;opacity:0.75;margin-top:auto;padding-top:4px;">→ midnight</div>`;
+      return`<div class="apcal-event" data-id="${e.id}" data-type="event" data-start="${e.startHour}" data-end="${e.endHour}" data-color="${eColor}" data-title="${(e.title||'').replace(/"/g,'&quot;')}"
+        style="top:${top}px;height:${height}px;background:${eColor}cc;${contBorder}color:#fff;left:2px;right:2px;border-left:3px solid ${eColor};border-radius:${continued?'0 0 ':''} 6px 6px${continues?' 0 0':''};"
         onclick="event.stopPropagation();if(!window._apCalDragMoved)wcalOpenEventModal(null,null,'${e.id}')">${inner}</div>`;
+    }
+
+    // Blocks from previous day that spill into today
+    prevItems.blocks.filter(b=>b.endHour>24).forEach(b=>{
+      html+=blockSegment(b,0,b.endHour-24,true,false);
+    });
+    // Blocks starting today
+    items.blocks.forEach(b=>{
+      const overnight=b.endHour>24;
+      html+=blockSegment(b,b.startHour,overnight?24:b.endHour,false,overnight);
+    });
+
+    // Events from previous day that spill into today
+    prevItems.events.filter(e=>e.startHour!=null&&e.endHour>24).forEach(e=>{
+      html+=eventSegment(e,0,e.endHour-24,true,false);
+    });
+    // Events starting today (skip all-day — those appear in the allday row)
+    items.events.filter(e=>e.startHour!=null).forEach(e=>{
+      const overnight=e.endHour>24;
+      html+=eventSegment(e,e.startHour,overnight?24:e.endHour,false,overnight);
     });
     // Tasks
     items.tasks.forEach(t=>{
