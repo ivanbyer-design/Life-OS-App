@@ -1152,6 +1152,33 @@ textarea.fi{resize:vertical;min-height:52px;}
 }
 .pdb-notes-ta:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--bbg);}
 
+/* "WHERE YOU LEFT OFF" BOX — manual note under the progress bar */
+.pdb-focus-box{
+  border:1.5px dashed var(--bd2);border-radius:14px;
+  background:color-mix(in srgb,var(--blue) 5%,var(--bg-in));
+  padding:14px 16px;margin-bottom:20px;
+}
+.pdb-focus-ta{
+  width:100%;min-height:64px;border:none;background:transparent;
+  color:var(--t);font-family:var(--font);font-size:13px;
+  line-height:1.6;resize:vertical;outline:none;padding:0;box-sizing:border-box;
+}
+.pdb-focus-ta::placeholder{color:var(--th);}
+.pdb-focus-meta{
+  display:flex;align-items:center;gap:8px;margin-top:8px;
+  font-size:11px;color:var(--ts);
+}
+
+/* NOTES LOG — multiple timestamped entries */
+.pdb-note-entry{
+  padding:10px 12px;background:var(--bg-in);border:1px solid var(--bd);
+  border-radius:12px;margin-bottom:8px;
+}
+.pdb-note-entry-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.pdb-note-entry-date{font-size:10.5px;color:var(--ts);font-weight:600;}
+.pdb-note-entry-txt{font-size:13px;color:var(--t);line-height:1.6;white-space:pre-wrap;}
+.pdb-note-entry-del{background:none;border:none;cursor:pointer;color:var(--th);font-size:13px;padding:2px 6px;border-radius:6px;}
+
 /* DASHBOARD FOOTER */
 .pdb-footer{
   padding:14px 30px;border-top:1px solid var(--bd);
@@ -8023,8 +8050,11 @@ function addProject(){
     tasks:[],
     phases:[],
     notes:'',
+    noteEntries:[],
     created:today,
     lastWorked:null,
+    focusNote:'',
+    focusNoteTs:null,
     color:getAccentColors()[S.projects.length%7],
   });
   G('proj-name').value='';G('proj-desc').value='';G('proj-budget').value='';
@@ -8390,6 +8420,16 @@ function renderProjOverview(p){
       </div>
     </div>
 
+    <!-- WHERE YOU LEFT OFF (manual — jot down what you were doing) -->
+    <div class="pdb-sh">📍 Where You Left Off <div class="pdb-sh-line"></div></div>
+    <div class="pdb-focus-box">
+      <textarea class="pdb-focus-ta" id="pdb-focus-ta" placeholder="What were you working on? Leave yourself a note so you can pick up right where you left off..." onblur="saveProjFocus('${p.id}')">${p.focusNote||''}</textarea>
+      <div class="pdb-focus-meta">
+        <span id="pdb-focus-saved"></span>
+        <span style="margin-left:auto;">${p.focusNoteTs?'Updated '+timeAgo(p.focusNoteTs):'Not set yet'}</span>
+      </div>
+    </div>
+
     <!-- HIGH PRI TASKS -->
     ${highTasks.length?`
     <div class="pdb-sh">Urgent Tasks <div class="pdb-sh-line"></div></div>
@@ -8667,6 +8707,24 @@ function renderProjNotes(p){
       </div>
     </div>
 
+    <div class="pdb-sh" style="margin-top:4px;">📚 Notes & Learnings <div class="pdb-sh-line"></div></div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:flex-start;">
+      <textarea class="fi" id="pdb-note-entry-inp" placeholder="Add a note — something you learned, a decision, a blocker you hit..." style="margin:0;flex:1;min-height:44px;resize:vertical;" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();addProjNoteEntry('${p.id}');}"></textarea>
+      <button class="btn pri" onclick="addProjNoteEntry('${p.id}')" style="margin:0;">+ Add</button>
+    </div>
+    <div id="pdb-note-entries" style="margin-bottom:20px;">
+      ${(p.noteEntries||[]).length?(p.noteEntries||[]).map((n,i)=>i).reverse().map(idx=>{
+        const n=p.noteEntries[idx];
+        return`<div class="pdb-note-entry">
+          <div class="pdb-note-entry-hdr">
+            <span class="pdb-note-entry-date">${timeAgo(n.ts)}</span>
+            <button class="pdb-note-entry-del" onclick="delProjNoteEntry('${p.id}',${idx})">✕</button>
+          </div>
+          <div class="pdb-note-entry-txt">${n.text}</div>
+        </div>`;
+      }).join(''):'<div style="font-size:12px;color:var(--ts);padding:8px 0;">No notes yet — capture what you learn as you go</div>'}
+    </div>
+
     <div class="pdb-sh" style="margin-top:4px;">Links & Resources <div class="pdb-sh-line"></div></div>
     <div id="pdb-links-list" style="margin-bottom:12px;">
       ${(p.links||[]).map((l,i)=>`
@@ -8697,11 +8755,42 @@ function saveProjNotes(id){
   if(saved){saved.textContent='✓ Saved';setTimeout(()=>saved.textContent='',2000);}
 }
 
+function saveProjFocus(id){
+  const ta=G('pdb-focus-ta');if(!ta)return;
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  if(ta.value===(p.focusNote||''))return; // no change — don't spam the activity log
+  p.focusNote=ta.value;p.focusNoteTs=Date.now();
+  touchProject(p,p.focusNote?`Left off: ${p.focusNote.slice(0,80)}${p.focusNote.length>80?'…':''}`:'Cleared "where I left off" note');
+  renderProjects();
+  const saved=G('pdb-focus-saved');
+  if(saved){saved.textContent='✓ Saved';setTimeout(()=>{if(saved)saved.textContent='';},2000);}
+  const lw=G('pdb-lastworked');
+  if(lw)lw.innerHTML=p.lastWorked?`🕐 Last worked on: ${p.lastWorked.label} · ${timeAgo(p.lastWorked.ts)}`:'✨ No activity yet — get started below';
+}
+
 function setProjBudget(id){
   const inp=G('pdb-set-budget');
   const amt=parseFloat(inp.value);if(!amt)return;
   const p=S.projects.find(p=>p.id===id);if(!p)return;
   p.budget=amt;touchProject(p,'Updated budget');renderProjects();renderProjectDashboard(p);
+}
+
+function addProjNoteEntry(id){
+  const inp=G('pdb-note-entry-inp');if(!inp)return;
+  const txt=inp.value.trim();if(!txt)return;
+  const p=S.projects.find(p=>p.id===id);if(!p)return;
+  if(!p.noteEntries)p.noteEntries=[];
+  p.noteEntries.push({text:txt,ts:Date.now(),id:Date.now()});
+  inp.value='';
+  touchProject(p,`Added note: ${txt.slice(0,80)}${txt.length>80?'…':''}`);
+  renderProjects();renderProjNotes(p);
+}
+
+function delProjNoteEntry(id,idx){
+  const p=S.projects.find(p=>p.id===id);if(!p||!p.noteEntries)return;
+  p.noteEntries.splice(idx,1);
+  touchProject(p,'Removed a note');
+  renderProjects();renderProjNotes(p);
 }
 
 function addProjLink(id){
