@@ -3398,6 +3398,7 @@ html,body{background:var(--bg);}
   <div class="ni draggable-ni" id="ni-planning" draggable="true" onclick="go('planning',this)" style="--sector:var(--gold);"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🗓️</span><span class="ni-lb" id="sbl-planning">Planning</span></div>
   <div class="ni draggable-ni" id="ni-journal" draggable="true" onclick="go('journal',this)" style="--sector:var(--purple);"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📓</span><span class="ni-lb">Journal</span></div>
   <div class="ni" id="ni-health" onclick="go('health',this)" style="--sector:var(--green);"><span class="ni-ic">🩺</span><span class="ni-lb">Health</span></div>
+  <div class="ni" id="ni-goals" onclick="go('goals',this)" style="--sector:var(--blue);"><span class="ni-ic">🎯</span><span class="ni-lb">Goals &amp; Projects</span></div>
   <div class="sb-div" id="sb-custom-div"></div>
   <div id="sb-custom-pages"></div>
   <div style="padding:4px 8px 2px;">
@@ -3825,10 +3826,36 @@ html,body{background:var(--bg);}
 
     </div>
 
-    <!-- GOALS & PROJECTS — now hidden standalone panels kept for data rendering -->
-    <div class="panel" id="p-goals" style="display:none!important;">
-      <!-- Goals content moved into planning panel tabs -->
-      <div id="g-sum-hidden"></div>
+    <!-- GOALS & PROJECTS -->
+    <div class="panel" id="p-goals">
+      <button class="mob-menu-float" onclick="openSB()">☰</button>
+      <div class="page-cover ch"></div>
+      <span class="page-icon">🎯</span>
+      <div class="page-title">Goals &amp; Projects</div>
+      <div class="page-sub">Aim · Build · Ship</div>
+
+      <div class="summary-bar" id="g-sum" style="margin-top:16px;"></div>
+
+      <div class="nf">
+        <div class="nf-ttl">＋ New goal or project</div>
+        <div class="fr">
+          <input class="fi" type="text" id="gl-t" placeholder="Title">
+          <select class="fi" id="gl-type" style="max-width:120px;"><option value="Goal">🎯 Goal</option><option value="Project">📁 Project</option></select>
+          <select class="fi" id="gl-c" style="max-width:130px;"><option>Financial</option><option>Health</option><option>Career</option><option>Personal</option><option>Learning</option><option>Business</option><option>Creative</option><option>Other</option></select>
+          <input class="fi" type="date" id="gl-d" style="max-width:150px;">
+          <select class="fi" id="gl-pri" style="max-width:110px;"><option value="high">🔴 High</option><option value="med" selected>🟡 Med</option><option value="low">⚪ Low</option></select>
+          <button class="btn pri" onclick="addGoal()">Add</button>
+        </div>
+      </div>
+
+      <div class="gp-filter">
+        <button class="gp-filter-btn on" onclick="setGPFilter('all',this)">All</button>
+        <button class="gp-filter-btn" onclick="setGPFilter('Goal',this)">🎯 Goals</button>
+        <button class="gp-filter-btn" onclick="setGPFilter('Project',this)">📁 Projects</button>
+        <button class="gp-filter-btn" onclick="setGPFilter('active',this)">In Progress</button>
+        <button class="gp-filter-btn" onclick="setGPFilter('done',this)">Completed</button>
+      </div>
+      <div id="g-list"></div>
     </div>
 
     <!-- PROJECTS standalone panel — hidden, content in planning -->
@@ -3847,7 +3874,6 @@ html,body{background:var(--bg);}
         <button class="planning-tab on" id="ptab-calendar" onclick="switchPlanTab('calendar',this)">📅 Calendar</button>
         <button class="planning-tab" id="ptab-todos" onclick="switchPlanTab('todos',this)">✅ Tasks</button>
         <button class="planning-tab" id="ptab-habits" onclick="switchPlanTab('habits',this)">🔄 Habits</button>
-        <button class="planning-tab" id="ptab-goals" onclick="switchPlanTab('goals',this)">🎯 Goals</button>
         <button class="planning-tab" id="ptab-projects" onclick="switchPlanTab('projects',this)">🚀 Projects</button>
         <button class="planning-tab" id="ptab-stacking" onclick="switchPlanTab('stacking',this)">&#x26D3;&#xFE0F; Habit Stacking</button>
       </div>
@@ -4296,30 +4322,6 @@ html,body{background:var(--bg);}
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- GOALS TAB -->
-      <div class="planning-tab-body" id="ptab-goals-body">
-        <div class="summary-bar" id="g-sum" style="margin-top:12px;"></div>
-        <div class="nf">
-          <div class="nf-ttl">＋ New goal or project</div>
-          <div class="fr">
-            <input class="fi" type="text" id="gl-t" placeholder="Title">
-            <select class="fi" id="gl-type" style="max-width:120px;"><option value="Goal">🎯 Goal</option><option value="Project">📁 Project</option></select>
-            <select class="fi" id="gl-c" style="max-width:130px;"><option>Financial</option><option>Health</option><option>Career</option><option>Personal</option><option>Learning</option><option>Business</option><option>Creative</option><option>Other</option></select>
-            <input class="fi" type="date" id="gl-d" style="max-width:150px;">
-            <select class="fi" id="gl-pri" style="max-width:110px;"><option value="high">🔴 High</option><option value="med" selected>🟡 Med</option><option value="low">⚪ Low</option></select>
-            <button class="btn pri" onclick="addGoal()">Add</button>
-          </div>
-        </div>
-        <div class="gp-filter">
-          <button class="gp-filter-btn on" onclick="setGPFilter('all',this)">All</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('Goal',this)">🎯 Goals</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('Project',this)">📁 Projects</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('active',this)">In Progress</button>
-          <button class="gp-filter-btn" onclick="setGPFilter('done',this)">Completed</button>
-        </div>
-        <div id="g-list"></div>
       </div>
 
       <!-- PROJECTS TAB -->
@@ -6462,8 +6464,61 @@ function renderGoals(){
       ${n?`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;"><div class="prog" style="flex:1;"><div class="pf${isDone?' g':''}" style="width:${pct}%;"></div></div><span style="font-size:12px;color:var(--ts);white-space:nowrap;">${d}/${n} · ${pct}%</span></div>`:''}
       <div style="margin-bottom:8px;">${g.todos.map(t=>`<div class="ci"><input type="checkbox" ${t.done?'checked':''} onchange="togGT(${g.id},${t.id})"><span class="ci-lb ${t.done?'done':''}">${t.t}</span><button class="del" style="font-size:11px;" onclick="delGT(${g.id},${t.id})">✕</button></div>`).join('')}</div>
       <div style="display:flex;gap:6px;"><input class="fi" type="text" id="gt-${g.id}" placeholder="Add step / milestone..." style="font-size:13px;" onkeydown="if(event.key==='Enter')addGT(${g.id})"><button class="btn xs" onclick="addGT(${g.id})">＋ Add</button></div>
+      ${g.type==='Goal'?goalProjectsHtml(g):''}
     </div>`;
   }).join('');
+}
+// Projects dedicated to a goal — real S.projects entries (kanban/tasks/deadlines), linked via project.goalId
+function goalProjectsHtml(g){
+  const linked=(S.projects||[]).filter(p=>p.goalId===g.id);
+  const unlinked=(S.projects||[]).filter(p=>!p.goalId);
+  const sm={active:'ps-active',planning:'ps-planning',review:'ps-review',paused:'ps-paused',blocked:'ps-blocked',done:'ps-done'};
+  const sl={active:'Active',planning:'Planning',review:'In Review',paused:'Paused',blocked:'Blocked',done:'Done'};
+  const cards=linked.map(p=>{
+    const tasks=p.tasks||[];const done=tasks.filter(t=>t.done).length;const pct=tasks.length?Math.round(done/tasks.length*100):0;
+    return`<div class="plan-proj-mini" style="margin-bottom:6px;" onclick="openProjectDrawer('${p.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div class="plan-proj-mini-name">${p.name}</div>
+        <span class="proj-bucket-status ${sm[p.status]||'ps-active'}" style="flex-shrink:0;">${sl[p.status]||p.status}</span>
+      </div>
+      <div class="plan-proj-mini-meta">${done}/${tasks.length} tasks · ${pct}%<span style="margin-left:auto;color:var(--th);cursor:pointer;" onclick="event.stopPropagation();unlinkProjectFromGoal('${p.id}')" title="Unlink from this goal">✕ unlink</span></div>
+      <div class="plan-proj-mini-bar"><div class="plan-proj-mini-prog" style="width:${pct}%;background:${p.color||'var(--green)'};"></div></div>
+    </div>`;
+  }).join('');
+  return`<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--bd);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.05em;">🚀 Projects for this goal</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${unlinked.length?`<select class="fi" style="font-size:11px;padding:3px 6px;max-width:160px;" onchange="if(this.value){linkProjectToGoal(this.value,${g.id});this.value='';}">
+          <option value="">🔗 Link existing…</option>
+          ${unlinked.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}
+        </select>`:''}
+        <button class="btn xs" onclick="quickAddProjectForGoal(${g.id})">＋ New project</button>
+      </div>
+    </div>
+    ${linked.length?cards:`<div style="font-size:12px;color:var(--th);font-style:italic;">No projects linked yet — spin one up above.</div>`}
+  </div>`;
+}
+function linkProjectToGoal(projId,goalId){
+  const p=(S.projects||[]).find(p=>String(p.id)===String(projId));if(!p)return;
+  p.goalId=goalId;save();renderGoals();if(typeof renderProjects==='function')renderProjects();if(typeof renderProjectOverview==='function')renderProjectOverview();
+}
+function unlinkProjectFromGoal(projId){
+  const p=(S.projects||[]).find(p=>String(p.id)===String(projId));if(!p)return;
+  delete p.goalId;save();renderGoals();if(typeof renderProjects==='function')renderProjects();if(typeof renderProjectOverview==='function')renderProjectOverview();
+}
+function quickAddProjectForGoal(goalId){
+  const name=(prompt('Project name:')||'').trim();if(!name)return;
+  const id='proj-'+Date.now();
+  S.projects.push({
+    id,name,cat:'Personal',status:'active',desc:'',deadline:'',budget:0,spent:0,
+    tasks:[],phases:[],notes:'',noteEntries:[],
+    created:today,lastWorked:null,focusNote:'',focusNoteTs:null,
+    color:getAccentColors()[S.projects.length%7],
+    goalId
+  });
+  save();renderGoals();if(typeof renderProjects==='function')renderProjects();if(typeof renderProjectOverview==='function')renderProjectOverview();
+  openProjectDrawer(id);
 }
 
 // ── BILLS ──
@@ -7850,7 +7905,7 @@ function renderLifeDir(){
   const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
   const activeProjects=(S.projects||[]).filter(p=>p.status!=='done').length;
   const tiles=[
-    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('goals',G('ptab-goals')),80)"},
+    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))"},
     {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))"},
     {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))"},
     {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))"},
@@ -8550,6 +8605,7 @@ function addProject(){
     noteEntries:[],
     created:today,
     lastWorked:null,
+    goalId:null,
     focusNote:'',
     focusNoteTs:null,
     color:getAccentColors()[S.projects.length%7],
