@@ -4334,6 +4334,17 @@ html,body{background:var(--bg);}
           </div>
           <div class="proj-board" id="proj-tasks-board"></div>
         </div>
+
+        <!-- SECTION 4 · ROUTINES -->
+        <div class="tsk-section">
+          <div class="tsk-section-hdr">
+            <div class="bh2">🔁 Routines</div>
+            <div class="tsk-section-sub">Morning, midday, and night routines — the same tasks shown in Start/End My Day</div>
+          </div>
+          <div id="routinizer-summary"></div>
+          <div id="routines-container"></div>
+          <div id="routines-custom-container"></div>
+        </div>
       </div><!-- end ptab-todos-body -->
 
       <!-- HABITS TAB -->
@@ -4517,7 +4528,6 @@ html,body{background:var(--bg);}
       <div id="journal-history" style="margin-top:8px;"></div>
     </div>
 
-    <!-- Hidden Routinizer panel — routines still function via home panel -->
     <!-- HEALTH -->
     <div class="panel" id="p-health">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
@@ -4535,11 +4545,6 @@ html,body{background:var(--bg);}
       </div>
     </div>
 
-    <div class="panel" id="p-routinizer" style="display:none!important;">
-      <div id="routinizer-summary"></div>
-      <div id="routines-container"></div>
-      <div id="routines-custom-container"></div>
-    </div>
 
     <div class="panel" id="p-settings">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
@@ -10705,7 +10710,7 @@ const START_STEPS=[
         <span class="daywiz-icon">🌤️</span>
         <div class="daywiz-title">Morning routine</div>
         <div class="daywiz-sub">Check off your morning steps to earn +20 pts</div>
-        ${!items.length?'<div class="daywiz-sub" style="background:var(--bg-h);border-radius:10px;padding:12px;">No morning steps yet — add them in the routines section on Home.</div>'
+        ${!items.length?'<div class="daywiz-sub" style="background:var(--bg-h);border-radius:10px;padding:12px;">No morning steps yet — add them in the Routines section on the Planning page.</div>'
         :`<div class="daywiz-task-list">${items.map(it=>`<div class="daywiz-task-row">
             <input type="checkbox" class="daywiz-task-cb" ${done.includes(it.id)?'checked':''} onchange="togRoutineItem('morning',${it.id},this.checked)">
             <span class="daywiz-task-lbl">${it.t}</span>
@@ -10779,31 +10784,14 @@ const END_STEPS=[
     }
   },
   {
-    icon:'🌙',title:'Night routine',
-    render:(el)=>{
-      const items=(S.routines&&S.routines.night)||[];
-      const done=(S.routineLog&&S.routineLog[today+'-night'])||[];
-      el.innerHTML=`
-        <span class="daywiz-icon">🌙</span>
-        <div class="daywiz-title">Night routine</div>
-        <div class="daywiz-sub">Wind down and prepare for tomorrow. +20 pts on completion.</div>
-        ${!items.length?'<div class="daywiz-sub" style="background:var(--bg-h);border-radius:10px;padding:12px;">No night steps yet — add them in the routines section on Home.</div>'
-        :`<div class="daywiz-task-list">${items.map(it=>`<div class="daywiz-task-row">
-            <input type="checkbox" class="daywiz-task-cb" ${done.includes(it.id)?'checked':''} onchange="togRoutineItem('night',${it.id},this.checked)">
-            <span class="daywiz-task-lbl">${it.t}</span>
-          </div>`).join('')}</div>`}
-      `;
-    }
-  },
-  {
     icon:'✏️',title:'Evening reflection',
     render:(el)=>{
       const saved=(S.routineLog||{})[today+'-night-journal']||'';
       el.innerHTML=`
         <span class="daywiz-icon">✏️</span>
         <div class="daywiz-title">Evening reflection</div>
-        <div class="daywiz-sub">What went well today? What are you grateful for?</div>
-        <textarea class="daywiz-textarea" id="wiz-journal" placeholder="Today I'm grateful for...">${saved}</textarea>
+        <div class="daywiz-sub">What happened today? Wins, frustrations, whatever's on your mind.</div>
+        <textarea class="daywiz-textarea" id="wiz-journal" placeholder="Today...">${saved}</textarea>
       `;
     }
   },
@@ -10817,6 +10805,23 @@ const END_STEPS=[
         <div class="daywiz-title">Tomorrow's preview</div>
         <div class="daywiz-sub">${tmTasks.length?`You have ${tmTasks.length} task${tmTasks.length!==1?'s':''} scheduled for tomorrow.`:'Nothing scheduled for tomorrow yet — enjoy!'}</div>
         ${tmTasks.length?`<div class="daywiz-task-list">${tmTasks.slice(0,5).map(t=>`<div class="daywiz-task-row"><span class="daywiz-task-lbl">${t.t}</span><span class="daywiz-task-pri tag ${t.p==='high'?'red':t.p==='med'?'amber':'gray'}">${t.p}</span></div>`).join('')}</div>`:''}
+      `;
+    }
+  },
+  {
+    icon:'🌙',title:'Night routine',
+    render:(el)=>{
+      const items=(S.routines&&S.routines.night)||[];
+      const done=(S.routineLog&&S.routineLog[today+'-night'])||[];
+      el.innerHTML=`
+        <span class="daywiz-icon">🌙</span>
+        <div class="daywiz-title">Night routine</div>
+        <div class="daywiz-sub">Last thing before bed — wind down and prepare for tomorrow. +20 pts on completion.</div>
+        ${!items.length?'<div class="daywiz-sub" style="background:var(--bg-h);border-radius:10px;padding:12px;">No night steps yet — add them in the Routines section on the Planning page.</div>'
+        :`<div class="daywiz-task-list">${items.map(it=>`<div class="daywiz-task-row">
+            <input type="checkbox" class="daywiz-task-cb" ${done.includes(it.id)?'checked':''} onchange="togRoutineItem('night',${it.id},this.checked)">
+            <span class="daywiz-task-lbl">${it.t}</span>
+          </div>`).join('')}</div>`}
       `;
     }
   },
