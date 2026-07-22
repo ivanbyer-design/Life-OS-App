@@ -602,9 +602,9 @@ textarea.fi{resize:vertical;min-height:52px;}
 .qc-chip:hover{border-color:var(--th);color:var(--t);}
 .qc-chip.on.imp{background:color-mix(in srgb,var(--amber) 18%,var(--bg-card));border-color:var(--amber);color:var(--amber);}
 .qc-chip.on.urg{background:color-mix(in srgb,var(--red) 15%,var(--bg-card));border-color:var(--red);color:var(--red);}
-/* quadrant badge shown on each task */
+/* quadrant badge shown on each task — colors match the Eisenhower Matrix exactly */
 .qbadge{font-size:9px;font-weight:800;padding:1px 7px;border-radius:8px;letter-spacing:.03em;white-space:nowrap;}
-.qbadge.q1{background:color-mix(in srgb,var(--green) 16%,var(--bg-card));color:var(--green);}
+.qbadge.q1{background:color-mix(in srgb,var(--red) 16%,var(--bg-card));color:var(--red);}
 .qbadge.q2{background:color-mix(in srgb,var(--blue) 16%,var(--bg-card));color:var(--blue);}
 .qbadge.q3{background:color-mix(in srgb,var(--amber) 18%,var(--bg-card));color:var(--amber);}
 .qbadge.q4{background:var(--bg-h);color:var(--ts);border:1px solid var(--bd);}
@@ -3296,36 +3296,41 @@ html,body{background:var(--bg);}
 /* ── EISENHOWER MATRIX ── */
 .eis-wrap{margin-top:6px;}
 .eis-axis-row{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;margin-bottom:4px;align-items:flex-end;}
-.eis-axis-top{font-size:15px;font-weight:800;color:var(--t);text-align:center;padding-bottom:6px;text-transform:uppercase;letter-spacing:0.07em;}
+.eis-axis-top{font-size:11px;font-weight:800;color:var(--ts);text-align:center;padding-bottom:6px;text-transform:uppercase;letter-spacing:0.1em;}
 .eis-main-grid{display:grid;grid-template-columns:42px 1fr 1fr;gap:0;}
 .eis-task-list{flex:1;overflow:hidden;}
 .eis-task-list.eis-scroll{max-height:190px;overflow-y:auto;}
 .eis-side-lbl{display:flex;align-items:center;justify-content:center;}
-.eis-axis-label{font-size:14px;font-weight:800;color:var(--t);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;text-transform:uppercase;letter-spacing:0.07em;}
+.eis-axis-label{font-size:11px;font-weight:800;color:var(--ts);writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);white-space:nowrap;text-transform:uppercase;letter-spacing:0.1em;}
+/* Each quadrant carries one accent, used consistently for its border-bar, name, icon, task chips and add-button — Do=red (act now), Decide=blue (plan it), Delegate=amber (hand off), Delete=neutral (cut it) */
 .eis-q{border-radius:var(--r);padding:12px 12px 10px;margin:3px;display:flex;flex-direction:column;border:1px solid;position:relative;}
-.eis-q.q1{background:color-mix(in srgb,var(--green) 11%,var(--bg-card));border-color:color-mix(in srgb,var(--green) 28%,transparent);}
-.eis-q.q2{background:color-mix(in srgb,var(--blue) 11%,var(--bg-card));border-color:color-mix(in srgb,var(--blue) 28%,transparent);}
-.eis-q.q3{background:color-mix(in srgb,var(--amber) 13%,var(--bg-card));border-color:color-mix(in srgb,var(--amber) 30%,transparent);}
-.eis-q.q4{background:var(--bg-h);border-color:var(--bd);}
-.eis-q-name{font-size:16px;font-weight:800;text-align:center;margin-bottom:2px;}
-.eis-q.q1 .eis-q-name{color:var(--green);}
+.eis-q.q1{background:color-mix(in srgb,var(--red) 7%,var(--bg-card));border-color:color-mix(in srgb,var(--red) 22%,var(--bd));box-shadow:inset 3px 0 0 var(--red);}
+.eis-q.q2{background:color-mix(in srgb,var(--blue) 7%,var(--bg-card));border-color:color-mix(in srgb,var(--blue) 22%,var(--bd));box-shadow:inset 3px 0 0 var(--blue);}
+.eis-q.q3{background:color-mix(in srgb,var(--amber) 8%,var(--bg-card));border-color:color-mix(in srgb,var(--amber) 24%,var(--bd));box-shadow:inset 3px 0 0 var(--amber);}
+.eis-q.q4{background:var(--bg-h);border-color:var(--bd);box-shadow:inset 3px 0 0 var(--bd2);}
+.eis-q-name{font-family:var(--font-display);font-size:17px;font-weight:700;letter-spacing:-0.01em;text-align:center;margin-bottom:2px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.eis-q-ic{font-size:12px;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.eis-q.q1 .eis-q-name{color:var(--red);}
+.eis-q.q1 .eis-q-ic{background:color-mix(in srgb,var(--red) 16%,var(--bg-card));}
 .eis-q.q2 .eis-q-name{color:var(--blue);}
+.eis-q.q2 .eis-q-ic{background:color-mix(in srgb,var(--blue) 16%,var(--bg-card));}
 .eis-q.q3 .eis-q-name{color:var(--amber);}
+.eis-q.q3 .eis-q-ic{background:color-mix(in srgb,var(--amber) 16%,var(--bg-card));}
 .eis-q.q4 .eis-q-name{color:var(--ts);}
+.eis-q.q4 .eis-q-ic{background:var(--bg-tag);}
 .eis-q-action{font-size:10.5px;color:var(--ts);font-style:italic;text-align:center;margin-bottom:7px;}
 .eis-task{display:flex;align-items:flex-start;gap:5px;margin-bottom:4px;padding:5px 7px;border-radius:8px;cursor:pointer;background:color-mix(in srgb,var(--bg-card) 65%,transparent);border:1px solid var(--bd);box-shadow:0 1px 1px rgba(0,0,0,0.04);transition:background .12s,border-color .12s;}
 .eis-task:hover{background:var(--bg-card);border-color:var(--bd2);}
 .eis-task.focused{background:var(--bg-card);border-color:var(--blue);}
-/* Per-quadrant task tint: Do=red, Decide=orange, Delegate=yellow, Delete=neutral/white */
-.eis-q.q1 .eis-task{background:color-mix(in srgb,var(--red) 20%,transparent);border-color:color-mix(in srgb,var(--red) 40%,var(--bd));}
-.eis-q.q2 .eis-task{background:color-mix(in srgb,#f97316 22%,transparent);border-color:color-mix(in srgb,#f97316 42%,var(--bd));}
-.eis-q.q3 .eis-task{background:color-mix(in srgb,#eab308 24%,transparent);border-color:color-mix(in srgb,#eab308 46%,var(--bd));}
-.eis-q.q1 .eis-task:hover{background:color-mix(in srgb,var(--red) 30%,transparent);}
-.eis-q.q2 .eis-task:hover{background:color-mix(in srgb,#f97316 32%,transparent);}
-.eis-q.q3 .eis-task:hover{background:color-mix(in srgb,#eab308 34%,transparent);}
+.eis-q.q1 .eis-task{background:color-mix(in srgb,var(--red) 10%,var(--bg-card));border-color:color-mix(in srgb,var(--red) 28%,var(--bd));}
+.eis-q.q2 .eis-task{background:color-mix(in srgb,var(--blue) 10%,var(--bg-card));border-color:color-mix(in srgb,var(--blue) 28%,var(--bd));}
+.eis-q.q3 .eis-task{background:color-mix(in srgb,var(--amber) 11%,var(--bg-card));border-color:color-mix(in srgb,var(--amber) 30%,var(--bd));}
+.eis-q.q1 .eis-task:hover{background:color-mix(in srgb,var(--red) 17%,var(--bg-card));}
+.eis-q.q2 .eis-task:hover{background:color-mix(in srgb,var(--blue) 17%,var(--bg-card));}
+.eis-q.q3 .eis-task:hover{background:color-mix(in srgb,var(--amber) 18%,var(--bg-card));}
 .eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;background:var(--bd2);}
 .eis-task-txt{font-size:13px;font-weight:600;color:var(--t);line-height:1.35;flex:1;}
-.eis-empty{font-size:10px;color:var(--th);font-style:italic;margin-top:2px;margin-bottom:4px;}
+.eis-empty{font-size:11.5px;color:var(--th);font-style:italic;padding:8px 2px 6px;text-align:center;}
 .eis-more{font-size:11px;font-weight:700;color:var(--blue);margin-top:4px;cursor:pointer;user-select:none;display:inline-block;padding:2px 4px;border-radius:6px;}
 .eis-more:hover{background:var(--bg-a);text-decoration:underline;}
 .eis-task-arr{font-size:13px;color:var(--ts);flex-shrink:0;margin-left:2px;transition:transform .2s;}
@@ -3337,13 +3342,20 @@ html,body{background:var(--bg);}
 .eis-move-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
 .eis-move-btn.clr{background:transparent;color:var(--th);border-style:dashed;font-size:9px;}
 .eis-add-corner{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--bd2);background:var(--bg-card);color:var(--t);font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--font);transition:all .15s;z-index:2;padding:0;}
-.eis-add-corner:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.eis-q.q1 .eis-add-corner:hover{background:var(--red);color:#fff;border-color:var(--red);}
+.eis-q.q2 .eis-add-corner:hover{background:var(--blue);color:#fff;border-color:var(--blue);}
+.eis-q.q3 .eis-add-corner:hover{background:var(--amber);color:#fff;border-color:var(--amber);}
+.eis-q.q4 .eis-add-corner:hover{background:var(--ts);color:var(--ti);border-color:var(--ts);}
 .eis-add-pop{display:none;position:absolute;top:36px;right:8px;background:var(--bg-card);border:1px solid var(--bd);border-radius:12px;padding:10px;box-shadow:0 6px 24px rgba(0,0,0,0.14);z-index:20;min-width:220px;flex-direction:column;gap:6px;}
 .eis-add-pop.open{display:flex;}
 .eis-add-inp{font-size:12px!important;padding:6px 10px!important;}
 .eis-add-pop-row{display:flex;gap:6px;align-items:center;}
 .eis-add-pop-btn{flex-shrink:0;height:30px;padding:0 12px;border-radius:8px;border:1.5px solid var(--blue);background:var(--blue);color:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:opacity .15s;}
 .eis-add-pop-btn:hover{opacity:.85;}
+.eis-q.q1 .eis-add-pop-btn{border-color:var(--red);background:var(--red);}
+.eis-q.q2 .eis-add-pop-btn{border-color:var(--blue);background:var(--blue);}
+.eis-q.q3 .eis-add-pop-btn{border-color:var(--amber);background:var(--amber);}
+.eis-q.q4 .eis-add-pop-btn{border-color:var(--ts);background:var(--ts);}
 
 /* ── PERSONAL TO-DOS ── */
 .home-ptodos-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:16px 16px 12px;box-shadow:var(--sh);}
@@ -7941,8 +7953,8 @@ function renderEisenhowerMatrix(){
       +`</div>`;
   };
   const expanded=window._eisExpanded||(window._eisExpanded={});
-  const taskHtml=(arr,curQ,max=5)=>{
-    if(!arr.length&&focused===null)return'';
+  const taskHtml=(arr,curQ,emptyMsg,max=5)=>{
+    if(!arr.length)return`<div class="eis-empty">${emptyMsg}</div>`;
     const isExp=!!expanded[curQ];
     const shown=isExp?arr:arr.slice(0,max);
     let more='';
@@ -7955,10 +7967,10 @@ function renderEisenhowerMatrix(){
     return rows+more;
   };
   const qs=[
-    {arr:byQ(1),q:1,cls:'q1',name:'Do',sub:'Do it now.'},
-    {arr:byQ(2),q:2,cls:'q2',name:'Decide',sub:'Schedule a time to do it'},
-    {arr:byQ(3),q:3,cls:'q3',name:'Delegate',sub:'Who can do it for you?'},
-    {arr:byQ(4),q:4,cls:'q4',name:'Delete',sub:'Eliminate it'}
+    {arr:byQ(1),q:1,cls:'q1',ic:'🔥',name:'Do',sub:'Do it now.',empty:'Nothing on fire. Good.'},
+    {arr:byQ(2),q:2,cls:'q2',ic:'🗓️',name:'Decide',sub:'Schedule a time to do it',empty:'Nothing planned — add what actually matters.'},
+    {arr:byQ(3),q:3,cls:'q3',ic:'🤝',name:'Delegate',sub:'Who can do it for you?',empty:'Nobody waiting on you here.'},
+    {arr:byQ(4),q:4,cls:'q4',ic:'🗑️',name:'Delete',sub:'Eliminate it',empty:'Clear. Nothing to cut.'}
   ];
   const qCard=x=>{
     const scrollCls=(x.arr.length>5&&!expanded[x.q])?' eis-scroll':'';
@@ -7970,9 +7982,9 @@ function renderEisenhowerMatrix(){
           <button class="eis-add-pop-btn" onclick="eisAddTask(${x.q})">Add</button>
         </div>
       </div>
-      <div class="eis-q-name">${x.name}</div>
+      <div class="eis-q-name"><span class="eis-q-ic">${x.ic}</span>${x.name}</div>
       <div class="eis-q-action">${x.sub}</div>
-      <div class="eis-task-list${scrollCls}">${taskHtml(x.arr,x.q)}</div>
+      <div class="eis-task-list${scrollCls}">${taskHtml(x.arr,x.q,x.empty)}</div>
     </div>`;
   };
   el.innerHTML=`<div class="eis-wrap"><div class="eis-axis-row"><div></div><div class="eis-axis-top">Urgent</div><div class="eis-axis-top">Not Urgent</div></div><div class="eis-main-grid"><div class="eis-side-lbl"><span class="eis-axis-label">Important</span></div>${qCard(qs[0])}${qCard(qs[1])}<div class="eis-side-lbl"><span class="eis-axis-label">Not Important</span></div>${qCard(qs[2])}${qCard(qs[3])}</div></div>`;
