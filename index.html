@@ -7918,9 +7918,9 @@ function renderLifeDir(){
   const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
   const activeProjects=(S.projects||[]).filter(p=>p.status!=='done').length;
   const tiles=[
-    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))",color:'var(--blue)'},
-    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))",color:'var(--neon)'},
     {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))",color:'var(--gold)'},
+    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))",color:'var(--neon)'},
+    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))",color:'var(--blue)'},
     {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))",color:'var(--purple)'},
   ];
   el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" style="--tile:${t.color};" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
