@@ -4986,6 +4986,13 @@ function openFinQuickAdd(){
 function closeFinQuickAdd(){
   G('fqa-wrap').classList.remove('open');
   document.body.style.overflow='';
+  // If this popup was opened as step 1 of the End My Day flow, continue into the wizard
+  if(_endDayPending){
+    _endDayPending=false;
+    wizardType='end';wizardStep=0;wizardMood='';
+    G('daywiz-overlay').classList.add('open');
+    renderWizardStep();
+  }
 }
 
 // ── HOME UNIVERSAL QUICK-ADD MODAL ──
@@ -7829,8 +7836,8 @@ function renderWeekly(){
       </div>
     </div>
     <div class="week-cal-day-btns">
-      <button class="hero-day-btn start day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127749; Start My Day</button>
-      <button class="hero-day-btn end day-ctrl-btn" onclick="go('journal',G('ni-journal'))">&#127769; End My Day</button>
+      <button class="hero-day-btn start day-ctrl-btn" onclick="openDayWizard('start')">&#127749; Start My Day</button>
+      <button class="hero-day-btn end day-ctrl-btn" onclick="openDayWizard('end')">&#127769; End My Day</button>
     </div>
   </div>`;
 
@@ -10642,6 +10649,7 @@ document.addEventListener('keydown',e=>{
 
 // ══ DAY WIZARD ══
 let wizardType='start',wizardStep=0,wizardMood='';
+let _endDayPending=false;
 
 const START_STEPS=[
   {
@@ -10728,6 +10736,24 @@ const START_STEPS=[
 
 const END_STEPS=[
   {
+    icon:'✅',title:"Today's tasks",
+    render:(el)=>{
+      const items=S.todos.filter(t=>t.d===today);
+      const doneCt=items.filter(t=>t.done).length;
+      el.innerHTML=`
+        <span class="daywiz-icon">✅</span>
+        <div class="daywiz-title">What did you get done?</div>
+        <div class="daywiz-sub">${items.length?`Check off what you finished today — ${doneCt}/${items.length} so far.`:'Things you said you\'d do today, pulled from your task list.'}</div>
+        ${!items.length?'<div class="daywiz-sub" style="background:var(--bg-h);border-radius:10px;padding:12px;">Nothing was scheduled for today.</div>'
+        :`<div class="daywiz-task-list">${items.map(t=>`<div class="daywiz-task-row">
+            <input type="checkbox" class="daywiz-task-cb" ${t.done?'checked':''} onchange="taskComplete('todo:${t.id}');wizRefreshTaskStep();">
+            <span class="daywiz-task-lbl${t.done?' done':''}" style="${t.done?'text-decoration:line-through;color:var(--ts);':''}">${t.t}</span>
+            ${(t.importance||'low')==='high'?'<span class="daywiz-task-pri tag red">High</span>':''}
+          </div>`).join('')}</div>`}
+      `;
+    }
+  },
+  {
     icon:'🌙',title:'How was your day?',
     render:(el)=>{
       const done=S.todos.filter(t=>t.dd===today).length;
@@ -10802,9 +10828,22 @@ const END_STEPS=[
 ];
 
 function openDayWizard(type){
+  if(type==='end'){
+    // Step 1 of End My Day: log today's income/expenses first, in the same popup used everywhere else.
+    // The wizard itself (task checklist → mood → night routine → ...) opens once that's closed.
+    _endDayPending=true;
+    openFinQuickAdd();
+    fqaSetIE('income');
+    return;
+  }
   wizardType=type;wizardStep=0;wizardMood='';
   G('daywiz-overlay').classList.add('open');
   renderWizardStep();
+}
+function wizRefreshTaskStep(){
+  if(wizardType==='end'&&END_STEPS[wizardStep]&&END_STEPS[wizardStep].title==="Today's tasks"){
+    END_STEPS[wizardStep].render(G('daywiz-step-inner'));
+  }
 }
 function closeDayWizard(){
   // Save any open journal/intention before closing
