@@ -7869,10 +7869,6 @@ function renderWeekly(){
         <div class="ws-cell-vl ${wkBills.length>0?'dn':''}">${wkBills.length}</div>
       </div>
     </div>
-    <div class="week-cal-day-btns">
-      <button class="hero-day-btn start day-ctrl-btn" onclick="openDayWizard('start')">&#127749; Start My Day</button>
-      <button class="hero-day-btn end day-ctrl-btn" onclick="openDayWizard('end')">&#127769; End My Day</button>
-    </div>
   </div>`;
 
   setTimeout(()=>{
@@ -8008,14 +8004,13 @@ function renderLifeDir(){
   const mPrefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   const mFin=S.finance.filter(f=>f.dt&&f.dt.startsWith(mPrefix));
   const mNet=mFin.filter(f=>f.t==='income').reduce((s,f)=>s+f.a,0)-mFin.filter(f=>f.t==='expense').reduce((s,f)=>s+f.a,0);
-  const activeGoals=(S.goals||[]).filter(g=>g.todos&&!g.todos.every(t=>t.done)).length;
   const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
   const activeProjects=(S.projects||[]).filter(p=>p.status!=='done').length;
   const tiles=[
     {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))",color:'var(--gold)'},
     {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))",color:'var(--neon)'},
-    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))",color:'var(--blue)'},
-    {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))",color:'var(--purple)'},
+    {icon:'&#127749;',name:'Start My Day',stat:'Morning check-in & routine',cls:'',action:"openDayWizard('start')",color:'var(--green)'},
+    {icon:'&#127769;',name:'End My Day',stat:'Wrap up & reflect',cls:'',action:"openDayWizard('end')",color:'var(--purple)'},
   ];
   el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" style="--tile:${t.color};" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
 }
