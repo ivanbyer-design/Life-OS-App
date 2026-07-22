@@ -3051,6 +3051,10 @@ html,body{background:var(--bg);}
 .plan-goal-mini-prog{height:4px;background:var(--blue);border-radius:2px;transition:width .3s;}
 .plan-goal-mini-meta{font-size:11px;color:var(--ts);margin-bottom:2px;}
 .plan-goals-empty{font-size:13px;color:var(--ts);padding:20px 0;}
+.plan-goal-mini-add{box-shadow:none;border:1.5px dashed var(--bd2);background:transparent;opacity:0.6;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:130px;max-width:150px;transition:opacity .15s,border-color .15s,background .15s;}
+.plan-goal-mini-add:hover{opacity:1;border-color:var(--blue);background:color-mix(in srgb,var(--blue) 6%,transparent);}
+.plan-goal-mini-add-ic{font-size:24px;color:var(--ts);}
+.plan-goal-mini-add-lb{font-size:11px;font-weight:700;color:var(--ts);}
 
 /* ── APPLE CALENDAR WEEK VIEW ── */
 .apcal{display:flex;height:760px;width:100%;background:var(--bg-card);border-radius:var(--rl);overflow:hidden;border:1px solid var(--bd);box-shadow:var(--sh-md);}
@@ -7894,8 +7898,11 @@ function _renderProjBuckets(el){
 function renderGoalsOverview(){
   const el=G('planning-goals-overview');if(!el)return;
   const goals=(S.goals||[]).filter(g=>g.type==='Goal');
-  if(!goals.length){el.innerHTML=`<div class="plan-goals-empty">🎯 No goals yet — <span style="color:var(--blue);cursor:pointer;font-weight:600;" onclick="navToPage('goals')">add one</span></div>`;return;}
-  el.innerHTML=`<div class="plan-goals-row">`+goals.map(g=>{
+  const addCard=`<div class="plan-goal-mini plan-goal-mini-add" onclick="quickAddGoal()" title="Add a goal">
+    <div class="plan-goal-mini-add-ic">＋</div>
+    <div class="plan-goal-mini-add-lb">New Goal</div>
+  </div>`;
+  const cards=goals.map(g=>{
     const d=g.todos.filter(t=>t.done).length,n=g.todos.length,pct=n?Math.round(d/n*100):0;
     const isDone=g.status==='done'||(n&&pct===100);
     return`<div class="plan-goal-mini">
@@ -7903,7 +7910,14 @@ function renderGoalsOverview(){
       ${n?`<div class="plan-goal-mini-bar"><div class="plan-goal-mini-prog" style="width:${pct}%;"></div></div><div class="plan-goal-mini-meta">${d}/${n} steps · ${pct}%</div>`:`<div class="plan-goal-mini-meta">No steps yet</div>`}
       ${goalProjectsHtml(g)}
     </div>`;
-  }).join('')+`</div>`;
+  }).join('');
+  el.innerHTML=`<div class="plan-goals-row">${cards}${addCard}</div>`;
+}
+function quickAddGoal(){
+  const t=(prompt('Goal title:')||'').trim();if(!t)return;
+  S.goals.push({t,c:'Personal',dl:'',type:'Goal',priority:'med',status:'active',todos:[],id:Date.now()});
+  if(typeof addPersonalPoints==='function')addPersonalPoints(5,'Added goal');
+  save();renderGoals();
 }
 
 function renderHomeDebts(){
