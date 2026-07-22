@@ -3329,6 +3329,11 @@ html,body{background:var(--bg);}
 .eis-q.q2 .eis-task:hover{background:color-mix(in srgb,var(--blue) 17%,var(--bg-card));}
 .eis-q.q3 .eis-task:hover{background:color-mix(in srgb,var(--amber) 18%,var(--bg-card));}
 .eis-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;background:var(--bd2);}
+/* inline check-off circle — completes the task directly, no need to open the row */
+.eis-task-check{width:15px;height:15px;border-radius:50%;border:2px solid var(--bd2);background:var(--bg-card);flex-shrink:0;margin-top:2px;cursor:pointer;position:relative;transition:all .13s;}
+.eis-task-check:hover{border-color:var(--green);background:var(--green);transform:scale(1.08);}
+.eis-task-check:hover::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.eis-task-check:active{transform:scale(0.92);}
 .eis-task-txt{font-size:13px;font-weight:600;color:var(--t);line-height:1.35;flex:1;}
 .eis-empty{font-size:11.5px;color:var(--th);font-style:italic;padding:8px 2px 6px;text-align:center;}
 .eis-more{font-size:11px;font-weight:700;color:var(--blue);margin-top:4px;cursor:pointer;user-select:none;display:inline-block;padding:2px 4px;border-radius:6px;}
@@ -7963,7 +7968,13 @@ function renderEisenhowerMatrix(){
         ?`<div class="eis-more" onclick="event.stopPropagation();eisToggleMore(${curQ})">▲ Show less</div>`
         :`<div class="eis-more" onclick="event.stopPropagation();eisToggleMore(${curQ})">▾ +${arr.length-max} more</div>`;
     }
-    const rows=shown.map(it=>`<div class="eis-task${focused===it.key?' focused':''}" onclick="eisFocus('${it.key}')"><div class="eis-dot"></div><div class="eis-task-txt">${it.label}${it.tag?` <span style="font-size:10px;color:var(--ts);font-weight:600;">· ${it.tag}</span>`:''}</div><div class="eis-task-arr">›</div></div>${focused===it.key?actPanel(it):''}`).join('');
+    const rows=shown.map(it=>{
+      const canComplete=!it.key.startsWith('rec:');
+      const check=canComplete
+        ?`<div class="eis-task-check" title="Mark complete" onclick="event.stopPropagation();taskComplete('${it.key}')"></div>`
+        :`<div class="eis-dot" title="Recurring task"></div>`;
+      return`<div class="eis-task${focused===it.key?' focused':''}" onclick="eisFocus('${it.key}')">${check}<div class="eis-task-txt">${it.label}${it.tag?` <span style="font-size:10px;color:var(--ts);font-weight:600;">· ${it.tag}</span>`:''}</div><div class="eis-task-arr">›</div></div>${focused===it.key?actPanel(it):''}`;
+    }).join('');
     return rows+more;
   };
   const qs=[
