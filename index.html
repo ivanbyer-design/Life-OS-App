@@ -3039,6 +3039,19 @@ html,body{background:var(--bg);}
 .plan-proj-mini-prog{height:4px;background:var(--green);border-radius:2px;transition:width .3s;}
 .plan-projs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;}
 
+/* ── PLANNING PAGE GOALS ROW — goals side by side, each with its dedicated projects ── */
+.plan-goals-row{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+.plan-goals-row::-webkit-scrollbar{height:5px;}
+.plan-goals-row::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px;}
+.plan-goal-mini{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--r);padding:14px 14px 12px;min-width:250px;max-width:270px;flex-shrink:0;box-shadow:inset 3px 0 0 var(--blue);transition:box-shadow .15s;}
+.plan-goal-mini:hover{box-shadow:inset 3px 0 0 var(--blue),var(--sh-md);}
+.plan-goal-mini-name{font-size:13.5px;font-weight:700;color:var(--t);cursor:pointer;line-height:1.3;}
+.plan-goal-mini-name:hover{color:var(--blue);}
+.plan-goal-mini-bar{height:4px;background:var(--bg-a);border-radius:2px;overflow:hidden;margin:8px 0 4px;}
+.plan-goal-mini-prog{height:4px;background:var(--blue);border-radius:2px;transition:width .3s;}
+.plan-goal-mini-meta{font-size:11px;color:var(--ts);margin-bottom:2px;}
+.plan-goals-empty{font-size:13px;color:var(--ts);padding:20px 0;}
+
 /* ── APPLE CALENDAR WEEK VIEW ── */
 .apcal{display:flex;height:760px;width:100%;background:var(--bg-card);border-radius:var(--rl);overflow:hidden;border:1px solid var(--bd);box-shadow:var(--sh-md);}
 .apcal-sb{width:196px;flex-shrink:0;background:color-mix(in srgb,var(--bg) 60%,var(--bg-card));border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,opacity .18s ease;}
@@ -3894,8 +3907,17 @@ html,body{background:var(--bg);}
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
 
-        <!-- APPLE CALENDAR — week view — shown first -->
-        <div class="apcal" id="apcal" style="margin-top:16px;">
+        <!-- GOALS — side by side, each with its dedicated projects -->
+        <div class="plan-below-cal" style="margin-top:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="bh2" style="margin:0;">🎯 Goals</div>
+            <button class="btn sml" onclick="navToPage('goals')">View all</button>
+          </div>
+          <div id="planning-goals-overview"></div>
+        </div>
+
+        <!-- APPLE CALENDAR — week view -->
+        <div class="apcal" id="apcal">
           <!-- Sidebar -->
           <div class="apcal-sb" id="apcal-sb">
             <div class="apcal-sb-inner">
@@ -4917,7 +4939,7 @@ function go(id,el){
   setTimeout(()=>{
     renderAll();
     if(id==='journal')renderJournal();
-    if(id==='planning'){if(typeof renderApCal==='function')renderApCal();renderProjectOverview();renderEisenhowerMatrix();}
+    if(id==='planning'){if(typeof renderApCal==='function')renderApCal();renderProjectOverview();renderEisenhowerMatrix();renderGoalsOverview();}
     setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
   },0);
 }
@@ -6480,6 +6502,7 @@ function renderGoals(){
       ${g.type==='Goal'?goalProjectsHtml(g):''}
     </div>`;
   }).join('');
+  if(typeof renderGoalsOverview==='function')renderGoalsOverview();
 }
 // Projects dedicated to a goal — real S.projects entries (kanban/tasks/deadlines), linked via project.goalId
 function goalProjectsHtml(g){
@@ -7865,6 +7888,22 @@ function _renderProjBuckets(el){
       <div style="font-size:10px;color:var(--ts);text-align:center;font-weight:700;">New</div>
     </div>
   </div></div>`;
+}
+
+// Goals side by side on the Planning page — each card includes its own "attach projects" section (goalProjectsHtml, shared with the Goals & Projects page)
+function renderGoalsOverview(){
+  const el=G('planning-goals-overview');if(!el)return;
+  const goals=(S.goals||[]).filter(g=>g.type==='Goal');
+  if(!goals.length){el.innerHTML=`<div class="plan-goals-empty">🎯 No goals yet — <span style="color:var(--blue);cursor:pointer;font-weight:600;" onclick="navToPage('goals')">add one</span></div>`;return;}
+  el.innerHTML=`<div class="plan-goals-row">`+goals.map(g=>{
+    const d=g.todos.filter(t=>t.done).length,n=g.todos.length,pct=n?Math.round(d/n*100):0;
+    const isDone=g.status==='done'||(n&&pct===100);
+    return`<div class="plan-goal-mini">
+      <div class="plan-goal-mini-name" onclick="navToPage('goals')" title="Open in Goals &amp; Projects">${isDone?'✓ ':''}${g.t}</div>
+      ${n?`<div class="plan-goal-mini-bar"><div class="plan-goal-mini-prog" style="width:${pct}%;"></div></div><div class="plan-goal-mini-meta">${d}/${n} steps · ${pct}%</div>`:`<div class="plan-goal-mini-meta">No steps yet</div>`}
+      ${goalProjectsHtml(g)}
+    </div>`;
+  }).join('')+`</div>`;
 }
 
 function renderHomeDebts(){
@@ -10203,7 +10242,7 @@ function switchPlanTab(tab, btn){
   if(btn)btn.classList.add('on');
   const body=G('ptab-'+tab+'-body');
   if(body)body.classList.add('on');
-  if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();},30);}
+  if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();renderGoalsOverview();},30);}
   if(tab==='todos'){setTimeout(()=>{renderTodos();renderRecurring();renderProjTasksBoard();},20);}
 }
 
