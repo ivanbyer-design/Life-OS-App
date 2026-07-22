@@ -7,10 +7,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Life OS">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0d0906">
+<meta name="theme-color" content="#12151C">
 <title>Life OS</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
@@ -18,43 +18,43 @@
 :root{
   --sw:290px;
   --font:'Inter',system-ui,sans-serif;
-  --font-display:'Cormorant Garamond','Georgia',serif;
+  --font-display:'Space Grotesk','Inter',sans-serif;
   --font-mono:'JetBrains Mono','Fira Code',monospace;
-  /* Light mode — neon turquoise accent */
-  --bg:#faf4ec;--bg-h:#f3ead9;--bg-a:#e8dcc8;--bg-sb:#f5efe3;
-  --bg-card:#fffdf8;--bg-in:#f3ead9;--bg-tag:#e8dcc8;
-  --t:#2c1810;--ts:#7a5c42;--th:#b89880;--ti:#fffdf8;
-  --bd:#d4c0a8;--bd2:#c0a882;
-  --green:#2a7a42;--gbg:#d4f0dc;
-  --red:#b83030;--rbg:#fce8e0;
-  --amber:#b06818;--abg:#feefd4;
-  --blue:#9a5f18;--bbg:#fce8c8;
-  --purple:#6840b0;--pbg:#e8e0f4;
-  --gold:#c9943a;--goldbg:rgba(201,148,58,0.1);
-  --neon:#c9943a;--neon-glow:rgba(201,148,58,0.25);
-  --r:12px;--rl:24px;--spring:cubic-bezier(0.34,1.56,0.64,1);
-  --sh:0 2px 8px rgba(44,24,16,0.10),0 1px 3px rgba(44,24,16,0.07);
-  --sh-md:0 6px 24px rgba(44,24,16,0.14),0 2px 6px rgba(44,24,16,0.08);
-  --sh-lg:0 12px 40px rgba(44,24,16,0.18),0 4px 10px rgba(44,24,16,0.10);
-  --accent:var(--gold);--accent-glow:rgba(201,148,58,0.2);
+  /* Light mode — paper & ink, with a coded-color sector system */
+  --bg:#f5f5f2;--bg-h:#ebeae3;--bg-a:#e0ddd3;--bg-sb:#efeee9;
+  --bg-card:#ffffff;--bg-in:#f1f0eb;--bg-tag:#e7e4dc;
+  --t:#1c222c;--ts:#5b6472;--th:#9aa2ae;--ti:#ffffff;
+  --bd:#dfdbd1;--bd2:#c9c4b6;
+  --green:#1e9e6c;--gbg:#dcf3e8;
+  --red:#e14f3d;--rbg:#fce4df;
+  --amber:#d9861b;--abg:#fbe8c8;
+  --blue:#2e63e8;--bbg:#dee6fc;
+  --purple:#7b4fd1;--pbg:#ece3fa;
+  --gold:#c98a2e;--goldbg:rgba(201,138,46,0.12);
+  --neon:#00a896;--neon-glow:rgba(0,168,150,0.22);
+  --r:10px;--rl:16px;--spring:cubic-bezier(0.34,1.56,0.64,1);
+  --sh:0 1px 2px rgba(28,34,44,0.06),0 1px 1px rgba(28,34,44,0.04);
+  --sh-md:0 6px 20px rgba(28,34,44,0.08),0 2px 5px rgba(28,34,44,0.05);
+  --sh-lg:0 16px 40px rgba(28,34,44,0.12),0 4px 10px rgba(28,34,44,0.06);
+  --accent:var(--blue);--accent-glow:rgba(46,99,232,0.18);
 }
 [data-dark]{
-  /* Finance terminal dark — deep charcoal, ref-match */
-  --bg:#0d0906;--bg-h:#201808;--bg-a:#2a2014;--bg-sb:#0a0705;
-  --bg-card:#231a0e;--bg-in:#281e0e;--bg-tag:#342618;
-  --t:#f0e4cc;--ts:#a08060;--th:#5e4030;--ti:#0d0906;
-  --bd:rgba(201,148,58,0.2);--bd2:rgba(201,148,58,0.4);
-  --green:#68b878;--gbg:#0e1e10;
-  --red:#e06055;--rbg:#1e0e0a;
-  --amber:#d4943a;--abg:#241508;
-  --blue:#d4a050;--bbg:#1e1408;
-  --purple:#b07ad0;--pbg:#180e28;
-  --gold:#d4a050;--goldbg:rgba(212,160,80,0.12);
-  --neon:#c9943a;--neon-glow:rgba(201,148,58,0.25);
-  --sh:0 1px 6px rgba(0,0,0,0.8),0 0 0 1px rgba(212,160,80,0.08);
-  --sh-md:0 4px 24px rgba(0,0,0,0.7),0 0 20px rgba(212,160,80,0.12),0 0 0 1px rgba(212,160,80,0.2);
-  --sh-lg:0 8px 48px rgba(0,0,0,0.8),0 0 36px rgba(212,160,80,0.18),0 0 0 1px rgba(212,160,80,0.28);
-  --accent:var(--gold);--accent-glow:rgba(212,160,80,0.2);
+  /* Dark mode — ink navy console, same sector colors brightened for contrast */
+  --bg:#12151c;--bg-h:#191d26;--bg-a:#212633;--bg-sb:#0d0f14;
+  --bg-card:#171b23;--bg-in:#1d212b;--bg-tag:#232838;
+  --t:#edeef2;--ts:#98a1b0;--th:#5a6270;--ti:#12151c;
+  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.16);
+  --green:#3fcb92;--gbg:#0f2a20;
+  --red:#ff6e5a;--rbg:#2c1512;
+  --amber:#f0a93e;--abg:#2b1d0a;
+  --blue:#6c93ff;--bbg:#16213f;
+  --purple:#a47aed;--pbg:#221a3a;
+  --gold:#d9a24e;--goldbg:rgba(217,162,78,0.14);
+  --neon:#26d6be;--neon-glow:rgba(38,214,190,0.28);
+  --sh:0 1px 3px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.04);
+  --sh-md:0 8px 24px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.05);
+  --sh-lg:0 20px 48px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.06);
+  --accent:var(--blue);--accent-glow:rgba(108,147,255,0.22);
 }
 html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);background:var(--bg);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;}
 /* PWA safe area — Dynamic Island / notch at top, home indicator at bottom */
@@ -2600,16 +2600,16 @@ html,body{font-feature-settings:"tnum" 1,"lnum" 1;-webkit-font-smoothing:antiali
 }
 .sb-today-streak{color:var(--gold) !important;font-family:var(--font-mono);font-size:22px !important;}
 
-/* NAV ITEMS */
+/* NAV ITEMS — each life sector carries its own accent (see --sector on .ni) */
 .ni.on{
-  background:color-mix(in srgb,var(--gold) 12%,var(--bg-a)) !important;
-  color:var(--gold) !important;
-  box-shadow:inset 3px 0 0 var(--gold) !important;
+  background:color-mix(in srgb,var(--sector,var(--gold)) 12%,var(--bg-a)) !important;
+  color:var(--sector,var(--gold)) !important;
+  box-shadow:inset 3px 0 0 var(--sector,var(--gold)) !important;
 }
 [data-dark] .ni.on{
   background:#161a26 !important;
-  color:var(--gold) !important;
-  box-shadow:inset 3px 0 0 var(--gold) !important;
+  color:var(--sector,var(--gold)) !important;
+  box-shadow:inset 3px 0 0 var(--sector,var(--gold)) !important;
   border-radius:var(--rl);
 }
 .ni:hover{background:var(--bg-a);}
@@ -3377,10 +3377,10 @@ html,body{background:var(--bg);}
   <div class="ni on" id="ni-home" onclick="go('home',this)"><span class="ni-ic">∞</span><span class="ni-lb">Home</span></div>
   <div class="sb-div"></div>
   <div class="sb-sec">Life Sectors</div>
-  <div class="ni draggable-ni" id="ni-finance" draggable="true" onclick="go('finance',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🧾</span><span class="ni-lb" id="sbl-finance">Bills &amp; Budgets</span></div>
-  <div class="ni draggable-ni" id="ni-planning" draggable="true" onclick="go('planning',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🗓️</span><span class="ni-lb" id="sbl-planning">Planning</span></div>
-  <div class="ni draggable-ni" id="ni-journal" draggable="true" onclick="go('journal',this)"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📓</span><span class="ni-lb">Journal</span></div>
-  <div class="ni" id="ni-health" onclick="go('health',this)"><span class="ni-ic">🩺</span><span class="ni-lb">Health</span></div>
+  <div class="ni draggable-ni" id="ni-finance" draggable="true" onclick="go('finance',this)" style="--sector:var(--neon);"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🧾</span><span class="ni-lb" id="sbl-finance">Bills &amp; Budgets</span></div>
+  <div class="ni draggable-ni" id="ni-planning" draggable="true" onclick="go('planning',this)" style="--sector:var(--gold);"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">🗓️</span><span class="ni-lb" id="sbl-planning">Planning</span></div>
+  <div class="ni draggable-ni" id="ni-journal" draggable="true" onclick="go('journal',this)" style="--sector:var(--purple);"><span class="sb-drag-grip" onclick="event.stopPropagation()">⠿</span><span class="ni-ic">📓</span><span class="ni-lb">Journal</span></div>
+  <div class="ni" id="ni-health" onclick="go('health',this)" style="--sector:var(--green);"><span class="ni-ic">🩺</span><span class="ni-lb">Health</span></div>
   <div class="sb-div" id="sb-custom-div"></div>
   <div id="sb-custom-pages"></div>
   <div style="padding:4px 8px 2px;">
