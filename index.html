@@ -3257,12 +3257,25 @@ html,body{background:var(--bg);}
 .home-dir-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:16px;margin-top:16px;align-items:start;}
 @media(max-width:768px){.home-dir-grid{grid-template-columns:1fr;}}
 .home-dir-tiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;}
-.home-dir-tile{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:28px 12px 24px;cursor:pointer;transition:transform .3s var(--spring),box-shadow .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;min-height:140px;}
-.home-dir-tile:hover{transform:translateY(-7px) scale(1.03);box-shadow:var(--sh-md);}
+/* Each tile carries its own sector color (--tile, set inline per card) so the Home shortcuts read the same way the sidebar sector nav does */
+.home-dir-tile{
+  --tile:var(--blue);
+  position:relative;overflow:hidden;
+  background:linear-gradient(155deg,color-mix(in srgb,var(--tile) 13%,var(--bg-card)),var(--bg-card) 68%);
+  border:1px solid color-mix(in srgb,var(--tile) 24%,var(--bd));
+  border-radius:var(--rl);padding:28px 12px 24px;cursor:pointer;
+  transition:transform .3s var(--spring),box-shadow .25s,background .25s,border-color .25s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;min-height:140px;
+  box-shadow:0 1px 3px color-mix(in srgb,var(--tile) 12%,transparent);
+}
+.home-dir-tile::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% -10%,color-mix(in srgb,var(--tile) 20%,transparent),transparent 60%);opacity:0;transition:opacity .3s;}
+.home-dir-tile:hover{transform:translateY(-7px) scale(1.03);border-color:color-mix(in srgb,var(--tile) 48%,var(--bd));background:linear-gradient(155deg,color-mix(in srgb,var(--tile) 22%,var(--bg-card)),var(--bg-card) 72%);box-shadow:0 16px 32px color-mix(in srgb,var(--tile) 26%,transparent),0 4px 10px color-mix(in srgb,var(--tile) 14%,transparent);}
+.home-dir-tile:hover::before{opacity:1;}
 .home-dir-tile:active{transform:scale(0.95)!important;}
-.home-dir-tile-icon{font-size:48px;line-height:1;}
-.home-dir-tile-name{font-size:13px;font-weight:700;color:var(--t);letter-spacing:.01em;}
-.home-dir-tile-stat{font-size:11px;color:var(--ts);}
+.home-dir-tile-icon{position:relative;z-index:1;font-size:32px;line-height:1;width:66px;height:66px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--tile) 16%,var(--bg-card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tile) 26%,transparent);transition:background .25s,transform .3s var(--spring);}
+.home-dir-tile:hover .home-dir-tile-icon{background:color-mix(in srgb,var(--tile) 28%,var(--bg-card));transform:scale(1.08) rotate(-4deg);}
+.home-dir-tile-name{position:relative;z-index:1;font-size:13px;font-weight:700;color:var(--t);letter-spacing:.01em;}
+.home-dir-tile-stat{position:relative;z-index:1;font-size:11px;color:var(--ts);}
 .home-dir-tile-stat.good{color:var(--green);}
 .home-dir-tile-stat.warn{color:var(--amber);}
 .home-dir-tile-stat.bad{color:var(--red);}
@@ -7905,12 +7918,12 @@ function renderLifeDir(){
   const todayTasks=S.todos.filter(t=>!t.done&&t.d===today).length;
   const activeProjects=(S.projects||[]).filter(p=>p.status!=='done').length;
   const tiles=[
-    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))"},
-    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))"},
-    {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))"},
-    {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))"},
+    {icon:'&#127775;',name:'Goals / Wants / Needs',stat:activeGoals+' active goal'+(activeGoals!==1?'s':''),cls:'',action:"go('goals',G('ni-goals'))",color:'var(--blue)'},
+    {icon:'&#128176;',name:'Money',stat:fmtS(mNet)+' this month',cls:mNet>=0?'good':'bad',action:"go('finance',G('ni-finance'))",color:'var(--neon)'},
+    {icon:'&#128197;',name:'Schedule & Projects',stat:todayTasks+' task'+(todayTasks!==1?'s':'')+" today · "+activeProjects+' project'+(activeProjects!==1?'s':''),cls:todayTasks===0?'good':'warn',action:"go('planning',G('ni-planning'))",color:'var(--gold)'},
+    {icon:'&#128215;',name:'Journal',stat:'Capture your thoughts',cls:'',action:"go('journal',G('ni-journal'))",color:'var(--purple)'},
   ];
-  el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
+  el.innerHTML=tiles.map(t=>`<div class="home-dir-tile" style="--tile:${t.color};" onclick="${t.action}"><div class="home-dir-tile-icon">${t.icon}</div><div class="home-dir-tile-name">${t.name}</div><div class="home-dir-tile-stat ${t.cls}">${t.stat}</div></div>`).join('');
 }
 
 function renderHomeProjPanel(){
