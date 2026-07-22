@@ -3855,26 +3855,8 @@ html,body{background:var(--bg);}
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
 
-        <!-- EISENHOWER MATRIX — above calendar -->
-        <div class="plan-below-cal">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div class="bh2" style="margin:0;">🎯 Eisenhower Matrix</div>
-            <button class="btn sml" onclick="switchPlanTab('todos',G('ptab-todos'))">All tasks</button>
-          </div>
-          <div id="plan-eis-matrix"></div>
-        </div>
-
-        <!-- PROJECTS OVERVIEW — between matrix and calendar -->
-        <div class="plan-below-cal">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div class="bh2" style="margin:0;">🚀 Projects</div>
-            <button class="btn sml" onclick="switchPlanTab('projects',G('ptab-projects'))">View all</button>
-          </div>
-          <div id="planning-proj-overview"></div>
-        </div>
-
-        <!-- APPLE CALENDAR — week view -->
-        <div class="apcal" id="apcal">
+        <!-- APPLE CALENDAR — week view — shown first -->
+        <div class="apcal" id="apcal" style="margin-top:16px;">
           <!-- Sidebar -->
           <div class="apcal-sb" id="apcal-sb">
             <div class="apcal-sb-inner">
@@ -3921,6 +3903,24 @@ html,body{background:var(--bg);}
               <div class="apcal-body-inner" id="apcal-body-inner"></div>
             </div>
           </div>
+        </div>
+
+        <!-- EISENHOWER MATRIX -->
+        <div class="plan-below-cal">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="bh2" style="margin:0;">🎯 Eisenhower Matrix</div>
+            <button class="btn sml" onclick="switchPlanTab('todos',G('ptab-todos'))">All tasks</button>
+          </div>
+          <div id="plan-eis-matrix"></div>
+        </div>
+
+        <!-- PROJECTS OVERVIEW -->
+        <div class="plan-below-cal">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <div class="bh2" style="margin:0;">🚀 Projects</div>
+            <button class="btn sml" onclick="switchPlanTab('projects',G('ptab-projects'))">View all</button>
+          </div>
+          <div id="planning-proj-overview"></div>
         </div>
 
         <!-- DAY VIEW BOTTOM SHEET -->
