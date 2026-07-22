@@ -10800,11 +10800,19 @@ const END_STEPS=[
     render:(el)=>{
       const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
       const tmTasks=S.todos.filter(t=>!t.done&&t.d===tomorrow);
+      const savedIntention=(S.routineLog||{})[tomorrow+'-intention']||'';
       el.innerHTML=`
         <span class="daywiz-icon">📅</span>
         <div class="daywiz-title">Tomorrow's preview</div>
-        <div class="daywiz-sub">${tmTasks.length?`You have ${tmTasks.length} task${tmTasks.length!==1?'s':''} scheduled for tomorrow.`:'Nothing scheduled for tomorrow yet — enjoy!'}</div>
+        <div class="daywiz-sub">${tmTasks.length?`You have ${tmTasks.length} task${tmTasks.length!==1?'s':''} scheduled for tomorrow.`:'Nothing scheduled for tomorrow yet.'}</div>
         ${tmTasks.length?`<div class="daywiz-task-list">${tmTasks.slice(0,5).map(t=>`<div class="daywiz-task-row"><span class="daywiz-task-lbl">${t.t}</span><span class="daywiz-task-pri tag ${t.p==='high'?'red':t.p==='med'?'amber':'gray'}">${t.p}</span></div>`).join('')}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:${tmTasks.length?'10px':'4px'};">
+          <input class="fi" type="text" id="wiz-tm-task" placeholder="+ Add a task for tomorrow..." style="flex:1;" onkeydown="if(event.key==='Enter'){event.preventDefault();wizAddTomorrowTask();}">
+          <button class="btn xs" onclick="wizAddTomorrowTask()">Add</button>
+        </div>
+        <div class="daywiz-section-lbl" style="margin-top:18px;">🎯 Tomorrow's #1 priority</div>
+        <textarea class="daywiz-textarea" id="wiz-tm-intention" placeholder="Tomorrow I will..." style="min-height:64px;">${savedIntention}</textarea>
+        <div class="daywiz-sub" style="margin:6px 0 0;font-size:12px;">This shows up pre-filled when you start tomorrow's day.</div>
       `;
     }
   },
@@ -10861,6 +10869,25 @@ function wizRefreshTaskStep(){
     END_STEPS[wizardStep].render(G('daywiz-step-inner'));
   }
 }
+function wizRefreshTomorrowStep(){
+  if(wizardType==='end'&&END_STEPS[wizardStep]&&END_STEPS[wizardStep].title==="Tomorrow's preview"){
+    END_STEPS[wizardStep].render(G('daywiz-step-inner'));
+  }
+}
+function wizAddTomorrowTask(){
+  const inp=G('wiz-tm-task');if(!inp)return;
+  const t=inp.value.trim();if(!t)return;
+  const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
+  // Preserve any unsaved draft in the priority textarea — re-rendering the step below would otherwise wipe it
+  const intentionDraft=G('wiz-tm-intention')?G('wiz-tm-intention').value:null;
+  S.todos.push({id:Date.now(),t,c:'Personal',importance:'low',p:'low',urgent:false,d:tomorrow,notes:'',starred:false,subtasks:[],listId:(typeof gtDefaultListId==='function'?gtDefaultListId():'list-main'),googleId:null,etag:null,updated:new Date().toISOString(),done:false,dd:null,calHour:null});
+  save();
+  wizRefreshTomorrowStep();
+  if(intentionDraft!==null){const ta=G('wiz-tm-intention');if(ta)ta.value=intentionDraft;}
+  if(typeof renderTasks==='function')renderTasks();
+  if(typeof renderEisenhowerMatrix==='function')renderEisenhowerMatrix();
+  if(typeof renderHome==='function')renderHome();
+}
 function closeDayWizard(){
   // Save any open journal/intention before closing
   saveWizardFields();
@@ -10878,6 +10905,9 @@ function saveWizardFields(){
     S.routineLog[jk]=j.value;
   }
   const it=G('wiz-intention');if(it){S.routineLog[today+'-intention']=it.value;}
+  // Tomorrow's #1 priority, set from the End Day wizard — pre-fills tomorrow's "Set your intention" step
+  const tmIt=G('wiz-tm-intention');
+  if(tmIt){const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));S.routineLog[tomorrow+'-intention']=tmIt.value;}
   // Persist mood
   if(wizardMood){
     const mk=today+'-'+(wizardType==='start'?'morning-mood':'evening-mood');
