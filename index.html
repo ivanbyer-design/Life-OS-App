@@ -2290,6 +2290,25 @@ input:-webkit-autofill,input:-webkit-autofill:focus{
 .daywiz-btn.pri:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(37,99,235,0.45);}
 .daywiz-btn.success{background:linear-gradient(135deg,#059669,#047857);color:#fff;box-shadow:0 4px 14px rgba(5,150,105,0.35);}
 .daywiz-section-lbl{font-size:11px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+/* Tomorrow's #1 priority — picker trigger, replaces free typing */
+.wiz-tm-priority-box{display:flex;align-items:center;gap:8px;font-family:var(--font);font-size:13.5px;padding:12px 14px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg-in);color:var(--t);cursor:pointer;transition:border-color .15s,background .15s;}
+.wiz-tm-priority-box:hover{border-color:var(--blue);background:var(--bg-h);}
+.wiz-tm-priority-txt{flex:1;font-weight:600;line-height:1.4;}
+.wiz-tm-priority-txt.placeholder{font-weight:500;color:var(--th);}
+.wiz-tm-priority-arr{font-size:11px;font-weight:700;color:var(--blue);white-space:nowrap;}
+.wiz-tm-priority-clear{font-size:11px;font-weight:600;color:var(--ts);cursor:pointer;text-align:right;margin-top:6px;}
+.wiz-tm-priority-clear:hover{color:var(--red);}
+/* Task picker popup — stacks above the day wizard */
+.wiz-pick-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:1100;padding:16px;}
+.wiz-pick-overlay.open{display:flex;}
+.wiz-pick-modal{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);width:100%;max-width:420px;max-height:74vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.4);overflow:hidden;}
+.wiz-pick-hdr{padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;border-bottom:1px solid var(--bd);}
+.wiz-pick-title{font-size:15px;font-weight:800;color:var(--t);}
+.wiz-pick-list{overflow-y:auto;padding:8px 10px 14px;}
+.wiz-pick-item{display:flex;align-items:center;gap:8px;padding:10px 10px;border-radius:10px;cursor:pointer;transition:background .12s;}
+.wiz-pick-item:hover{background:var(--bg-h);}
+.wiz-pick-item-txt{flex:1;font-size:13px;font-weight:500;color:var(--t);}
+.wiz-pick-empty{font-size:13px;color:var(--ts);text-align:center;padding:24px 0;}
 /* Day buttons on home hero */
 .home-day-btns{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;}
 .home-day-btn{flex:1;min-width:130px;font-family:var(--font);font-size:14px;font-weight:700;padding:11px 16px;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s;}
@@ -10811,7 +10830,11 @@ const END_STEPS=[
           <button class="btn xs" onclick="wizAddTomorrowTask()">Add</button>
         </div>
         <div class="daywiz-section-lbl" style="margin-top:18px;">🎯 Tomorrow's #1 priority</div>
-        <textarea class="daywiz-textarea" id="wiz-tm-intention" placeholder="Tomorrow I will..." style="min-height:64px;">${savedIntention}</textarea>
+        <div class="wiz-tm-priority-box" onclick="openWizTaskPicker()">
+          ${savedIntention?`<span class="wiz-tm-priority-txt">${savedIntention}</span>`:`<span class="wiz-tm-priority-txt placeholder">Tap to choose from your tasks…</span>`}
+          <span class="wiz-tm-priority-arr">${savedIntention?'Change':'Choose'} →</span>
+        </div>
+        ${savedIntention?`<div class="wiz-tm-priority-clear" onclick="wizClearTomorrowPriority()">✕ Clear</div>`:''}
         <div class="daywiz-sub" style="margin:6px 0 0;font-size:12px;">This shows up pre-filled when you start tomorrow's day.</div>
       `;
     }
@@ -10878,15 +10901,50 @@ function wizAddTomorrowTask(){
   const inp=G('wiz-tm-task');if(!inp)return;
   const t=inp.value.trim();if(!t)return;
   const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
-  // Preserve any unsaved draft in the priority textarea — re-rendering the step below would otherwise wipe it
-  const intentionDraft=G('wiz-tm-intention')?G('wiz-tm-intention').value:null;
   S.todos.push({id:Date.now(),t,c:'Personal',importance:'low',p:'low',urgent:false,d:tomorrow,notes:'',starred:false,subtasks:[],listId:(typeof gtDefaultListId==='function'?gtDefaultListId():'list-main'),googleId:null,etag:null,updated:new Date().toISOString(),done:false,dd:null,calHour:null});
   save();
   wizRefreshTomorrowStep();
-  if(intentionDraft!==null){const ta=G('wiz-tm-intention');if(ta)ta.value=intentionDraft;}
   if(typeof renderTasks==='function')renderTasks();
   if(typeof renderEisenhowerMatrix==='function')renderEisenhowerMatrix();
   if(typeof renderHome==='function')renderHome();
+}
+// Task picker for "Tomorrow's #1 priority" — pick from open tasks instead of typing
+function openWizTaskPicker(){
+  const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
+  const items=(S.todos||[]).filter(t=>!t.done);
+  const sorted=[...items].sort((a,b)=>{
+    const aT=a.d===tomorrow?0:1,bT=b.d===tomorrow?0:1;
+    if(aT!==bT)return aT-bT;
+    const aI=(a.importance||'low')==='high'?0:1,bI=(b.importance||'low')==='high'?0:1;
+    return aI-bI;
+  });
+  const list=G('wiz-pick-list');
+  if(!list)return;
+  list.innerHTML=!sorted.length?'<div class="wiz-pick-empty">No open tasks to choose from — add one above, or in the Tasks tab.</div>'
+    :sorted.map(t=>`<div class="wiz-pick-item" onclick="wizSetTomorrowPriority(${t.id})">
+        <span class="wiz-pick-item-txt">${t.t}</span>
+        ${t.d===tomorrow?'<span class="tag blue" style="font-size:10px;">Tomorrow</span>':(t.d?`<span style="font-size:10px;color:var(--th);white-space:nowrap;">${t.d}</span>`:'')}
+        ${(t.importance||'low')==='high'?'<span class="tag red" style="font-size:10px;">High</span>':''}
+      </div>`).join('');
+  G('wiz-pick-overlay').classList.add('open');
+}
+function closeWizTaskPicker(){
+  G('wiz-pick-overlay').classList.remove('open');
+}
+function wizSetTomorrowPriority(taskId){
+  const t=(S.todos||[]).find(t=>t.id===taskId);if(!t)return;
+  const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
+  if(!S.routineLog)S.routineLog={};
+  S.routineLog[tomorrow+'-intention']=t.t;
+  save();
+  closeWizTaskPicker();
+  wizRefreshTomorrowStep();
+}
+function wizClearTomorrowPriority(){
+  const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));
+  if(S.routineLog)delete S.routineLog[tomorrow+'-intention'];
+  save();
+  wizRefreshTomorrowStep();
 }
 function closeDayWizard(){
   // Save any open journal/intention before closing
@@ -10905,9 +10963,7 @@ function saveWizardFields(){
     S.routineLog[jk]=j.value;
   }
   const it=G('wiz-intention');if(it){S.routineLog[today+'-intention']=it.value;}
-  // Tomorrow's #1 priority, set from the End Day wizard — pre-fills tomorrow's "Set your intention" step
-  const tmIt=G('wiz-tm-intention');
-  if(tmIt){const tomorrow=localDate(new Date(new Date().setDate(new Date().getDate()+1)));S.routineLog[tomorrow+'-intention']=tmIt.value;}
+  // Tomorrow's #1 priority is set immediately via wizSetTomorrowPriority() when picked, not here
   // Persist mood
   if(wizardMood){
     const mk=today+'-'+(wizardType==='start'?'morning-mood':'evening-mood');
@@ -16010,6 +16066,17 @@ if (_origTaskCheck) {
     </div>
     <div class="daywiz-body" id="daywiz-body"></div>
     <div class="daywiz-footer" id="daywiz-footer"></div>
+  </div>
+</div>
+
+<!-- Task picker for "Tomorrow's #1 priority" in the End Day wizard -->
+<div class="wiz-pick-overlay" id="wiz-pick-overlay" onclick="if(event.target===this)closeWizTaskPicker()">
+  <div class="wiz-pick-modal">
+    <div class="wiz-pick-hdr">
+      <div class="wiz-pick-title">Choose tomorrow's priority</div>
+      <button class="daywiz-close" onclick="closeWizTaskPicker()" aria-label="Close">✕</button>
+    </div>
+    <div class="wiz-pick-list" id="wiz-pick-list"></div>
   </div>
 </div>
 
