@@ -3886,6 +3886,10 @@ html,body{background:var(--bg);}
 
       <div class="summary-bar" id="g-sum" style="margin-top:16px;"></div>
 
+      <!-- GOALS — side by side, each with its dedicated projects (relocated from Planning) -->
+      <div class="bh2" style="margin:20px 0 8px;">🎯 Goals</div>
+      <div id="planning-goals-overview"></div>
+
       <div class="nf">
         <div class="nf-ttl">＋ New goal or project</div>
         <div class="fr">
@@ -3977,15 +3981,6 @@ html,body{background:var(--bg);}
 
       <!-- CALENDAR TAB -->
       <div class="planning-tab-body on" id="ptab-calendar-body">
-
-        <!-- GOALS — side by side, each with its dedicated projects -->
-        <div class="plan-below-cal" style="margin-top:16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <div class="bh2" style="margin:0;">🎯 Goals</div>
-            <button class="btn sml" onclick="navToPage('goals')">View all</button>
-          </div>
-          <div id="planning-goals-overview"></div>
-        </div>
 
         <!-- APPLE CALENDAR — week view -->
         <div class="apcal" id="apcal">
@@ -4935,7 +4930,7 @@ function go(id,el){
   setTimeout(()=>{
     renderAll();
     if(id==='journal')renderJournal();
-    if(id==='planning'){if(typeof renderApCal==='function')renderApCal();renderProjectOverview();renderEisenhowerMatrix();renderGoalsOverview();}
+    if(id==='planning'){if(typeof renderApCal==='function')renderApCal();renderProjectOverview();renderEisenhowerMatrix();}
     setTimeout(()=>{Object.values(charts).forEach(ch=>{try{ch.resize();}catch(e){}});},50);
   },0);
 }
@@ -10259,7 +10254,7 @@ function switchPlanTab(tab, btn){
   if(btn)btn.classList.add('on');
   const body=G('ptab-'+tab+'-body');
   if(body)body.classList.add('on');
-  if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();renderGoalsOverview();},30);}
+  if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();},30);}
   if(tab==='todos'){setTimeout(()=>{renderTodos();renderRecurring();},20);}
 }
 
