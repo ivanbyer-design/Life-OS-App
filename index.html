@@ -3500,7 +3500,7 @@ html,body{background:var(--bg);}
       <!-- PROJECT BUCKETS (full width, below calendar) -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:0;">
         <div class="bh2" style="margin:0;">&#128640; Projects</div>
-        <button class="btn sml" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)">View all</button>
+        <button class="btn sml" onclick="navToPage('goals')">View all</button>
       </div>
       <div id="home-proj-overview"></div>
 
@@ -3906,6 +3906,54 @@ html,body{background:var(--bg);}
         <button class="gp-filter-btn" onclick="setGPFilter('done',this)">Completed</button>
       </div>
       <div id="g-list"></div>
+
+      <!-- PROJECTS — full project tracker, relocated from Planning -->
+      <div class="bh2" style="margin-top:28px;">🚀 Projects</div>
+      <div id="proj-resume-widget"></div>
+      <div class="summary-bar" id="proj-summary" style="margin-top:12px;"></div>
+      <div class="nf" style="margin:12px 0;">
+        <div class="nf-ttl">＋ New project</div>
+        <div class="fr">
+          <input class="fi" type="text" id="proj-name" placeholder="Project name">
+          <select class="fi" id="proj-cat" style="max-width:130px;">
+            <option>Personal</option><option>Work</option><option>Financial</option>
+            <option>Health</option><option>Home</option><option>Creative</option>
+            <option>Learning</option><option>Business</option><option>Other</option>
+          </select>
+          <select class="fi" id="proj-status" style="max-width:120px;">
+            <option value="planning">Planning</option>
+            <option value="active" selected>Active</option>
+            <option value="review">In Review</option>
+            <option value="paused">Paused</option>
+            <option value="done">Done</option>
+          </select>
+          <input class="fi" type="date" id="proj-deadline" style="max-width:150px;">
+          <button class="btn pri" onclick="addProject()">Create</button>
+        </div>
+        <div class="fr" style="margin-top:4px;">
+          <input class="fi" type="text" id="proj-desc" placeholder="Description / goal (optional)">
+          <input class="fi" type="number" id="proj-budget" placeholder="Budget $" step="0.01" style="max-width:130px;">
+        </div>
+      </div>
+      <div class="db-hdr">
+        <div class="db-ttl">📋 All projects</div>
+        <div class="db-acts" id="proj-filters">
+          <button class="db-btn" onclick="filtProj('all')" id="pf-all" style="font-weight:600;">All</button>
+          <button class="db-btn" onclick="filtProj('active')" id="pf-active">Active</button>
+          <button class="db-btn" onclick="filtProj('planning')" id="pf-planning">Planning</button>
+          <button class="db-btn" onclick="filtProj('done')" id="pf-done">Done</button>
+        </div>
+      </div>
+      <div class="proj-grid" id="proj-grid"></div>
+
+      <!-- PROJECT TASKS — same board style previously shown on the Tasks tab -->
+      <div class="tsk-section" style="margin-top:20px;">
+        <div class="tsk-section-hdr">
+          <div class="bh2">🚀 Project Tasks</div>
+          <div class="tsk-section-sub">Each project side-by-side — tasks under their heading feed the matrix</div>
+        </div>
+        <div class="proj-board" id="proj-tasks-board"></div>
+      </div>
     </div>
 
     <!-- PROJECTS standalone panel — hidden, content in planning -->
@@ -3924,8 +3972,7 @@ html,body{background:var(--bg);}
         <button class="planning-tab on" id="ptab-calendar" onclick="switchPlanTab('calendar',this)">📅 Calendar</button>
         <button class="planning-tab" id="ptab-todos" onclick="switchPlanTab('todos',this)">✅ Tasks</button>
         <button class="planning-tab" id="ptab-habits" onclick="switchPlanTab('habits',this)">🔄 Habits</button>
-        <button class="planning-tab" id="ptab-projects" onclick="switchPlanTab('projects',this)">🚀 Projects</button>
-        <button class="planning-tab" id="ptab-stacking" onclick="switchPlanTab('stacking',this)">&#x26D3;&#xFE0F; Habit Stacking</button>
+        <button class="planning-tab" id="ptab-routines" onclick="switchPlanTab('routines',this)">🔁 Routines</button>
       </div>
 
       <!-- CALENDAR TAB -->
@@ -4003,7 +4050,7 @@ html,body{background:var(--bg);}
         <div class="plan-below-cal">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
             <div class="bh2" style="margin:0;">🚀 Projects</div>
-            <button class="btn sml" onclick="switchPlanTab('projects',G('ptab-projects'))">View all</button>
+            <button class="btn sml" onclick="navToPage('goals')">View all</button>
           </div>
           <div id="planning-proj-overview"></div>
         </div>
@@ -4345,25 +4392,6 @@ html,body{background:var(--bg);}
           <div id="gt-completed"></div>
         </div>
 
-        <!-- SECTION 3 · PROJECT TASKS -->
-        <div class="tsk-section">
-          <div class="tsk-section-hdr">
-            <div class="bh2">🚀 Project Tasks</div>
-            <div class="tsk-section-sub">Each project side-by-side — tasks under their heading feed the matrix</div>
-          </div>
-          <div class="proj-board" id="proj-tasks-board"></div>
-        </div>
-
-        <!-- SECTION 4 · ROUTINES -->
-        <div class="tsk-section">
-          <div class="tsk-section-hdr">
-            <div class="bh2">🔁 Routines</div>
-            <div class="tsk-section-sub">Morning, midday, and night routines — the same tasks shown in Start/End My Day</div>
-          </div>
-          <div id="routinizer-summary"></div>
-          <div id="routines-container"></div>
-          <div id="routines-custom-container"></div>
-        </div>
       </div><!-- end ptab-todos-body -->
 
       <!-- HABITS TAB -->
@@ -4394,77 +4422,16 @@ html,body{background:var(--bg);}
         </div>
       </div>
 
-      <!-- PROJECTS TAB -->
-      <div class="planning-tab-body" id="ptab-projects-body">
-        <div id="proj-resume-widget"></div>
-        <div class="summary-bar" id="proj-summary" style="margin-top:12px;"></div>
-        <div class="nf" style="margin:12px 0;">
-          <div class="nf-ttl">＋ New project</div>
-          <div class="fr">
-            <input class="fi" type="text" id="proj-name" placeholder="Project name">
-            <select class="fi" id="proj-cat" style="max-width:130px;">
-              <option>Personal</option><option>Work</option><option>Financial</option>
-              <option>Health</option><option>Home</option><option>Creative</option>
-              <option>Learning</option><option>Business</option><option>Other</option>
-            </select>
-            <select class="fi" id="proj-status" style="max-width:120px;">
-              <option value="planning">Planning</option>
-              <option value="active" selected>Active</option>
-              <option value="review">In Review</option>
-              <option value="paused">Paused</option>
-              <option value="done">Done</option>
-            </select>
-            <input class="fi" type="date" id="proj-deadline" style="max-width:150px;">
-            <button class="btn pri" onclick="addProject()">Create</button>
+      <!-- ROUTINES TAB -->
+      <div class="planning-tab-body" id="ptab-routines-body">
+        <div class="tsk-section">
+          <div class="tsk-section-hdr">
+            <div class="bh2">🔁 Routines</div>
+            <div class="tsk-section-sub">Morning, midday, and night routines — the same tasks shown in Start/End My Day</div>
           </div>
-          <div class="fr" style="margin-top:4px;">
-            <input class="fi" type="text" id="proj-desc" placeholder="Description / goal (optional)">
-            <input class="fi" type="number" id="proj-budget" placeholder="Budget $" step="0.01" style="max-width:130px;">
-          </div>
-        </div>
-        <div class="db-hdr">
-          <div class="db-ttl">📋 All projects</div>
-          <div class="db-acts" id="proj-filters">
-            <button class="db-btn" onclick="filtProj('all')" id="pf-all" style="font-weight:600;">All</button>
-            <button class="db-btn" onclick="filtProj('active')" id="pf-active">Active</button>
-            <button class="db-btn" onclick="filtProj('planning')" id="pf-planning">Planning</button>
-            <button class="db-btn" onclick="filtProj('done')" id="pf-done">Done</button>
-          </div>
-        </div>
-        <div class="proj-grid" id="proj-grid"></div>
-      </div>
-
-      <!-- HABIT STACKING TAB -->
-      <div class="planning-tab-body" id="ptab-stacking-body">
-        <div class="hs-intro" style="margin-top:12px;">
-          <div class="hs-intro-ttl">&#x26D3;&#xFE0F; What is Habit Stacking?</div>
-          <div class="hs-intro-txt">Habit stacking links a new behavior to an existing anchor habit using a simple cue so the new habit happens automatically after a routine you already do.</div>
-          <div class="hs-formula">"After I <strong>[anchor habit]</strong>, I will <strong>[new habit]</strong>."</div>
-        </div>
-        <div class="nf">
-          <div class="nf-ttl">&#xFF0B; Create a habit stack</div>
-          <div class="fr" style="flex-wrap:wrap;gap:8px;">
-            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:240px;">
-              <span style="font-size:12px;font-weight:600;color:var(--ts);white-space:nowrap;">After I</span>
-              <select class="fi" id="hs-anchor" style="flex:1;"><option value="">&#x2014; pick an anchor habit &#x2014;</option></select>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:240px;">
-              <span style="font-size:12px;font-weight:600;color:var(--ts);white-space:nowrap;">I will</span>
-              <input class="fi" type="text" id="hs-new" placeholder="new habit to build..." style="flex:1;">
-            </div>
-            <input class="fi" type="time" id="hs-time" style="max-width:120px;" title="Optional reminder time">
-            <button class="btn pri" onclick="addHabitStack()">Add Stack</button>
-          </div>
-          <div style="font-size:11px;color:var(--ts);margin-top:6px;padding-left:2px;">Tip: pick an anchor you already do every day &#x2014; morning coffee, brushing teeth, lunchtime, etc.</div>
-        </div>
-        <div style="margin-top:16px;">
-          <div class="bh3">Today's Stacks <span style="font-size:12px;font-weight:400;color:var(--ts);" id="hs-progress-lbl"></span></div>
-          <div id="hs-list"></div>
-        </div>
-        <div style="margin-top:20px;">
-          <div class="bh3">7-Day Completion Grid</div>
-          <div id="hs-ghdr" style="display:flex;align-items:center;gap:8px;padding:4px 0 8px;border-bottom:1px solid var(--bd);margin-bottom:4px;font-size:10px;color:var(--th);font-weight:600;"></div>
-          <div id="hs-grid"></div>
+          <div id="routinizer-summary"></div>
+          <div id="routines-container"></div>
+          <div id="routines-custom-container"></div>
         </div>
       </div>
 
@@ -7893,7 +7860,7 @@ function renderProjectOverview(){
 function _renderProjBuckets(el){
   const projects=S.projects||[];
   if(!projects.length){
-    el.innerHTML=`<div class="proj-empty-buckets">🚀 <span>No projects yet — <span style="color:var(--blue);cursor:pointer;" onclick="switchPlanTab('projects',G('ptab-projects'))">create one</span></span></div>`;
+    el.innerHTML=`<div class="proj-empty-buckets">🚀 <span>No projects yet — <span style="color:var(--blue);cursor:pointer;" onclick="navToPage('goals')">create one</span></span></div>`;
     return;
   }
   // Sort: active first then planning, blocked, review, paused, done
@@ -7922,7 +7889,7 @@ function _renderProjBuckets(el){
     </div>`;
   }).join('');
 
-  el.innerHTML=`<div class="proj-buckets">${buckets}<div class="proj-bucket" onclick="go('planning',G('ni-planning'));setTimeout(()=>switchPlanTab('projects',G('ptab-projects')),80)" style="opacity:0.55;">
+  el.innerHTML=`<div class="proj-buckets">${buckets}<div class="proj-bucket" onclick="navToPage('goals')" style="opacity:0.55;">
     <div class="proj-bucket-rim" style="background:var(--bd2);"></div>
     <div class="proj-bucket-shape" style="background:var(--bg-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
       <div style="font-size:26px;">＋</div>
@@ -8023,7 +7990,7 @@ function renderHomeProjPanel(){
     return (o[a.status]||9)-(o[b.status]||9);
   });
   if(!projects.length){
-    el.innerHTML='<div style="color:var(--ts);font-size:12px;padding:12px 0;">No active projects &mdash; <span style="color:var(--blue);cursor:pointer;" onclick="go(&#39;planning&#39;,G(&#39;ni-planning&#39;));setTimeout(()=>switchPlanTab(&#39;projects&#39;,G(&#39;ptab-projects&#39;)),80)">create one</span></div>';
+    el.innerHTML='<div style="color:var(--ts);font-size:12px;padding:12px 0;">No active projects &mdash; <span style="color:var(--blue);cursor:pointer;" onclick="navToPage(&#39;goals&#39;)">create one</span></div>';
     return;
   }
   const sm={active:'ps-active',planning:'ps-planning',review:'ps-review',paused:'ps-paused',blocked:'ps-blocked'};
@@ -9506,7 +9473,7 @@ function delProjTask(id,idx){
 function renderProjTasksBoard(){
   const el=G('proj-tasks-board');if(!el)return;
   const projects=(S.projects||[]).filter(p=>p.status!=='done');
-  if(!projects.length){el.innerHTML='<div class="proj-board-empty">No active projects yet — create one in the 🚀 Projects tab, then add tasks here.</div>';return;}
+  if(!projects.length){el.innerHTML='<div class="proj-board-empty">No active projects yet — create one on the 🎯 Goals &amp; Projects page, then add tasks here.</div>';return;}
   const todayDate=new Date(today);
   const autoUrg=t=>{if(!t.d)return false;return(new Date(t.d)-todayDate)/(1000*60*60*24)<=3;};
   el.innerHTML=projects.map(p=>{
@@ -10293,7 +10260,7 @@ function switchPlanTab(tab, btn){
   const body=G('ptab-'+tab+'-body');
   if(body)body.classList.add('on');
   if(tab==='calendar'){setTimeout(()=>{if(typeof renderApCal==="function")renderApCal();renderProjectOverview();renderEisenhowerMatrix();renderGoalsOverview();},30);}
-  if(tab==='todos'){setTimeout(()=>{renderTodos();renderRecurring();renderProjTasksBoard();},20);}
+  if(tab==='todos'){setTimeout(()=>{renderTodos();renderRecurring();},20);}
 }
 
 // ── SAVINGS ACCOUNTS ──
@@ -10600,7 +10567,7 @@ const CMD_PAGES=[
   {ic:'🗓️',name:'Planning',          sub:'Tasks & habits',             action:()=>navToPage('planning')},
   {ic:'📈',name:'Trades',            sub:'Trade journal & backtests',  action:()=>navToPage('trades')},
   {ic:'🎯',name:'Goals',             sub:'Objectives & action steps',  action:()=>navToPage('goals')},
-  {ic:'🚀',name:'Projects',          sub:'Track & ship projects',      action:()=>navToPage('projects')},
+  {ic:'🚀',name:'Projects',          sub:'Track & ship projects',      action:()=>navToPage('goals')},
   {ic:'⚙️',name:'Settings',          sub:'Preferences & data',         action:()=>navToPage('settings')},
 ];
 const CMD_ACTIONS=[
