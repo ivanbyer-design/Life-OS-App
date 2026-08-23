@@ -5595,10 +5595,6 @@ html,body{background:var(--bg);}
   }
 
   function selectDayAndType(d, typeKey) {
-    if (typeKey === 'dinner' && weekTheme) {
-      openThemeMealModal(d);
-      return;
-    }
     openLoadModal(typeKey, d);
   }
 
