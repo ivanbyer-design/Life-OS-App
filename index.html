@@ -305,6 +305,8 @@ html,body{height:100%;overflow:hidden;font-family:var(--font);color:var(--t);bac
 .wd-tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;margin-bottom:3px;letter-spacing:0.02em;}
 .wd-tag.bill{background:var(--rbg);color:var(--red);}
 .wd-tag.done{background:var(--gbg);color:var(--green);}
+.wd-tag.appt{background:var(--bbg);color:var(--blue);}
+.wd-hdr .wd-theme-bar{margin:0 0 6px;}
 .wd-fin{border-top:1px solid var(--bd2);margin-top:6px;padding-top:6px;display:flex;flex-direction:column;gap:3px;}
 .wd-fin-row{display:flex;align-items:center;justify-content:space-between;font-size:10px;font-weight:700;line-height:1.3;}
 .wd-fin-lbl{font-weight:600;color:var(--ts);font-size:10px;letter-spacing:0.02em;}
@@ -1959,6 +1961,14 @@ input:-webkit-autofill,input:-webkit-autofill:focus{
     inset 0 1px 0 rgba(255,255,255,0.18);
 }
 
+/* WEEKLY CALENDAR NAV */
+.home-weekly-nav-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:20px;margin-bottom:8px;}
+.hw-nav-controls{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+.hw-nav-btn{width:26px;height:26px;border-radius:50%;border:1px solid var(--bd);background:var(--bg-card);color:var(--t);cursor:pointer;font-size:14px;font-family:var(--font);display:flex;align-items:center;justify-content:center;line-height:1;transition:background .12s,transform .1s;}
+.hw-nav-btn:hover{background:var(--bg-h);transform:scale(1.08);}
+.hw-nav-lbl{font-size:11px;font-weight:700;color:var(--ts);min-width:64px;text-align:center;cursor:pointer;user-select:none;}
+.hw-nav-lbl:hover{color:var(--t);}
+
 /* WEEKLY SNAPSHOT CARD */
 .home-weekly-card{background:var(--bg-card);border:1px solid var(--bd);border-radius:var(--rl);padding:22px 18px 18px;box-shadow:var(--sh);margin:8px 0 0;}
 .home-weekly-card .bh2{margin:0 0 8px!important;}
@@ -3260,18 +3270,13 @@ html,body{background:var(--bg);}
 .apcal-theme-pop-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .apcal-theme-pop-title{font-size:12px;font-weight:700;color:var(--t);}
 .apcal-theme-pop-close{background:none;border:none;color:var(--ts);font-size:16px;cursor:pointer;line-height:1;padding:0;}
-.apcal-theme-inp{width:100%;box-sizing:border-box;font-family:var(--font);font-size:12px;padding:6px 8px;border:1px solid var(--bd);border-radius:8px;background:var(--bg-in);color:var(--t);margin-bottom:8px;}
-.apcal-theme-inp:focus{outline:none;border-color:var(--blue);}
-.apcal-theme-swatches{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
-.apcal-theme-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .12s;flex-shrink:0;}
-.apcal-theme-swatch:hover,.apcal-theme-swatch.sel{transform:scale(1.2);border-color:#fff;}
-.apcal-theme-emojis{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:10px;}
-.apcal-theme-emoji-btn{background:none;border:1px solid transparent;border-radius:6px;cursor:pointer;padding:2px 4px;font-size:14px;transition:background .1s,border-color .1s;line-height:1.3;}
-.apcal-theme-emoji-btn:hover,.apcal-theme-emoji-btn.sel{background:var(--bg-h);border-color:var(--bd);}
+.apcal-theme-presets{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.apcal-theme-preset-btn{display:flex;align-items:center;gap:8px;width:100%;box-sizing:border-box;padding:8px 10px;border-radius:10px;border:1.5px solid var(--bd);background:var(--bg-a);cursor:pointer;font-family:var(--font);font-size:12.5px;font-weight:700;color:var(--t);text-align:left;transition:background .12s,border-color .12s;}
+.apcal-theme-preset-btn:hover{background:var(--bg-h);}
+.apcal-theme-preset-emoji{font-size:15px;line-height:1;}
+.apcal-theme-preset-lbl{flex:1;}
 .apcal-theme-actions{display:flex;gap:6px;}
-.apcal-theme-save-btn{flex:1;font-family:var(--font);font-size:12px;font-weight:700;padding:7px;border-radius:8px;border:none;background:var(--blue);color:#fff;cursor:pointer;opacity:1;transition:opacity .12s;}
-.apcal-theme-save-btn:hover{opacity:.85;}
-.apcal-theme-rm-btn{font-family:var(--font);font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--ts);cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
+.apcal-theme-rm-btn{flex:1;font-family:var(--font);font-size:12px;font-weight:600;padding:7px 10px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--ts);cursor:pointer;transition:background .12s,color .12s,border-color .12s;}
 .apcal-theme-rm-btn:hover{background:color-mix(in srgb,var(--red) 12%,transparent);color:var(--red);border-color:var(--red);}
 .apcal-month-view{flex:1;overflow-y:auto;padding:12px;}
 .apcal-month-num{font-size:12px;font-weight:600;color:var(--t);margin-bottom:3px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;}
@@ -3494,7 +3499,14 @@ html,body{background:var(--bg);}
       </div>
 
       <!-- WEEKLY CALENDAR (full width) -->
-      <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin-top:20px;margin-bottom:8px;">&#128197; This Week</div>
+      <div class="home-weekly-nav-row">
+        <div class="bh2 editable-hdr" data-hdr="home-weekly-hdr" id="hdr-home-weekly" style="margin:0;">&#128197; This Week</div>
+        <div class="hw-nav-controls">
+          <button class="hw-nav-btn" onclick="homeWeekNav(-1)" title="Previous week">&#8592;</button>
+          <span class="hw-nav-lbl" id="home-week-lbl" onclick="homeWeekNav(0)" title="Jump to this week"></span>
+          <button class="hw-nav-btn" onclick="homeWeekNav(1)" title="Next week">&#8594;</button>
+        </div>
+      </div>
       <div id="home-weekly"></div>
 
       <!-- PROJECT BUCKETS (full width, below calendar) -->
@@ -4090,14 +4102,9 @@ html,body{background:var(--bg);}
             <span class="apcal-theme-pop-title">★ Day Theme</span>
             <button class="apcal-theme-pop-close" onclick="apCalCloseThemePop()">✕</button>
           </div>
-          <input class="apcal-theme-inp" id="apcal-theme-label" placeholder="Label (e.g. Birthday, Launch Day…)">
-          <div style="font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Color</div>
-          <div class="apcal-theme-swatches" id="apcal-theme-swatches"></div>
-          <div style="font-size:9.5px;font-weight:700;color:var(--ts);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;">Icon</div>
-          <div class="apcal-theme-emojis" id="apcal-theme-emojis"></div>
+          <div class="apcal-theme-presets" id="apcal-theme-presets"></div>
           <div class="apcal-theme-actions">
-            <button class="apcal-theme-rm-btn" onclick="apCalRemoveTheme()">Remove</button>
-            <button class="apcal-theme-save-btn" onclick="apCalSaveTheme()">Save</button>
+            <button class="apcal-theme-rm-btn" onclick="apCalRemoveTheme()">Remove Theme</button>
           </div>
         </div>
 
@@ -4512,18 +4519,1734 @@ html,body{background:var(--bg);}
     <!-- HEALTH -->
     <div class="panel" id="p-health">
       <button class="mob-menu-float" onclick="openSB()">☰</button>
-      <div class="page-cover ch"></div>
       <span class="page-icon">🩺</span>
       <div class="page-title">Health</div>
       <div class="page-sub">Move · Nourish · Recover</div>
 
-      <div class="nf" style="margin-top:16px;padding:6px;overflow:hidden;">
-        <div class="nf-ttl" style="padding:6px 8px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;">
-          <span>🍽️ Meal Planner</span>
-          <a href="/meal-prep/" target="_blank" style="font-size:12px;font-weight:600;color:var(--th);text-decoration:none;">Open full screen ↗</a>
-        </div>
-        <iframe src="/meal-prep/?v=60ae3c7a" title="Meal Planner" loading="lazy" style="width:100%;height:calc(100vh - 240px);min-height:620px;border:0;display:block;border-radius:12px;background:#fff;"></iframe>
+      <div style="margin-top:12px;display:flex;justify-content:flex-end;">
+        <a href="/meal-prep/" target="_blank" style="font-size:12px;font-weight:600;color:var(--th);text-decoration:none;">Open standalone ↗</a>
       </div>
+
+      <div id="mp-root">
+<style>
+#mp-root {
+    --bg: #FAF7F2;
+    --card: #FFFFFF;
+    --text: #2C2418;
+    --text-soft: #8C7E6A;
+    --accent: #D4854A;
+    --accent-light: #F5E6D8;
+    --accent-hover: #C0733C;
+    --green: #5A8F6B;
+    --green-light: #E3F0E7;
+    --red: #C45C5C;
+    --red-light: #F8E8E8;
+    --blue: #5A7FB5;
+    --blue-light: #E0EAF5;
+    --border: #E8E2D8;
+    --shadow: 0 2px 12px rgba(44, 36, 24, 0.06);
+    --radius: 14px;
+    --radius-sm: 10px;
+  }#mp-root * { margin: 0; padding: 0; box-sizing: border-box; }#mp-root {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 8px 16px 24px;
+    border-radius: var(--radius);
+  }#mp-root header { text-align: center; padding: 4px 0 10px; }#mp-root header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2rem;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }#mp-root header p { color: var(--text-soft); font-size: 0.9rem; margin-top: 4px; }#mp-root .week-label {
+    display: inline-block;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-top: 10px;
+    letter-spacing: 0.3px;
+  }#mp-root .tabs {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin: 24px 0 20px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    padding: 10px 0;
+    flex-wrap: wrap;
+  }#mp-root .tab {
+    padding: 10px 18px;
+    border-radius: 40px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+  }#mp-root .tab:hover { border-color: var(--accent); color: var(--accent); }#mp-root .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(212, 133, 74, 0.3);
+  }#mp-root .tab .badge {
+    position: absolute;
+    top: -6px; right: -6px;
+    background: var(--green);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }#mp-root .mp-panel { display: none; max-width: 600px; margin: 0 auto; }#mp-root .mp-panel.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }#mp-root /* PROTEIN THEME */
+  .theme-row {
+    display: flex;
+    gap: 12px;
+    max-width: 600px;
+    margin: 0 auto 20px;
+    flex-wrap: wrap;
+  }#mp-root .theme-card {
+    flex: 1 1 220px;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    box-shadow: var(--shadow);
+  }#mp-root .theme-card-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-soft);
+    margin-bottom: 10px;
+  }#mp-root .theme-pills { display: flex; flex-wrap: wrap; gap: 6px; }#mp-root .theme-pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }#mp-root .theme-pill:hover { border-color: var(--accent); color: var(--accent); }#mp-root .theme-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }#mp-root .theme-last-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--text);
+  }#mp-root .theme-last-value.na {
+    color: var(--text-soft);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-style: italic;
+  }#mp-root /* WEEK GRID (calendar) */
+  .week-grid-wrap {
+    max-width: 600px;
+    margin: 0 auto 20px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }#mp-root .week-grid {
+    display: grid;
+    grid-template-columns: 52px repeat(3, minmax(76px, 1fr));
+    gap: 6px;
+  }#mp-root .week-grid-head {
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-soft);
+    text-align: center;
+    line-height: 1.25;
+    padding: 2px 2px 8px;
+  }#mp-root .week-grid-daylabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 2px;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    transition: all 0.2s;
+  }#mp-root .week-grid-daylabel:hover { border-color: var(--accent); }#mp-root .week-grid-daylabel .wgd-name {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-soft);
+  }#mp-root .week-grid-daylabel .wgd-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+  }#mp-root .week-grid-daylabel.today { border-color: var(--accent); border-style: solid; border-width: 2px; }#mp-root .week-grid-daylabel.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(212, 133, 74, 0.3);
+  }#mp-root .week-grid-daylabel.selected .wgd-name,
+#mp-root .week-grid-daylabel.selected .wgd-num { color: #fff; }#mp-root .week-grid-cell {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 7px;
+    min-height: 46px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }#mp-root .week-grid-cell:hover { border-color: var(--accent); }#mp-root .week-grid-cell.in-selected-day { border-color: var(--accent); background: var(--accent-light); }#mp-root .week-grid-cell .wgc-meal {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }#mp-root .week-grid-cell .wgc-more {
+    font-size: 0.64rem;
+    color: var(--text-soft);
+  }#mp-root .week-grid-cell .wgc-empty {
+    font-size: 0.9rem;
+    color: var(--border);
+    text-align: center;
+  }#mp-root .day-heading { text-align: center; margin-bottom: 18px; }#mp-root .day-heading .day-full {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--text);
+  }#mp-root .day-heading .day-meal-count {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }#mp-root /* MEAL CATEGORY ACCORDION */
+  .meal-category { margin-bottom: 16px; }#mp-root .category-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    box-shadow: var(--shadow);
+  }#mp-root .category-header:hover { border-color: var(--accent); }#mp-root .category-header.open {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }#mp-root .category-header-left { display: flex; align-items: center; gap: 10px; }#mp-root .category-icon { font-size: 1.3rem; }#mp-root .category-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+  }#mp-root .category-count {
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-soft);
+    background: var(--bg);
+    padding: 2px 10px;
+    border-radius: 12px;
+  }#mp-root .category-chevron {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    transition: transform 0.25s ease;
+  }#mp-root .category-header.open .category-chevron { transform: rotate(180deg); }#mp-root .category-header-right { display: flex; align-items: center; gap: 6px; }#mp-root .category-add-btn {
+    background: none;
+    border: none;
+    color: var(--text-soft);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }#mp-root .category-add-btn:hover { background: var(--accent-light); color: var(--accent); }#mp-root .category-body {
+    display: none;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-top: none;
+    border-bottom-left-radius: var(--radius);
+    border-bottom-right-radius: var(--radius);
+    padding: 16px 18px;
+    box-shadow: var(--shadow);
+  }#mp-root .category-body.open { display: block; animation: fadeIn 0.2s ease; }#mp-root .meal-card {
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1.5px solid var(--border);
+    transition: border-color 0.2s;
+  }#mp-root .meal-card:hover { border-color: var(--accent); }#mp-root .meal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }#mp-root .meal-header-left { display: flex; align-items: center; gap: 8px; }#mp-root .meal-number {
+    font-weight: 600; font-size: 0.8rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }#mp-root .remove-meal,
+#mp-root .save-meal-btn {
+    background: none; border: none;
+    color: var(--text-soft);
+    cursor: pointer; font-size: 1.1rem;
+    padding: 4px 8px; border-radius: 8px;
+    transition: all 0.2s;
+  }#mp-root .remove-meal:hover { background: var(--red-light); color: var(--red); }#mp-root .save-meal-btn {
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--blue);
+    border: 1.5px solid var(--blue);
+    border-radius: 6px;
+    padding: 3px 10px;
+  }#mp-root .save-meal-btn:hover { background: var(--blue-light); }#mp-root .meal-name-input {
+    width: 100%;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 8px;
+  }#mp-root .meal-name-input::placeholder { color: var(--text-soft); font-weight: 400; }#mp-root .meal-name-input:focus { border-color: var(--accent); }#mp-root .ingredients-label {
+    font-size: 0.72rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    color: var(--text-soft);
+    margin-bottom: 6px;
+  }#mp-root .ingredient-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 5px;
+  }#mp-root .ingredient-row input {
+    flex: 1;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.86rem;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+  }#mp-root .ingredient-row input:focus { border-color: var(--accent); }#mp-root .ingredient-row .remove-btn {
+    background: none; border: none;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 1rem; padding: 4px;
+    border-radius: 6px; transition: all 0.2s;
+    flex-shrink: 0;
+  }#mp-root .ingredient-row .remove-btn:hover { color: var(--red); background: var(--red-light); }#mp-root .add-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: none;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--text-soft); cursor: pointer;
+    transition: all 0.2s; margin-top: 3px;
+  }#mp-root .add-btn:hover { border-color: var(--accent); color: var(--accent); }#mp-root .meal-actions-row {
+    display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;
+  }#mp-root .add-meal-btn,
+#mp-root .load-saved-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--text-soft); cursor: pointer;
+    transition: all 0.25s;
+  }#mp-root .add-meal-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }#mp-root .load-saved-btn { border-color: var(--blue); color: var(--blue); border-style: solid; }#mp-root .load-saved-btn:hover { background: var(--blue-light); }#mp-root /* SAVED MEALS */
+  .saved-meal-card {
+    background: var(--card);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1.5px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }#mp-root .saved-meal-card:hover { border-color: var(--accent); }#mp-root .saved-meal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 8px;
+  }#mp-root .saved-meal-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem; color: var(--text);
+  }#mp-root .saved-meal-actions { display: flex; gap: 4px; }#mp-root .saved-action-btn {
+    background: none; border: none;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 0.9rem; padding: 4px 6px;
+    border-radius: 6px; transition: all 0.2s;
+  }#mp-root .saved-action-btn:hover { color: var(--red); background: var(--red-light); }#mp-root .saved-ingredients {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }#mp-root .saved-ing-tag {
+    font-size: 0.78rem;
+    background: var(--bg);
+    color: var(--text-soft);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+  }#mp-root /* LOAD MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(44, 36, 24, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }#mp-root .modal-overlay.open { display: flex; }#mp-root .modal {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 16px 48px rgba(44, 36, 24, 0.2);
+    animation: fadeIn 0.2s ease;
+  }#mp-root .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+  }#mp-root .modal-subtitle {
+    font-size: 0.82rem;
+    color: var(--text-soft);
+    margin-bottom: 16px;
+  }#mp-root .modal-meal-option {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }#mp-root .modal-meal-option:hover { border-color: var(--accent); background: var(--accent-light); }#mp-root .modal-meal-option-left { flex: 1; }#mp-root .modal-meal-option-name {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+  }#mp-root .modal-meal-option-ings {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    margin-top: 2px;
+  }#mp-root .modal-close {
+    width: 100%;
+    padding: 11px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }#mp-root .modal-close:hover { border-color: var(--red); color: var(--red); }#mp-root .modal-empty {
+    text-align: center; padding: 24px;
+    color: var(--text-soft); font-size: 0.88rem;
+  }#mp-root /* GROCERY & HOUSE */
+  .grocery-section {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+  }#mp-root .check-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    transition: opacity 0.3s;
+  }#mp-root .check-item:last-child { border-bottom: none; }#mp-root .check-item.checked { opacity: 0.4; }#mp-root .check-item.checked .item-text { text-decoration: line-through; }#mp-root .checkbox {
+    width: 22px; height: 22px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    background: #fff;
+  }#mp-root .checkbox:hover { border-color: var(--green); }#mp-root .check-item.checked .checkbox { background: var(--green); border-color: var(--green); }#mp-root .checkbox svg {
+    width: 13px; height: 13px;
+    stroke: #fff; stroke-width: 2.5;
+    fill: none; opacity: 0;
+    transition: opacity 0.2s;
+  }#mp-root .check-item.checked .checkbox svg { opacity: 1; }#mp-root .item-text { flex: 1; font-size: 0.9rem; color: var(--text); }#mp-root .item-source {
+    font-size: 0.72rem; color: var(--text-soft);
+    background: var(--bg);
+    padding: 2px 8px; border-radius: 4px;
+    white-space: nowrap;
+  }#mp-root .item-remove {
+    background: none; border: none;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 0.9rem; padding: 2px 6px;
+    border-radius: 6px; transition: all 0.2s;
+    flex-shrink: 0;
+  }#mp-root .item-remove:hover { color: var(--red); background: var(--red-light); }#mp-root .item-to-grocery {
+    background: none; border: none;
+    color: var(--text-soft); cursor: pointer;
+    font-size: 0.82rem; padding: 2px 6px;
+    border-radius: 6px; transition: all 0.2s;
+    flex-shrink: 0;
+  }#mp-root .item-to-grocery:hover { color: var(--accent); background: var(--accent-light); }#mp-root .item-to-grocery.added { color: var(--green); }#mp-root .empty-state { text-align: center; padding: 40px 20px; color: var(--text-soft); }#mp-root .empty-state .icon { font-size: 2.5rem; margin-bottom: 10px; }#mp-root .empty-state p { font-size: 0.9rem; }#mp-root .house-category { margin-bottom: 14px; }#mp-root .house-cat-title {
+    font-weight: 600; font-size: 0.78rem;
+    text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--text-soft);
+    margin-bottom: 6px; padding-left: 2px;
+  }#mp-root .progress-bar-container {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+    border: 1.5px solid var(--border);
+  }#mp-root .progress-label {
+    display: flex; justify-content: space-between;
+    font-size: 0.82rem; font-weight: 600;
+    color: var(--text-soft); margin-bottom: 8px;
+  }#mp-root .progress-track {
+    width: 100%; height: 10px;
+    background: var(--bg); border-radius: 10px; overflow: hidden;
+  }#mp-root .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), #7AB88A);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }#mp-root .clear-section { text-align: center; margin-top: 24px; padding-bottom: 20px; }#mp-root .clear-btn {
+    background: none;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    color: var(--text-soft); cursor: pointer;
+    transition: all 0.2s;
+  }#mp-root .clear-btn:hover { border-color: var(--red); color: var(--red); background: var(--red-light); }#mp-root .save-list-btn:hover { border-color: var(--green); color: var(--green); background: rgba(122,184,138,0.12); }#mp-root /* HOUSE ADD WITH CATEGORY */
+  .add-house-row {
+    display: flex; gap: 8px; margin-top: 10px;
+    flex-wrap: wrap;
+  }#mp-root .add-house-row input {
+    flex: 1; min-width: 120px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s;
+  }#mp-root .add-house-row input::placeholder { color: var(--text-soft); }#mp-root .add-house-row input:focus { border-color: var(--accent); background: #fff; }#mp-root .add-house-row select {
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--card);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    min-width: 140px;
+  }#mp-root .add-house-row select:focus { border-color: var(--accent); }#mp-root .add-house-row button {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    padding: 9px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }#mp-root .add-house-row button:hover { background: var(--accent-hover); }#mp-root .add-inline { display: flex; gap: 8px; margin-top: 10px; }#mp-root .add-inline input {
+    flex: 1;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    color: var(--text);
+    background: transparent;
+    outline: none;
+    transition: border-color 0.2s;
+  }#mp-root .add-inline input::placeholder { color: var(--text-soft); }#mp-root .add-inline input:focus { border-color: var(--accent); background: #fff; }#mp-root .add-inline button {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    padding: 9px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }#mp-root .add-inline button:hover { background: var(--accent-hover); }#mp-root /* New category input */
+  .new-cat-row {
+    display: none; gap: 8px; margin-top: 8px;
+  }#mp-root .new-cat-row.open { display: flex; }#mp-root .new-cat-row input {
+    flex: 1;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+  }#mp-root .new-cat-row button {
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    padding: 9px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer;
+  }
+
+  @media (max-width: 480px) {#mp-root header h1 { font-size: 1.6rem; }#mp-root .tab { padding: 8px 12px; font-size: 0.76rem; }#mp-root .add-house-row { flex-direction: column; }#mp-root .add-house-row select { min-width: 100%; }
+  }
+
+
+</style>
+<header>
+  <p>Meals, groceries & house essentials</p>
+  <div class="week-label" id="weekLabel"></div>
+  <div id="saveStatus" style="font-size:0.72rem;color:var(--text-soft);margin-top:6px;opacity:0;transition:opacity 0.3s;">✓ Saved</div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" data-tab="meals" onclick="switchTab('meals')">📅 Planner</button>
+  <button class="tab" data-tab="saved" onclick="switchTab('saved')">
+    📌 Saved Meals
+    <span class="badge" id="savedBadge" style="display:none">0</span>
+  </button>
+  <button class="tab" data-tab="grocery" onclick="switchTab('grocery')">
+    🛒 Grocery
+    <span class="badge" id="groceryBadge" style="display:none">0</span>
+  </button>
+  <button class="tab" data-tab="house" onclick="switchTab('house')">
+    🏠 House
+    <span class="badge" id="houseBadge" style="display:none">0</span>
+  </button>
+</div>
+
+<div class="mp-panel active" id="mealsPanel">
+  <div class="theme-row">
+    <div class="theme-card">
+      <div class="theme-card-title">This Week's Protein Theme</div>
+      <div class="theme-pills" id="themePills"></div>
+    </div>
+    <div class="theme-card">
+      <div class="theme-card-title">Last Week's Theme</div>
+      <div id="lastThemeDisplay"></div>
+    </div>
+  </div>
+
+  <div class="week-grid-wrap"><div class="week-grid" id="weekGrid"></div></div>
+</div>
+
+<div class="mp-panel" id="savedPanel"><div id="savedMealsList"></div></div>
+
+<div class="mp-panel" id="groceryPanel">
+  <div class="progress-bar-container">
+    <div class="progress-label">
+      <span>Shopping progress</span>
+      <span id="groceryProgress">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="groceryFill" style="width:0%"></div>
+    </div>
+  </div>
+  <div id="groceryList"></div>
+  <div class="add-inline">
+    <input type="text" id="addGroceryInput" placeholder="Add extra item..." onkeydown="if(event.key==='Enter')addGroceryItem()">
+    <button onclick="addGroceryItem()">Add</button>
+  </div>
+</div>
+
+<div class="mp-panel" id="housePanel">
+  <div class="progress-bar-container">
+    <div class="progress-label">
+      <span>Restocking progress</span>
+      <span id="houseProgress">0 / 0</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="houseFill" style="width:0%"></div>
+    </div>
+  </div>
+  <div id="houseList"></div>
+  <div class="add-house-row">
+    <input type="text" id="addHouseInput" placeholder="Add house item..." onkeydown="if(event.key==='Enter')addHouseItem()">
+    <select id="houseCatSelect"></select>
+    <button onclick="addHouseItem()">Add</button>
+  </div>
+  <div class="clear-section">
+    <button class="clear-btn save-list-btn" onclick="saveHouseListPermanently()">💾 Save List (keep items after weekly reset)</button>
+  </div>
+  <div class="new-cat-row" id="newCatRow">
+    <input type="text" id="newCatInput" placeholder="New category name..." onkeydown="if(event.key==='Enter')confirmNewCat()">
+    <button onclick="confirmNewCat()">Create</button>
+  </div>
+  <div class="clear-section">
+    <button class="clear-btn" onclick="resetWeek()">↻ Reset for New Week</button>
+  </div>
+</div>
+
+<!-- LOAD SAVED MEAL MODAL -->
+<div class="modal-overlay" id="loadModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Load Saved Meal</div>
+    <div class="modal-subtitle" id="modalSubtitle">Pick a saved meal to add</div>
+    <div id="modalList"></div>
+    <button class="modal-close" onclick="closeModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- EDIT SAVED MEAL MODAL -->
+<div class="modal-overlay" id="editSavedModal">
+  <div class="modal">
+    <div class="modal-subtitle">Meal name</div>
+    <input class="meal-name-input" id="editSavedNameInput" placeholder="e.g. Overnight oats" oninput="updateEditSavedName(this.value)" />
+    <div class="ingredients-label">Ingredients</div>
+    <div id="editSavedIngredients"></div>
+    <button class="add-btn" onclick="addEditSavedIngredient()">+ ingredient</button>
+    <button class="modal-close" onclick="closeEditSavedModal()" style="margin-top:16px;">Done</button>
+  </div>
+</div>
+
+      </div>
+<script>
+(function(){
+  const tabKeys = ['meals','saved','grocery','house'];
+  const mealTypes = [
+    { key: 'breakfast', label: 'Breakfast', icon: '🌅', placeholder: 'e.g. Overnight oats' },
+    { key: 'lunch',     label: 'Lunch',     icon: '🥗', placeholder: 'e.g. Chicken wraps' },
+    { key: 'dinner',    label: 'Dinner',    icon: '🍽️', placeholder: 'e.g. Salmon & veggies' },
+    { key: 'snacks',    label: 'Snacks',    icon: '🥜', placeholder: 'e.g. Trail mix' },
+    { key: 'desserts',  label: 'Desserts',  icon: '🍰', placeholder: 'e.g. Banana bread' },
+  ];
+
+  const dayKeys = ['sun','mon','tue','wed','thu','fri','sat'];
+  const dayNames = { sun:'Sunday', mon:'Monday', tue:'Tuesday', wed:'Wednesday', thu:'Thursday', fri:'Friday', sat:'Saturday' };
+
+  const proteinOptions = [
+    { key: 'chicken', label: 'Chicken', icon: '🍗' },
+    { key: 'steak',   label: 'Steak',   icon: '🥩' },
+    { key: 'salmon',  label: 'Salmon',  icon: '🐟' },
+    { key: 'turkey',  label: 'Turkey',  icon: '🦃' },
+    { key: 'beef',    label: 'Beef',    icon: '🐄' },
+  ];
+
+  const proteinDinnerIdeas = {
+    chicken: [
+      { name: 'Grilled Chicken & Rice', ingredients: ['chicken breast', 'rice', 'broccoli', 'olive oil'] },
+      { name: 'Chicken Fajitas', ingredients: ['chicken breast', 'bell peppers', 'onion', 'tortillas'] },
+      { name: 'Chicken Stir-Fry', ingredients: ['chicken breast', 'mixed vegetables', 'soy sauce', 'rice'] },
+      { name: 'Baked Chicken Thighs', ingredients: ['chicken thighs', 'potatoes', 'green beans'] },
+    ],
+    steak: [
+      { name: 'Steak & Potatoes', ingredients: ['steak', 'potatoes', 'butter', 'garlic'] },
+      { name: 'Steak Fajitas', ingredients: ['steak', 'bell peppers', 'onion', 'tortillas'] },
+      { name: 'Steak Stir-Fry', ingredients: ['steak', 'mixed vegetables', 'soy sauce', 'rice'] },
+      { name: 'Garlic Butter Steak', ingredients: ['steak', 'garlic', 'butter', 'asparagus'] },
+    ],
+    salmon: [
+      { name: 'Baked Salmon & Asparagus', ingredients: ['salmon', 'asparagus', 'lemon', 'olive oil'] },
+      { name: 'Salmon Rice Bowl', ingredients: ['salmon', 'rice', 'avocado', 'soy sauce'] },
+      { name: 'Blackened Salmon', ingredients: ['salmon', 'cajun seasoning', 'green beans'] },
+      { name: 'Salmon & Veggies', ingredients: ['salmon', 'zucchini', 'bell peppers'] },
+    ],
+    turkey: [
+      { name: 'Turkey Chili', ingredients: ['ground turkey', 'beans', 'tomatoes', 'onion'] },
+      { name: 'Turkey Meatballs', ingredients: ['ground turkey', 'breadcrumbs', 'marinara', 'pasta'] },
+      { name: 'Turkey Burgers', ingredients: ['ground turkey', 'buns', 'lettuce', 'tomato'] },
+      { name: 'Turkey Taco Bowl', ingredients: ['ground turkey', 'rice', 'black beans', 'salsa'] },
+    ],
+    beef: [
+      { name: 'Beef Stir-Fry', ingredients: ['ground beef', 'mixed vegetables', 'soy sauce', 'rice'] },
+      { name: 'Beef Tacos', ingredients: ['ground beef', 'taco shells', 'lettuce', 'cheese'] },
+      { name: 'Beef & Rice Bowl', ingredients: ['ground beef', 'rice', 'black beans', 'salsa'] },
+      { name: 'Beef Stew', ingredients: ['beef chunks', 'potatoes', 'carrots', 'onion'] },
+    ],
+  };
+
+  let mealsByDay = {};
+  let openCategories = {};
+  let openSavedCategories = {};
+  let selectedDay = dayKeys[new Date().getDay()];
+  let weekDates = [];
+  let _migrated = false;
+  let weekTheme = '';
+  let lastWeekTheme = '';
+
+  function initDefaults() {
+    dayKeys.forEach(d => {
+      mealsByDay[d] = {};
+      mealTypes.forEach(t => { mealsByDay[d][t.key] = [{ name: '', ingredients: [''] }]; });
+    });
+    mealTypes.forEach(t => {
+      openCategories[t.key] = t.key === 'breakfast';
+      openSavedCategories[t.key] = t.key === 'breakfast';
+    });
+  }
+  initDefaults();
+
+  let savedMeals = []; // { name, ingredients: [], category (meal type key) }
+  let extraGroceries = [];
+  let groceryChecked = {};
+
+  // --- SAVED DINNER PROTEIN GROUPING ---
+  const savedDinnerProteinKeywords = [
+    { key: 'chicken', re: /chicken/i },
+    { key: 'steak',   re: /steak/i },
+    { key: 'salmon',  re: /salmon/i },
+    { key: 'turkey',  re: /turkey/i },
+    { key: 'beef',    re: /beef/i },
+  ];
+  let savedDinnerProteinTab = 'chicken';
+
+  function getSavedMealProtein(s) {
+    const text = `${s.name} ${s.ingredients.join(' ')}`;
+    const hit = savedDinnerProteinKeywords.find(p => p.re.test(text));
+    return hit ? hit.key : 'other';
+  }
+
+  function selectSavedDinnerProtein(key) {
+    savedDinnerProteinTab = key;
+    renderSavedMeals();
+  }
+
+  let defaultHouseItems = {
+    'Kitchen & Cleaning': ['Dish soap', 'Sponges', 'Paper towels', 'Trash bags', 'All-purpose cleaner', 'Aluminum foil', 'Zip-lock bags'],
+    'Bathroom': ['Toilet paper', 'Hand soap', 'Toothpaste', 'Shampoo', 'Body wash'],
+    'Laundry': ['Laundry detergent', 'Dryer sheets'],
+    'Pantry Staples': ['Salt', 'Pepper', 'Olive oil', 'Butter', 'Eggs', 'Milk', 'Rice', 'Bread'],
+  };
+
+  let houseItems = JSON.parse(JSON.stringify(defaultHouseItems));
+  let houseChecked = {};
+
+  // =====================
+  // PERSISTENCE LAYER
+  // =====================
+  const STORAGE_KEY = 'weekly-planner-data';
+  let _saveTimeout = null;
+
+  function getStateSnapshot() {
+    return {
+      mealsByDay,
+      openCategories,
+      openSavedCategories,
+      savedMeals,
+      extraGroceries,
+      groceryChecked,
+      houseItems,
+      houseChecked,
+      defaultHouseItems,
+      weekTheme,
+      lastWeekTheme,
+      _savedAt: new Date().toISOString()
+    };
+  }
+
+  function applyState(data) {
+    if (!data) return false;
+    try {
+      if (data.mealsByDay) {
+        mealsByDay = data.mealsByDay;
+      } else if (data.mealsByCategory) {
+        // Migrate from the old day-less format: drop existing meals into today
+        const todayKey = dayKeys[new Date().getDay()];
+        mealTypes.forEach(t => {
+          const meals = (data.mealsByCategory[t.key] || []).filter(m => m.name.trim() || m.ingredients.some(i => i.trim()));
+          if (meals.length) mealsByDay[todayKey][t.key] = meals;
+        });
+        _migrated = true;
+      }
+      if (data.openCategories) openCategories = data.openCategories;
+      if (data.openSavedCategories) openSavedCategories = data.openSavedCategories;
+      if (data.savedMeals) savedMeals = data.savedMeals;
+      if (data.extraGroceries) extraGroceries = data.extraGroceries;
+      if (data.groceryChecked) groceryChecked = data.groceryChecked;
+      if (data.houseItems) houseItems = data.houseItems;
+      if (data.houseChecked) houseChecked = data.houseChecked;
+      if (data.defaultHouseItems) defaultHouseItems = data.defaultHouseItems;
+      if (data.weekTheme != null) weekTheme = data.weekTheme;
+      if (data.lastWeekTheme != null) lastWeekTheme = data.lastWeekTheme;
+      return true;
+    } catch(e) { console.error('Failed to apply state:', e); return false; }
+  }
+
+  // --- Browser localStorage ---
+  function saveToLocal() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(getStateSnapshot()));
+    } catch(e) { /* silent — localStorage may be unavailable in some contexts */ }
+  }
+
+  function loadFromLocal() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) { /* silent */ }
+    return null;
+  }
+
+  // --- Cloud storage (synced across devices via lifeos-api on the VPS) ---
+  const CLOUD_API_URL = 'https://lifemeos.xyz/api/mealplanner';
+  const CLOUD_API_KEY = 'lifeos-sync-2026';
+
+  async function saveToCloud() {
+    try {
+      await fetch(CLOUD_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': CLOUD_API_KEY },
+        body: JSON.stringify({ data: getStateSnapshot() })
+      });
+    } catch(e) { /* offline — local save still succeeded */ }
+  }
+
+  async function loadFromCloud() {
+    try {
+      const res = await fetch(CLOUD_API_URL, { headers: { 'X-API-Key': CLOUD_API_KEY } });
+      if (!res.ok) return null;
+      const result = await res.json();
+      return result && result.data ? result.data : null;
+    } catch(e) { /* offline or unreachable — silent */ }
+    return null;
+  }
+
+  // --- Auto-save (debounced, triggers on every state change) ---
+  function scheduleSave() {
+    clearTimeout(_saveTimeout);
+    _saveTimeout = setTimeout(async () => {
+      saveToLocal();
+      await saveToCloud();
+      const el = document.getElementById('saveStatus');
+      if (el) { el.style.opacity = '1'; setTimeout(() => el.style.opacity = '0', 1500); }
+    }, 800);
+  }
+
+  // --- Load on init: prefer cloud (fresher), fallback to local ---
+  async function loadSavedData() {
+    const localData = loadFromLocal();
+    let cloudData = null;
+    try { cloudData = await loadFromCloud(); } catch(e) { /* silent */ }
+
+    // Pick the most recent
+    let best = null;
+    if (cloudData && localData) {
+      const ct = cloudData._savedAt ? new Date(cloudData._savedAt).getTime() : 0;
+      const lt = localData._savedAt ? new Date(localData._savedAt).getTime() : 0;
+      best = ct >= lt ? cloudData : localData;
+    } else {
+      best = cloudData || localData;
+    }
+
+    if (best && applyState(best)) {
+      showToast(_migrated ? 'Your meals were moved to today — reassign them to other days as needed' : 'Data loaded!');
+    }
+
+    renderThemeSection();
+    renderWeekGrid();
+    renderMeals();
+    buildCatSelect();
+    updateBadges();
+  }
+
+  // Modal state
+  let loadTargetCatKey = null;
+  let themeModalTargetDay = null;
+
+  // Week label
+  (function() {
+    const now = new Date();
+    const start = new Date(now); start.setDate(now.getDate() - now.getDay());
+    weekDates = dayKeys.map((_, i) => { const d = new Date(start); d.setDate(start.getDate() + i); return d; });
+    const end = weekDates[6];
+    const fmt = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    document.getElementById('weekLabel').textContent = `Week of ${fmt(start)} – ${fmt(end)}`;
+  })();
+
+  // Tabs
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.mp-panel').forEach((p, i) => p.classList.toggle('active', tabKeys[i] === tab));
+    if (tab === 'grocery') renderGroceryList();
+    if (tab === 'house') renderHouseList();
+    if (tab === 'saved') renderSavedMeals();
+  }
+
+  function toggleCategory(key) {
+    openCategories[key] = !openCategories[key];
+    renderMeals();
+  }
+
+  // --- PROTEIN THEME ---
+  function renderThemeSection() {
+    document.getElementById('themePills').innerHTML = proteinOptions.map(p => `
+      <button class="theme-pill ${weekTheme === p.key ? 'active' : ''}" onclick="setWeekTheme('${p.key}')">${p.icon} ${p.label}</button>
+    `).join('');
+
+    const lastEl = document.getElementById('lastThemeDisplay');
+    if (lastWeekTheme) {
+      const opt = proteinOptions.find(p => p.key === lastWeekTheme);
+      lastEl.innerHTML = `<span class="theme-last-value">${opt ? `${opt.icon} ${esc(opt.label)}` : esc(lastWeekTheme)}</span>`;
+    } else {
+      lastEl.innerHTML = `<span class="theme-last-value na">N/A</span>`;
+    }
+  }
+
+  function setWeekTheme(key) {
+    weekTheme = (weekTheme === key) ? '' : key;
+    renderThemeSection();
+    scheduleSave();
+  }
+
+  // --- WEEK GRID (calendar) ---
+  const gridMealTypes = mealTypes.filter(t => ['breakfast','lunch','dinner'].includes(t.key));
+
+  function renderWeekGrid() {
+    const todayKey = dayKeys[new Date().getDay()];
+    const grid = document.getElementById('weekGrid');
+
+    let html = `<div class="week-grid-head"></div>` +
+      gridMealTypes.map(t => `<div class="week-grid-head">${t.icon} ${t.label}</div>`).join('');
+
+    dayKeys.forEach((d, i) => {
+      const date = weekDates[i];
+      const num = date ? date.getDate() : '';
+      const isToday = d === todayKey;
+      const isSelected = d === selectedDay;
+
+      html += `
+        <div class="week-grid-daylabel ${isSelected ? 'selected' : ''} ${isToday ? 'today' : ''}" onclick="selectDay('${d}')">
+          <span class="wgd-name">${dayNames[d].slice(0,3)}</span>
+          <span class="wgd-num">${num}</span>
+        </div>`;
+
+      html += gridMealTypes.map(t => {
+        const names = mealsByDay[d][t.key].map(m => m.name.trim()).filter(Boolean);
+        const inner = names.length
+          ? `<span class="wgc-meal">${esc(names[0])}</span>${names.length > 1 ? `<span class="wgc-more">+${names.length - 1} more</span>` : ''}`
+          : `<span class="wgc-empty">+</span>`;
+        return `<div class="week-grid-cell ${isSelected ? 'in-selected-day' : ''}" onclick="selectDayAndType('${d}','${t.key}')">${inner}</div>`;
+      }).join('');
+    });
+
+    grid.innerHTML = html;
+  }
+
+  function selectDay(d) {
+    selectedDay = d;
+    renderThemeSection();
+    renderWeekGrid();
+    renderMeals();
+  }
+
+  function selectDayAndType(d, typeKey) {
+    if (typeKey === 'dinner' && weekTheme) {
+      openThemeMealModal(d);
+      return;
+    }
+    selectedDay = d;
+    openCategories[typeKey] = true;
+    renderThemeSection();
+    renderWeekGrid();
+    renderMeals();
+    openLoadModal(typeKey);
+  }
+
+  // --- RENDER MEALS ---
+  function renderMeals() {
+    const dayMeals = mealsByDay[selectedDay];
+    const date = weekDates[dayKeys.indexOf(selectedDay)];
+    const dayFullEl = document.getElementById('dayFull');
+    if (dayFullEl) dayFullEl.textContent = date
+      ? `${dayNames[selectedDay]}, ${date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`
+      : dayNames[selectedDay];
+
+    let totalFilled = 0;
+
+    const mealCategoriesEl = document.getElementById('mealCategories');
+    if (!mealCategoriesEl) {
+      mealTypes.forEach(type => {
+        totalFilled += dayMeals[type.key].filter(m => m.name.trim()).length;
+      });
+      updateBadges();
+      return;
+    }
+
+    mealCategoriesEl.innerHTML = mealTypes.map(type => {
+      const meals = dayMeals[type.key];
+      const isOpen = openCategories[type.key];
+      const filledCount = meals.filter(m => m.name.trim()).length;
+      totalFilled += filledCount;
+      const hasSaved = savedMeals.length > 0;
+
+      return `
+        <div class="meal-category">
+          <div class="category-header ${isOpen ? 'open' : ''}" onclick="toggleCategory('${type.key}')">
+            <div class="category-header-left">
+              <span class="category-icon">${type.icon}</span>
+              <span class="category-name">${type.label}</span>
+              <span class="category-count">${filledCount} meal${filledCount !== 1 ? 's' : ''}</span>
+            </div>
+            <span class="category-chevron">▼</span>
+          </div>
+          <div class="category-body ${isOpen ? 'open' : ''}">
+            ${meals.map((meal, mi) => `
+              <div class="meal-card">
+                <div class="meal-header">
+                  <span class="meal-number">${type.label} ${mi + 1}</span>
+                  <div class="meal-header-left">
+                    ${(meal.name.trim() && meal.ingredients.some(i => i.trim())) ? `<button class="save-meal-btn" onclick="event.stopPropagation();saveMealFrom('${type.key}',${mi})" title="Save to favorites">💾 Save</button>` : ''}
+                    ${meals.length > 1 ? `<button class="remove-meal" onclick="event.stopPropagation();removeMeal('${type.key}',${mi})">✕</button>` : ''}
+                  </div>
+                </div>
+                <input class="meal-name-input" placeholder="${type.placeholder}" value="${esc(meal.name)}" oninput="mealsByDay['${selectedDay}']['${type.key}'][${mi}].name=this.value;scheduleSave()" onblur="renderMeals()" />
+                <div class="ingredients-label">Ingredients</div>
+                ${meal.ingredients.map((ing, ii) => `
+                  <div class="ingredient-row">
+                    <input placeholder="e.g. chicken thighs" value="${esc(ing)}" oninput="mealsByDay['${selectedDay}']['${type.key}'][${mi}].ingredients[${ii}]=this.value;scheduleSave()" />
+                    ${meal.ingredients.length > 1 ? `<button class="remove-btn" onclick="removeIngredient('${type.key}',${mi},${ii})">✕</button>` : ''}
+                  </div>
+                `).join('')}
+                <button class="add-btn" onclick="addIngredient('${type.key}',${mi})">+ ingredient</button>
+              </div>
+            `).join('')}
+            <div class="meal-actions-row">
+              <button class="add-meal-btn" onclick="addMeal('${type.key}')">+ Add New</button>
+              ${hasSaved ? `<button class="load-saved-btn" onclick="openLoadModal('${type.key}')">📌 Load Saved</button>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    const dayMealCountEl = document.getElementById('dayMealCount');
+    if (dayMealCountEl) dayMealCountEl.textContent = `${totalFilled} meal${totalFilled !== 1 ? 's' : ''} planned`;
+    updateBadges();
+  }
+
+  // (render on blur instead of during typing to preserve focus)
+
+  function addMeal(catKey) {
+    mealsByDay[selectedDay][catKey].push({ name: '', ingredients: [''] });
+    renderMeals();
+    scheduleSave();
+  }
+
+  function removeMeal(catKey, mi) {
+    mealsByDay[selectedDay][catKey].splice(mi, 1);
+    if (!mealsByDay[selectedDay][catKey].length) mealsByDay[selectedDay][catKey] = [{ name: '', ingredients: [''] }];
+    renderMeals();
+    scheduleSave();
+  }
+
+  function addIngredient(catKey, mi) {
+    mealsByDay[selectedDay][catKey][mi].ingredients.push('');
+    renderMeals();
+    const cats = document.querySelectorAll('.meal-category');
+    const idx = mealTypes.findIndex(t => t.key === catKey);
+    const cards = cats[idx].querySelectorAll('.meal-card');
+    const inputs = cards[mi].querySelectorAll('.ingredient-row input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function removeIngredient(catKey, mi, ii) {
+    mealsByDay[selectedDay][catKey][mi].ingredients.splice(ii, 1);
+    renderMeals();
+    scheduleSave();
+  }
+
+  // --- SAVE MEAL ---
+  function saveMealFrom(catKey, mi) {
+    const meal = mealsByDay[selectedDay][catKey][mi];
+    const name = meal.name.trim();
+    const ings = meal.ingredients.filter(i => i.trim());
+    if (!name || !ings.length) return;
+
+    // Check for duplicate
+    if (savedMeals.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+      if (!confirm(`"${name}" is already saved. Save again as a new entry?`)) return;
+    }
+
+    savedMeals.push({
+      name: name,
+      ingredients: [...ings],
+      category: catKey
+    });
+
+    renderMeals();
+    scheduleSave();
+    showToast(`"${name}" saved!`);
+  }
+
+  function deleteSavedMeal(idx) {
+    const name = savedMeals[idx].name;
+    savedMeals.splice(idx, 1);
+    renderSavedMeals();
+    renderMeals();
+    scheduleSave();
+    showToast(`"${name}" removed`);
+  }
+
+  function toggleSavedCategory(key) {
+    openSavedCategories[key] = !openSavedCategories[key];
+    renderSavedMeals();
+  }
+
+  // --- EDIT SAVED MEAL (ingredients popup) ---
+  let editSavedIdx = null;
+
+  function openEditSavedModal(i) {
+    editSavedIdx = i;
+    const nameInput = document.getElementById('editSavedNameInput');
+    nameInput.value = savedMeals[i].name;
+    renderEditSavedIngredients();
+    document.getElementById('editSavedModal').classList.add('open');
+    if (!savedMeals[i].name.trim()) nameInput.focus();
+  }
+
+  function updateEditSavedName(val) {
+    savedMeals[editSavedIdx].name = val;
+    scheduleSave();
+  }
+
+  function closeEditSavedModal() {
+    if (editSavedIdx != null) {
+      const s = savedMeals[editSavedIdx];
+      // Discard a blank draft (e.g. opened via the category + button, then closed without entering anything)
+      if (s && !s.name.trim() && !s.ingredients.some(i => i.trim())) {
+        savedMeals.splice(editSavedIdx, 1);
+      }
+    }
+    document.getElementById('editSavedModal').classList.remove('open');
+    editSavedIdx = null;
+    renderSavedMeals();
+    scheduleSave();
+  }
+
+  function addSavedMealToCategory(catKey) {
+    savedMeals.push({ name: '', ingredients: [''], category: catKey });
+    openSavedCategories[catKey] = true;
+    const idx = savedMeals.length - 1;
+    renderSavedMeals();
+    scheduleSave();
+    openEditSavedModal(idx);
+  }
+
+  function renderEditSavedIngredients() {
+    const s = savedMeals[editSavedIdx];
+    document.getElementById('editSavedIngredients').innerHTML = s.ingredients.map((ing, ii) => `
+      <div class="ingredient-row">
+        <input placeholder="e.g. chicken thighs" value="${esc(ing)}" oninput="savedMeals[${editSavedIdx}].ingredients[${ii}]=this.value;scheduleSave()" />
+        ${s.ingredients.length > 1 ? `<button class="remove-btn" onclick="removeEditSavedIngredient(${ii})">✕</button>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function addEditSavedIngredient() {
+    savedMeals[editSavedIdx].ingredients.push('');
+    renderEditSavedIngredients();
+    scheduleSave();
+    const inputs = document.querySelectorAll('#editSavedIngredients .ingredient-row input');
+    if (inputs.length) inputs[inputs.length - 1].focus();
+  }
+
+  function removeEditSavedIngredient(ii) {
+    savedMeals[editSavedIdx].ingredients.splice(ii, 1);
+    if (!savedMeals[editSavedIdx].ingredients.length) savedMeals[editSavedIdx].ingredients = [''];
+    renderEditSavedIngredients();
+    scheduleSave();
+  }
+
+  function renderSavedMealCards(items, emptyLabel) {
+    if (!items.length) {
+      return `<div style="padding:8px 0;color:var(--text-soft);font-size:0.85rem;">${emptyLabel}</div>`;
+    }
+    return items.map(({ s, i }) => `
+      <div class="saved-meal-card" onclick="openEditSavedModal(${i})">
+        <div class="saved-meal-header">
+          <div class="saved-meal-name">${esc(s.name)}</div>
+          <div class="saved-meal-actions">
+            <button class="saved-action-btn" onclick="event.stopPropagation();deleteSavedMeal(${i})" title="Delete">✕</button>
+          </div>
+        </div>
+        <div class="saved-ingredients">
+          ${s.ingredients.map(ing => `<span class="saved-ing-tag">${esc(ing)}</span>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function renderSavedMeals() {
+    const container = document.getElementById('savedMealsList');
+    const proteinTabs = [...proteinOptions, { key: 'other', label: 'Other', icon: '🍽️' }];
+
+    container.innerHTML = mealTypes.map(type => {
+      const items = savedMeals
+        .map((s, i) => ({ s, i }))
+        .filter(({ s }) => s.category === type.key);
+      const isOpen = openSavedCategories[type.key];
+
+      let bodyHtml;
+      if (type.key === 'dinner') {
+        const grouped = {};
+        proteinTabs.forEach(p => { grouped[p.key] = []; });
+        items.forEach(item => grouped[getSavedMealProtein(item.s)].push(item));
+
+        const pillsHtml = `<div class="theme-pills" style="margin-bottom:10px;">${
+          proteinTabs.map(p => `<button class="theme-pill ${savedDinnerProteinTab === p.key ? 'active' : ''}" onclick="event.stopPropagation();selectSavedDinnerProtein('${p.key}')">${p.icon} ${p.label} <span style="opacity:0.7;">(${grouped[p.key].length})</span></button>`).join('')
+        }</div>`;
+
+        const activeLabel = proteinTabs.find(p => p.key === savedDinnerProteinTab)?.label.toLowerCase() || '';
+        bodyHtml = pillsHtml + renderSavedMealCards(grouped[savedDinnerProteinTab] || [], `No saved ${activeLabel} dinners yet`);
+      } else {
+        bodyHtml = renderSavedMealCards(items, `No saved ${type.label.toLowerCase()} yet`);
+      }
+
+      return `
+        <div class="meal-category">
+          <div class="category-header ${isOpen ? 'open' : ''}" onclick="toggleSavedCategory('${type.key}')">
+            <div class="category-header-left">
+              <span class="category-icon">${type.icon}</span>
+              <span class="category-name">${type.label}</span>
+              <span class="category-count">${items.length} saved</span>
+            </div>
+            <div class="category-header-right">
+              <button class="category-add-btn" onclick="event.stopPropagation();addSavedMealToCategory('${type.key}')" title="Add a ${type.label.toLowerCase()} meal">+</button>
+              <span class="category-chevron">▼</span>
+            </div>
+          </div>
+          <div class="category-body ${isOpen ? 'open' : ''}">
+            ${bodyHtml}
+          </div>
+        </div>`;
+    }).join('');
+
+    updateBadges();
+  }
+
+  // --- LOAD MODAL ---
+  function openLoadModal(catKey) {
+    loadTargetCatKey = catKey;
+    const typeLabel = mealTypes.find(t => t.key === catKey)?.label || catKey;
+    document.getElementById('modalTitle').textContent = `Load into ${typeLabel}`;
+    document.getElementById('modalSubtitle').textContent = `Pick a saved ${typeLabel.toLowerCase()} to add`;
+
+    const filtered = savedMeals
+      .map((s, i) => ({ s, i }))
+      .filter(({ s }) => s.category === catKey);
+
+    const list = document.getElementById('modalList');
+    if (!savedMeals.length) {
+      list.innerHTML = `<div class="modal-empty">No saved meals yet. Save one first!</div>`;
+    } else if (!filtered.length) {
+      list.innerHTML = `<div class="modal-empty">No saved ${typeLabel.toLowerCase()} meals yet. Save one from this category first!</div>`;
+    } else {
+      list.innerHTML = filtered.map(({ s, i }) => {
+        const ings = s.ingredients.slice(0, 4).join(', ') + (s.ingredients.length > 4 ? ` +${s.ingredients.length - 4} more` : '');
+        return `
+          <div class="modal-meal-option" onclick="loadSavedMeal(${i})">
+            <div class="modal-meal-option-left">
+              <div class="modal-meal-option-name">${esc(s.name)}</div>
+              <div class="modal-meal-option-ings">${esc(ings)}</div>
+            </div>
+            <span style="color:var(--accent);font-size:1.2rem;">→</span>
+          </div>`;
+      }).join('');
+    }
+
+    document.getElementById('loadModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('loadModal').classList.remove('open');
+    loadTargetCatKey = null;
+    themeModalTargetDay = null;
+  }
+
+  // --- THEME MEAL PICKER (for dinner boxes on the week grid) ---
+  function openThemeMealModal(d) {
+    themeModalTargetDay = d;
+    const opt = proteinOptions.find(p => p.key === weekTheme);
+    document.getElementById('modalTitle').textContent = `${opt ? opt.label : 'Theme'} Dinner Ideas`;
+    document.getElementById('modalSubtitle').textContent = `Pick a dinner for ${dayNames[d]}`;
+
+    const ideas = proteinDinnerIdeas[weekTheme] || [];
+    const list = document.getElementById('modalList');
+    if (!ideas.length) {
+      list.innerHTML = `<div class="modal-empty">No ideas for this theme yet.</div>`;
+    } else {
+      list.innerHTML = ideas.map((idea, i) => {
+        const ings = idea.ingredients.slice(0, 4).join(', ') + (idea.ingredients.length > 4 ? ` +${idea.ingredients.length - 4} more` : '');
+        return `
+          <div class="modal-meal-option" onclick="chooseThemeMeal(${i})">
+            <div class="modal-meal-option-left">
+              <div class="modal-meal-option-name">${esc(idea.name)}</div>
+              <div class="modal-meal-option-ings">${esc(ings)}</div>
+            </div>
+            <span style="color:var(--accent);font-size:1.2rem;">→</span>
+          </div>`;
+      }).join('');
+    }
+
+    document.getElementById('loadModal').classList.add('open');
+  }
+
+  function chooseThemeMeal(i) {
+    const ideas = proteinDinnerIdeas[weekTheme] || [];
+    const idea = ideas[i];
+    const targetDay = themeModalTargetDay;
+    if (!idea || !targetDay) { closeModal(); return; }
+
+    const list = mealsByDay[targetDay]['dinner'];
+    list.push({ name: idea.name, ingredients: [...idea.ingredients] });
+    if (list.length > 1 && list[0].name === '' && list[0].ingredients.every(x => !x.trim())) {
+      list.splice(0, 1);
+    }
+
+    selectedDay = targetDay;
+    openCategories['dinner'] = true;
+    closeModal();
+    renderThemeSection();
+    renderWeekGrid();
+    renderMeals();
+    scheduleSave();
+    showToast(`"${idea.name}" added to Dinner for ${dayNames[targetDay]}`);
+  }
+
+  function loadSavedMeal(savedIdx) {
+    const saved = savedMeals[savedIdx];
+    const catKey = loadTargetCatKey;
+    const list = mealsByDay[selectedDay][catKey];
+    // Add as a new meal in that category, for the currently selected day
+    list.push({
+      name: saved.name,
+      ingredients: [...saved.ingredients]
+    });
+    // Remove empty placeholder if it's the only one
+    if (list.length > 1 && list[0].name === '' && list[0].ingredients.every(i => !i.trim())) {
+      list.splice(0, 1);
+    }
+    openCategories[catKey] = true;
+    closeModal();
+    renderMeals();
+    scheduleSave();
+    showToast(`"${saved.name}" loaded into ${mealTypes.find(t=>t.key===catKey)?.label} for ${dayNames[selectedDay]}`);
+  }
+
+  // --- GROCERY ---
+  function getGroceryItems() {
+    const merged = new Map(); // normalized ingredient text -> { text, sources: [] }
+
+    function addItem(rawText, source) {
+      const t = rawText.trim();
+      if (!t) return;
+      const key = t.toLowerCase();
+      if (!merged.has(key)) merged.set(key, { text: t, sources: [] });
+      const entry = merged.get(key);
+      if (!entry.sources.includes(source)) entry.sources.push(source);
+    }
+
+    dayKeys.forEach(d => {
+      mealTypes.forEach(type => {
+        mealsByDay[d][type.key].forEach(meal => {
+          meal.ingredients.forEach(ing => {
+            addItem(ing, `${dayNames[d].slice(0,3)} · ${meal.name.trim() || `${type.label} (unnamed)`}`);
+          });
+        });
+      });
+    });
+    extraGroceries.forEach(g => addItem(g, 'Added manually'));
+
+    return Array.from(merged.values()).map(entry => ({
+      text: entry.text,
+      source: entry.sources.length <= 2
+        ? entry.sources.join(', ')
+        : `${entry.sources[0]} +${entry.sources.length - 1} more`
+    }));
+  }
+
+  function renderGroceryList() {
+    const items = getGroceryItems();
+    const container = document.getElementById('groceryList');
+
+    if (!items.length) {
+      container.innerHTML = `<div class="empty-state"><div class="icon">🛒</div><p>Add meals and ingredients first,<br>then they'll appear here!</p></div>`;
+      document.getElementById('groceryProgress').textContent = '0 / 0';
+      document.getElementById('groceryFill').style.width = '0%';
+      return;
+    }
+
+    container.innerHTML = `<div class="grocery-section">${items.map((item) => {
+      const key = `g_${item.text.toLowerCase()}`;
+      const checked = groceryChecked[key] || false;
+      return `
+        <div class="check-item ${checked ? 'checked' : ''}">
+          <div class="checkbox" onclick="toggleGrocery('${esc(key)}')">
+            <svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
+          </div>
+          <span class="item-text">${esc(item.text)}</span>
+          <span class="item-source">${esc(item.source)}</span>
+        </div>`;
+    }).join('')}</div>`;
+
+    const checked = items.filter(item => groceryChecked[`g_${item.text.toLowerCase()}`]).length;
+    document.getElementById('groceryProgress').textContent = `${checked} / ${items.length}`;
+    document.getElementById('groceryFill').style.width = items.length ? `${(checked / items.length) * 100}%` : '0%';
+    updateBadges();
+  }
+
+  function toggleGrocery(key) { groceryChecked[key] = !groceryChecked[key]; renderGroceryList(); scheduleSave(); }
+
+  function addGroceryItem() {
+    const input = document.getElementById('addGroceryInput');
+    const val = input.value.trim();
+    if (!val) return;
+    extraGroceries.push(val);
+    input.value = '';
+    renderGroceryList();
+    scheduleSave();
+  }
+
+  // --- HOUSE ---
+  function saveHouseListPermanently() {
+    defaultHouseItems = JSON.parse(JSON.stringify(houseItems));
+    scheduleSave();
+    showToast('House list saved — it will stick around after your next weekly reset');
+  }
+
+  function buildCatSelect() {
+    const sel = document.getElementById('houseCatSelect');
+    const cats = Object.keys(houseItems);
+    sel.innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('')
+      + `<option value="__new__">+ New category...</option>`;
+    sel.onchange = function() {
+      document.getElementById('newCatRow').classList.toggle('open', this.value === '__new__');
+    };
+  }
+
+  function confirmNewCat() {
+    const input = document.getElementById('newCatInput');
+    const name = input.value.trim();
+    if (!name) return;
+    if (!houseItems[name]) houseItems[name] = [];
+    input.value = '';
+    document.getElementById('newCatRow').classList.remove('open');
+    buildCatSelect();
+    document.getElementById('houseCatSelect').value = name;
+    renderHouseList();
+    scheduleSave();
+  }
+
+  function renderHouseList() {
+    const container = document.getElementById('houseList');
+    let total = 0, checked = 0;
+
+    container.innerHTML = Object.entries(houseItems).map(([cat, items]) => {
+      return `<div class="house-category">
+        <div class="house-cat-title">${esc(cat)}</div>
+        <div class="grocery-section">
+          ${items.length ? items.map((item, i) => {
+            const key = `h_${cat}_${item}`;
+            total++;
+            const isChecked = houseChecked[key] || false;
+            if (isChecked) checked++;
+            return `
+              <div class="check-item ${isChecked ? 'checked' : ''}">
+                <div class="checkbox" onclick="toggleHouse('${esc(key)}')">
+                  <svg viewBox="0 0 16 16"><polyline points="3,8 7,12 13,4"/></svg>
+                </div>
+                <span class="item-text">${esc(item)}</span>
+                <button class="item-to-grocery ${extraGroceries.some(g => g.toLowerCase() === item.toLowerCase()) ? 'added' : ''}" onclick="addHouseToGrocery('${esc(item)}')" title="${extraGroceries.some(g => g.toLowerCase() === item.toLowerCase()) ? 'Already on grocery list' : 'Add to grocery list'}">🛒</button>
+                <button class="item-remove" onclick="removeHouseItem('${esc(cat)}',${i})">✕</button>
+              </div>`;
+          }).join('') : `<div style="padding:8px 0;color:var(--text-soft);font-size:0.85rem;">No items yet</div>`}
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('houseProgress').textContent = `${checked} / ${total}`;
+    document.getElementById('houseFill').style.width = total ? `${(checked / total) * 100}%` : '0%';
+    buildCatSelect();
+    updateBadges();
+  }
+
+  function toggleHouse(key) { houseChecked[key] = !houseChecked[key]; renderHouseList(); scheduleSave(); }
+
+  function addHouseToGrocery(itemName) {
+    if (extraGroceries.some(g => g.toLowerCase() === itemName.toLowerCase())) {
+      showToast(`"${itemName}" is already on the grocery list`);
+      return;
+    }
+    extraGroceries.push(itemName);
+    renderHouseList();
+    scheduleSave();
+    showToast(`"${itemName}" added to grocery list`);
+  }
+
+  function removeHouseItem(cat, i) {
+    const [removed] = houseItems[cat].splice(i, 1);
+    if (!houseItems[cat].length) delete houseItems[cat];
+    delete houseChecked[`h_${cat}_${removed}`];
+    renderHouseList();
+    scheduleSave();
+  }
+
+  function addHouseItem() {
+    const input = document.getElementById('addHouseInput');
+    const sel = document.getElementById('houseCatSelect');
+    const val = input.value.trim();
+    if (!val) return;
+
+    if (sel.value === '__new__') {
+      document.getElementById('newCatRow').classList.add('open');
+      document.getElementById('newCatInput').focus();
+      return;
+    }
+
+    const cat = sel.value;
+    if (!houseItems[cat]) houseItems[cat] = [];
+    houseItems[cat].push(val);
+    input.value = '';
+    renderHouseList();
+    scheduleSave();
+  }
+
+  function resetWeek() {
+    if (!confirm('Start fresh for a new week? This clears current meals, grocery checks, and house checks. Saved meals are kept.')) return;
+    dayKeys.forEach(d => {
+      mealTypes.forEach(t => { mealsByDay[d][t.key] = [{ name: '', ingredients: [''] }]; });
+    });
+    mealTypes.forEach(t => { openCategories[t.key] = t.key === 'breakfast'; });
+    selectedDay = dayKeys[new Date().getDay()];
+    extraGroceries = [];
+    groceryChecked = {};
+    houseChecked = {};
+    houseItems = JSON.parse(JSON.stringify(defaultHouseItems));
+    lastWeekTheme = weekTheme;
+    weekTheme = '';
+    renderThemeSection();
+    renderWeekGrid();
+    renderMeals();
+    switchTab('meals');
+    scheduleSave();
+  }
+
+  function updateBadges() {
+    const gItems = getGroceryItems();
+    const gCount = gItems.filter(item => !groceryChecked[`g_${item.text.toLowerCase()}`]).length;
+    const gBadge = document.getElementById('groceryBadge');
+    gBadge.style.display = gCount > 0 ? 'flex' : 'none';
+    gBadge.textContent = gCount;
+
+    let hCount = 0;
+    Object.entries(houseItems).forEach(([cat, items]) => {
+      items.forEach(item => { if (!houseChecked[`h_${cat}_${item}`]) hCount++; });
+    });
+    const hBadge = document.getElementById('houseBadge');
+    hBadge.style.display = hCount > 0 ? 'flex' : 'none';
+    hBadge.textContent = hCount;
+
+    const sBadge = document.getElementById('savedBadge');
+    sBadge.style.display = savedMeals.length > 0 ? 'flex' : 'none';
+    sBadge.textContent = savedMeals.length;
+  }
+
+  // Toast
+  function showToast(msg) {
+    let t = document.getElementById('_toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = '_toast';
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2C2418;color:#fff;padding:10px 24px;border-radius:40px;font-family:"DM Sans",sans-serif;font-size:0.85rem;font-weight:600;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timeout);
+    t._timeout = setTimeout(() => { t.style.opacity = '0'; }, 2000);
+  }
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+
+  // Close modal on overlay click
+  document.getElementById('loadModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  document.getElementById('editSavedModal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditSavedModal();
+  });
+
+  // Init — load saved data, then render
+  renderThemeSection();
+  renderWeekGrid();
+  renderMeals();
+  buildCatSelect();
+  loadSavedData();
+
+  // expose functions referenced by inline HTML event handlers
+  window.addEditSavedIngredient = addEditSavedIngredient;
+  window.addGroceryItem = addGroceryItem;
+  window.addHouseItem = addHouseItem;
+  window.addHouseToGrocery = addHouseToGrocery;
+  window.addIngredient = addIngredient;
+  window.addMeal = addMeal;
+  window.addSavedMealToCategory = addSavedMealToCategory;
+  window.chooseThemeMeal = chooseThemeMeal;
+  window.closeEditSavedModal = closeEditSavedModal;
+  window.closeModal = closeModal;
+  window.confirmNewCat = confirmNewCat;
+  window.deleteSavedMeal = deleteSavedMeal;
+  window.loadSavedMeal = loadSavedMeal;
+  window.openEditSavedModal = openEditSavedModal;
+  window.openLoadModal = openLoadModal;
+  window.removeEditSavedIngredient = removeEditSavedIngredient;
+  window.removeHouseItem = removeHouseItem;
+  window.removeIngredient = removeIngredient;
+  window.removeMeal = removeMeal;
+  window.resetWeek = resetWeek;
+  window.saveHouseListPermanently = saveHouseListPermanently;
+  window.saveMealFrom = saveMealFrom;
+  window.selectDay = selectDay;
+  window.selectDayAndType = selectDayAndType;
+  window.selectSavedDinnerProtein = selectSavedDinnerProtein;
+  window.setWeekTheme = setWeekTheme;
+  window.switchTab = switchTab;
+  window.toggleCategory = toggleCategory;
+  window.toggleGrocery = toggleGrocery;
+  window.toggleHouse = toggleHouse;
+  window.toggleSavedCategory = toggleSavedCategory;
+  window.updateEditSavedName = updateEditSavedName;
+})();
+
+</script>
     </div>
 
 
@@ -7709,14 +9432,22 @@ function renderHabitStacks(){
 }
 
 // ── HOME ──
+let homeWeekOffset=0;
+function homeWeekNav(dir){
+  homeWeekOffset=dir===0?0:homeWeekOffset+dir;
+  renderWeekly();
+}
 function renderWeekly(){
   const dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const offsetDays=homeWeekOffset*7;
   const days=[];
   for(let i=-3;i<=10;i++){
     const d=new Date();
-    d.setDate(d.getDate()+i);
+    d.setDate(d.getDate()+i+offsetDays);
     days.push(new Date(d));
   }
+  const anchorD=new Date();anchorD.setDate(anchorD.getDate()+offsetDays);
+  const anchorKey=localDate(anchorD);
 
   const cols=days.map(d=>{
     const dk=localDate(d);
@@ -7745,8 +9476,12 @@ function renderWeekly(){
 
     const isWeekend=dow===0||dow===6;
 
-    return`<div class="week-day${isToday?' is-today':''}${isWeekend&&!isToday?' is-weekend':''}" ${isToday?'id="cal-today"':''} onclick="openDayDetail('${dk}')" style="cursor:pointer;">
+    const dayTheme=(S.dayThemes||{})[dk];
+
+    const isAnchor=!isToday&&dk===anchorKey;
+    return`<div class="week-day${isToday?' is-today':''}${isWeekend&&!isToday?' is-weekend':''}" ${isToday?'id="cal-today"':isAnchor?'id="cal-anchor"':''} onclick="openDayDetail('${dk}')" style="cursor:pointer;">
       <div class="wd-hdr">
+        ${dayTheme?`<div class="apcal-mc-theme-bar wd-theme-bar" style="background:${dayTheme.color};">${dayTheme.emoji?dayTheme.emoji+' ':''}${dayTheme.label||''}</div>`:''}
         <div class="wd-name">${dayNames[d.getDay()]}</div>
         <div class="wd-num">${d.getDate()}</div>
         ${isToday?`<div class="wd-today-pill">Today</div>`:''}
@@ -7778,8 +9513,8 @@ function renderWeekly(){
   }).join('');
 
   // ── WEEKLY SUMMARY ──
-  // Compute totals across the 14-day window for the current week (Mon–Sun containing today)
-  const wkStart=new Date();wkStart.setDate(wkStart.getDate()-wkStart.getDay()+1); // this Monday
+  // Compute totals across the 7-day window for the viewed week (Mon–Sun), shifted by homeWeekOffset
+  const wkStart=new Date();wkStart.setDate(wkStart.getDate()-wkStart.getDay()+1+offsetDays); // Monday of viewed week
   const wkDates=[];
   for(let i=0;i<7;i++){const d=new Date(wkStart);d.setDate(wkStart.getDate()+i);wkDates.push(localDate(d));}
 
@@ -7833,12 +9568,25 @@ function renderWeekly(){
     </div>
   </div>`;
 
+  const wkEnd=new Date(wkStart);wkEnd.setDate(wkStart.getDate()+6);
+  const lblEl=G('home-week-lbl');
+  if(lblEl){
+    if(homeWeekOffset===0){
+      lblEl.textContent='This Week';
+    }else{
+      const sameMonth=wkStart.getMonth()===wkEnd.getMonth();
+      const startLbl=MONTH_NAMES[wkStart.getMonth()].slice(0,3)+' '+wkStart.getDate();
+      const endLbl=(sameMonth?'':MONTH_NAMES[wkEnd.getMonth()].slice(0,3)+' ')+wkEnd.getDate();
+      lblEl.textContent=startLbl+'–'+endLbl;
+    }
+  }
+
   setTimeout(()=>{
-    const todayCol=document.getElementById('cal-today');
+    const anchorCol=document.getElementById('cal-today')||document.getElementById('cal-anchor');
     const scroller=document.getElementById('week-scroll');
-    if(todayCol&&scroller){
-      const colLeft=todayCol.offsetLeft;
-      const colWidth=todayCol.offsetWidth;
+    if(anchorCol&&scroller){
+      const colLeft=anchorCol.offsetLeft;
+      const colWidth=anchorCol.offsetWidth;
       const scrollerWidth=scroller.offsetWidth;
       scroller.scrollLeft=colLeft-(scrollerWidth/2)+(colWidth/2);
     }
@@ -12698,6 +14446,19 @@ function renderDayDetail(dk){
   const nightHabits=S.habits.filter(h=>h.t&&parseInt(h.t.split(':')[0])>=18);
   const otherHabits=S.habits.filter(h=>!h.t||(parseInt(h.t.split(':')[0])>=12&&parseInt(h.t.split(':')[0])<18));
 
+  // ── Day theme + all-calendars aggregation ──
+  const dayTheme=(S.dayThemes||{})[dk];
+  const ddApItems=(typeof apItemsForDay==='function')?apItemsForDay(dk):{blocks:[],events:[],tasks:[],gcal:[]};
+  const calItems=[
+    ...ddApItems.blocks.map(b=>({title:b.title||'Untitled',h:b.startHour,h2:b.endHour,color:b.color||'#3b82f6',src:'Time block'})),
+    ...ddApItems.events.map(e=>({title:e.title||'Event',h:e.startHour,h2:e.endHour,color:e.color||'#8b5cf6',src:'Event'})),
+    ...ddApItems.gcal.map(e=>{
+      const allDay=!(e.start&&e.start.dateTime);
+      const h=allDay?null:(new Date(e.start.dateTime).getHours()+new Date(e.start.dateTime).getMinutes()/60);
+      return{title:e.summary||'Event',h,h2:null,color:'#4285f4',src:'Google Calendar',allDay};
+    }),
+  ].sort((a,b)=>(a.h??-1)-(b.h??-1));
+
   const el=G('day-detail-content');
   if(!el)return;
 
@@ -12718,6 +14479,7 @@ function renderDayDetail(dk){
     <div style="margin-bottom:20px;">
       <div style="font-size:11px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:0.07em;">${isToday?'Today · ':''}${dayNames[dow]}</div>
       <div style="font-size:32px;font-weight:700;color:var(--t);letter-spacing:-0.02em;">${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}, ${dateObj.getFullYear()}</div>
+      ${dayTheme?`<div style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;color:#fff;background:${dayTheme.color};">${dayTheme.emoji?dayTheme.emoji+' ':''}${dayTheme.label}</div>`:''}
     </div>
 
     <!-- SNAPSHOT CARDS -->
@@ -12741,6 +14503,7 @@ function renderDayDetail(dk){
       <button class="dd-tab" onclick="switchDDTab('morning',this)" style="flex:1;min-width:60px;padding:8px 4px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ts);cursor:pointer;white-space:nowrap;">🌅 Morning</button>
       <button class="dd-tab" onclick="switchDDTab('night',this)" style="flex:1;min-width:60px;padding:8px 4px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ts);cursor:pointer;white-space:nowrap;">🌙 Night</button>
       <button class="dd-tab" onclick="switchDDTab('finance',this)" style="flex:1;min-width:60px;padding:8px 4px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ts);cursor:pointer;white-space:nowrap;">💰 Finance</button>
+      <button class="dd-tab" onclick="switchDDTab('calendar',this)" style="flex:1;min-width:60px;padding:8px 4px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ts);cursor:pointer;white-space:nowrap;">📅 Calendar</button>
       <button class="dd-tab" onclick="switchDDTab('journal',this)" style="flex:1;min-width:60px;padding:8px 4px;border:none;background:transparent;font-family:var(--font);font-size:13px;font-weight:500;color:var(--ts);cursor:pointer;white-space:nowrap;">📓 Journal</button>
     </div>
 
@@ -12828,6 +14591,17 @@ function renderDayDetail(dk){
       </div>
     </div>
 
+    <!-- TAB: CALENDAR -->
+    <div id="dd-tab-calendar" style="display:none;">
+      ${calItems.length?calItems.map(it=>`<div class="day-task-row">
+        <span class="wd-task-dot" style="background:${it.color};width:8px;height:8px;"></span>
+        <div style="flex:1;"><div class="day-task-txt">${it.title}</div><div style="font-size:11px;color:var(--ts);">${it.src}</div></div>
+        <span style="font-size:12px;color:var(--ts);font-weight:600;white-space:nowrap;">${it.allDay?'All day':(it.h!=null?(typeof fmtHour==='function'?fmtHour(Math.floor(it.h)):''):'')}</span>
+      </div>`).join(''):`<div class="day-empty">No calendar events for this day</div>`}
+      <div class="divider"></div>
+      <button class="btn pri" style="width:100%;" onclick="go('planning',G('ni-planning'))">Open Planning calendar →</button>
+    </div>
+
     <!-- TAB: JOURNAL -->
     <div id="dd-tab-journal" style="display:none;">
       ${(!morningMood&&!eveningMood&&!intention&&!morningJournal&&!nightJournal)?`
@@ -12897,7 +14671,7 @@ function renderDayDetail(dk){
 function switchDDTab(tab,btn){
   document.querySelectorAll('.dd-tab').forEach(b=>{b.style.color='var(--ts)';b.style.borderBottom='2px solid transparent';b.style.marginBottom='-2px';});
   btn.style.color='var(--blue)';btn.style.borderBottom='2px solid var(--blue)';btn.style.marginBottom='-2px';
-  ['tasks','morning','night','finance','journal'].forEach(t=>{
+  ['tasks','morning','night','finance','calendar','journal'].forEach(t=>{
     const el=G('dd-tab-'+t);if(el)el.style.display=t===tab?'block':'none';
   });
 }
@@ -15296,25 +17070,28 @@ if (_origTaskCheck) {
     return Math.ceil((((date-yearStart)/86400000)+1)/7);
   }
 
-  /* ---- Day theme ---- */
-  const THEME_COLORS=['#ef4444','#f97316','#f59e0b','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899','#14b8a6','#64748b'];
-  const THEME_EMOJIS=['⭐','🎂','🎉','🏆','❤️','⚡','🔥','💎','🎯','📌','🚀','🌟'];
-  let _apThemeDate=null,_apThemeColor=THEME_COLORS[5],_apThemeEmoji='';
+  /* ---- Day theme (preset categories) ---- */
+  const DAY_THEME_PRESETS=[
+    {id:'rest',label:'Rest Day',emoji:'🛌',color:'#8b5cf6'},
+    {id:'focus',label:'Focus Day',emoji:'🎯',color:'#3b82f6'},
+    {id:'travel',label:'Travel',emoji:'✈️',color:'#f59e0b'},
+    {id:'social',label:'Social',emoji:'🎉',color:'#ec4899'},
+    {id:'workout',label:'Workout',emoji:'💪',color:'#10b981'},
+    {id:'errands',label:'Errands',emoji:'🗂️',color:'#64748b'},
+  ];
+  let _apThemeDate=null;
 
   function apCalShowThemeMenu(e,ds){
     e.stopPropagation();
     _apThemeDate=ds;
     const pop=document.getElementById('apcal-theme-pop');
     if(!pop)return;
-    const theme=(S.dayThemes||{})[ds]||{};
-    _apThemeColor=theme.color||THEME_COLORS[5];
-    _apThemeEmoji=theme.emoji||'';
-    const inp=document.getElementById('apcal-theme-label');
-    if(inp)inp.value=theme.label||'';
-    const sw=document.getElementById('apcal-theme-swatches');
-    if(sw)sw.innerHTML=THEME_COLORS.map(c=>`<div class="apcal-theme-swatch${c===_apThemeColor?' sel':''}" style="background:${c};" onclick="apCalPickThemeColor('${c}',this)"></div>`).join('');
-    const em=document.getElementById('apcal-theme-emojis');
-    if(em)em.innerHTML=THEME_EMOJIS.map(emoji=>`<button class="apcal-theme-emoji-btn${emoji===_apThemeEmoji?' sel':''}" onclick="apCalPickThemeEmoji('${emoji}',this)">${emoji}</button>`).join('');
+    const theme=(S.dayThemes||{})[ds]||null;
+    const grid=document.getElementById('apcal-theme-presets');
+    if(grid)grid.innerHTML=DAY_THEME_PRESETS.map(p=>{
+      const sel=theme&&theme.id===p.id;
+      return`<button class="apcal-theme-preset-btn${sel?' sel':''}" style="${sel?`border-color:${p.color};background:${p.color}22;`:''}" onclick="apCalPickThemePreset('${p.id}')"><span class="apcal-theme-preset-emoji">${p.emoji}</span><span class="apcal-theme-preset-lbl">${p.label}</span></button>`;
+    }).join('');
     // position near click but keep inside viewport
     pop.style.left=Math.min(e.clientX,window.innerWidth-240)+'px';
     pop.style.top=Math.min(e.clientY+4,window.innerHeight-280)+'px';
@@ -15326,31 +17103,24 @@ if (_origTaskCheck) {
     if(pop&&!pop.contains(e.target))pop.classList.remove('open');
     else document.addEventListener('click',_apThemeOutside,{once:true});
   }
-  function apCalPickThemeColor(c,el){
-    _apThemeColor=c;
-    document.querySelectorAll('.apcal-theme-swatch').forEach(s=>s.classList.remove('sel'));
-    if(el)el.classList.add('sel');
-  }
-  function apCalPickThemeEmoji(emoji,el){
-    _apThemeEmoji=(_apThemeEmoji===emoji)?'':emoji;
-    document.querySelectorAll('.apcal-theme-emoji-btn').forEach(s=>s.classList.remove('sel'));
-    if(_apThemeEmoji&&el)el.classList.add('sel');
-  }
-  function apCalSaveTheme(){
-    const inp=document.getElementById('apcal-theme-label');
-    const label=(inp?inp.value:'').trim();
-    if(!label&&!_apThemeEmoji){apCalRemoveTheme();return;}
+  function apCalPickThemePreset(id){
+    const p=DAY_THEME_PRESETS.find(x=>x.id===id);
+    if(!p||!_apThemeDate)return;
     if(!S.dayThemes)S.dayThemes={};
-    S.dayThemes[_apThemeDate]={label,color:_apThemeColor,emoji:_apThemeEmoji};
+    S.dayThemes[_apThemeDate]={id:p.id,label:p.label,color:p.color,emoji:p.emoji};
     save();
     document.getElementById('apcal-theme-pop')?.classList.remove('open');
     renderApCal();
+    if(typeof renderWeekly==='function')renderWeekly();
+    if(typeof renderDayDetail==='function'&&G('day-detail-content'))renderDayDetail(_apThemeDate);
   }
   function apCalRemoveTheme(){
     if(S.dayThemes&&_apThemeDate)delete S.dayThemes[_apThemeDate];
     save();
     document.getElementById('apcal-theme-pop')?.classList.remove('open');
     renderApCal();
+    if(typeof renderWeekly==='function')renderWeekly();
+    if(typeof renderDayDetail==='function'&&G('day-detail-content'))renderDayDetail(_apThemeDate);
   }
   function apCalCloseThemePop(){document.getElementById('apcal-theme-pop')?.classList.remove('open');}
 
@@ -15387,11 +17157,11 @@ if (_origTaskCheck) {
   window.populateCalendarDropdown=populateCalendarDropdown;
   window.apCalUpdateSelDot=apCalUpdateSelDot;
   window.apCalShowThemeMenu=apCalShowThemeMenu;
-  window.apCalPickThemeColor=apCalPickThemeColor;
-  window.apCalPickThemeEmoji=apCalPickThemeEmoji;
-  window.apCalSaveTheme=apCalSaveTheme;
+  window.apCalPickThemePreset=apCalPickThemePreset;
   window.apCalRemoveTheme=apCalRemoveTheme;
   window.apCalCloseThemePop=apCalCloseThemePop;
+  window.apItemsForDay=apItemsForDay;
+  window.fmtHour=fmtHour;
   window.apCalMonthCellClick=apCalMonthCellClick;
   window.apCalMonthJumpDay=apCalMonthJumpDay;
   window.apCalYearJump=apCalYearJump;
