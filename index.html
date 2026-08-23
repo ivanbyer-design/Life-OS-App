@@ -5628,7 +5628,7 @@ html,body{background:var(--bg);}
                     ${meals.length > 1 ? `<button class="remove-meal" onclick="event.stopPropagation();removeMeal('${type.key}',${mi})">✕</button>` : ''}
                   </div>
                 </div>
-                <input class="meal-name-input" placeholder="${type.placeholder}" value="${esc(meal.name)}" oninput="mealsByDay['${selectedDay}']['${type.key}'][${mi}].name=this.value;scheduleSave()" onblur="renderMeals()" />
+                <input class="meal-name-input" placeholder="${type.placeholder}" value="${esc(meal.name)}" oninput="mealsByDay['${selectedDay}']['${type.key}'][${mi}].name=this.value;scheduleSave()" onblur="renderWeekGrid();renderMeals()" />
                 <div class="ingredients-label">Ingredients</div>
                 ${meal.ingredients.map((ing, ii) => `
                   <div class="ingredient-row">
@@ -5656,6 +5656,7 @@ html,body{background:var(--bg);}
 
   function addMeal(catKey) {
     mealsByDay[selectedDay][catKey].push({ name: '', ingredients: [''] });
+    renderWeekGrid();
     renderMeals();
     scheduleSave();
   }
@@ -5663,6 +5664,7 @@ html,body{background:var(--bg);}
   function removeMeal(catKey, mi) {
     mealsByDay[selectedDay][catKey].splice(mi, 1);
     if (!mealsByDay[selectedDay][catKey].length) mealsByDay[selectedDay][catKey] = [{ name: '', ingredients: [''] }];
+    renderWeekGrid();
     renderMeals();
     scheduleSave();
   }
@@ -5955,6 +5957,7 @@ html,body{background:var(--bg);}
     }
     openCategories[catKey] = true;
     closeModal();
+    renderWeekGrid();
     renderMeals();
     scheduleSave();
     showToast(`"${saved.name}" loaded into ${mealTypes.find(t=>t.key===catKey)?.label} for ${dayNames[selectedDay]}`);
