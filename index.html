@@ -13,6 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
@@ -1624,6 +1625,26 @@ textarea.fi{resize:vertical;min-height:52px;}
 .fd-day-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;}
 .fd-day-row:last-child{border-bottom:none;}
 .fd-day-net{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg-in);border-radius:var(--r);margin-top:8px;}
+
+.plaid-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--gbg);border:1px solid var(--green);border-radius:var(--rl);margin-bottom:14px;cursor:pointer;}
+.plaid-banner-txt{font-size:13px;font-weight:700;color:var(--t);}
+.plaid-banner-arrow{font-size:13px;font-weight:700;color:var(--green);white-space:nowrap;}
+.plaid-import-row{padding:12px 0;border-bottom:1px solid var(--bd);}
+.plaid-import-row:last-child{border-bottom:none;}
+.plaid-import-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.plaid-import-name{font-weight:700;font-size:13.5px;color:var(--t);}
+.plaid-import-date{font-size:11px;color:var(--ts);margin-top:2px;}
+.plaid-import-amt{font-weight:800;font-size:14px;white-space:nowrap;}
+.plaid-import-controls{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.plaid-import-controls select,.plaid-import-controls .fi{font-size:12px;padding:6px 8px;}
+.plaid-import-toggle{display:flex;border:1.5px solid var(--bd);border-radius:8px;overflow:hidden;flex-shrink:0;}
+.plaid-import-toggle button{font-family:var(--font);font-size:11.5px;font-weight:700;padding:6px 10px;border:none;background:var(--bg-card);color:var(--ts);cursor:pointer;}
+.plaid-import-toggle button.on.exp{background:var(--rbg);color:var(--red);}
+.plaid-import-toggle button.on.inc{background:var(--gbg);color:var(--green);}
+.plaid-import-actions{display:flex;gap:8px;}
+.plaid-import-actions button{flex:1;font-family:var(--font);font-size:12px;font-weight:700;padding:8px;border-radius:8px;cursor:pointer;}
+.plaid-import-approve{border:none;background:var(--green);color:#fff;}
+.plaid-import-dismiss{border:1.5px solid var(--bd);background:transparent;color:var(--ts);}
 /* Focus-visible rings for keyboard nav */
 :focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
 button:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
@@ -3559,6 +3580,12 @@ html,body{background:var(--bg);}
       <!-- TAB: FINANCE HUB (Overview + Bills merged)  -->
       <!-- ═══════════════════════════════════════════ -->
       <div id="ftab-overview-body">
+
+        <!-- PLAID PENDING IMPORTS BANNER -->
+        <div id="plaid-import-banner" class="plaid-banner" style="display:none;" onclick="openPlaidImportModal()">
+          <span class="plaid-banner-txt">🏦 <span id="plaid-banner-count">0</span> new bank transaction<span id="plaid-banner-plural">s</span> ready to review</span>
+          <span class="plaid-banner-arrow">Review →</span>
+        </div>
 
         <!-- UNIFIED CARD: period → KPIs → chips → calendar → quadrants -->
         <div id="fd-cal-section" class="fd-cal-wrap" style="margin-top:10px;margin-bottom:0;">
@@ -6428,6 +6455,14 @@ html,body{background:var(--bg);}
             </div>
             <button class="stt-run-btn" onclick="event.stopPropagation();gcalFetchEvents()" style="white-space:nowrap;">↻ Reload</button>
           </div>
+          <div class="stt-action-row" onclick="plaidConnectBank()" style="cursor:pointer;">
+            <div class="stt-action-icon" style="background:#e6f4ea;color:#1e9e6c;font-size:18px;">🏦</div>
+            <div class="stt-row-info">
+              <div class="stt-row-label">Bank Account (Plaid)</div>
+              <div class="stt-row-sub" id="plaid-status-text"><span style="color:var(--ts);">Not connected</span></div>
+            </div>
+            <button class="stt-run-btn" id="plaid-connect-btn" onclick="event.stopPropagation();plaidConnectBank()" style="white-space:nowrap;">🔗 Connect</button>
+          </div>
         </div>
       </div>
 
@@ -6630,7 +6665,7 @@ if(!S.liveCategories.length){
   ];
 }
 // ─── CLOUD SYNC ─────────────────────────────────────
-const SYNC_KEY='lifeos-sync-2026';
+const SYNC_KEY='26ec0865dc3d9e607ad2bf01f685ec38d76151c4612fc6c576680e0ecaf28b98';
 const SYNC_URL='/api/lifeos';
 let syncTimer=null;
 
@@ -7021,6 +7056,34 @@ const mkChart=(id,cfg)=>{if(charts[id])charts[id].destroy();const el=G(id);if(el
 // ── CATEGORY HELPERS ──
 const BASE_INCOME_CATS=['Salary','Freelance','Investment','Side income','Gift','Other'];
 const BASE_EXPENSE_CATS=['Groceries','Gas','Eating Out','Laundry','Food','Transport','Housing','Utilities','Entertainment','Healthcare','Shopping','Other'];
+
+// Maps Plaid's personal_finance_category.primary values to this app's categories
+const PLAID_CATEGORY_MAP={
+  FOOD_AND_DRINK:'Food',
+  GROCERIES:'Groceries',
+  TRANSPORTATION:'Transport',
+  TRAVEL:'Transport',
+  RENT_AND_UTILITIES:'Utilities',
+  HOME_IMPROVEMENT:'Housing',
+  GENERAL_MERCHANDISE:'Shopping',
+  MEDICAL:'Healthcare',
+  ENTERTAINMENT:'Entertainment',
+  PERSONAL_CARE:'Healthcare',
+  GENERAL_SERVICES:'Other',
+  GOVERNMENT_AND_NON_PROFIT:'Other',
+  LOAN_PAYMENTS:'Other',
+  BANK_FEES:'Other',
+  TRANSFER_IN:'Other',
+  TRANSFER_OUT:'Other',
+  INCOME:'Salary',
+};
+function mapPlaidCategory(raw,type){
+  if(!raw)return'Other';
+  const mapped=PLAID_CATEGORY_MAP[raw];
+  if(mapped)return mapped;
+  const cats=getAllCats(type);
+  return cats.includes('Other')?'Other':cats[0];
+}
 function getAllCats(type){
   const base=type==='income'?BASE_INCOME_CATS:BASE_EXPENSE_CATS;
   const custom=(S.customCategories||[]).filter(c=>c.type===type||c.type==='both').map(c=>c.name);
@@ -8633,6 +8696,185 @@ function autoLinkToLivingBudget(cat,amt,dt){
   if(!match)return;
   if(!S.liveSpend)S.liveSpend=[];
   S.liveSpend.push({id:Date.now(),catId:match.id,amt:parseFloat(amt),note:'auto',date:dt||today});
+}
+
+// ───────────────── PLAID BANK SYNC ─────────────────
+
+let plaidPending=[];
+
+async function plaidApiCall(path,opts={}){
+  const r=await fetch(path,{...opts,headers:{'Content-Type':'application/json','X-API-Key':SYNC_KEY,...(opts.headers||{})}});
+  if(!r.ok){const t=await r.text().catch(()=>'');throw new Error('HTTP '+r.status+' '+t);}
+  return r.json();
+}
+
+async function plaidConnectBank(){
+  const statusEl=G('plaid-status-text');
+  try{
+    if(statusEl)statusEl.innerHTML='<span style="color:var(--ts);">⏳ Connecting…</span>';
+    const {link_token}=await plaidApiCall('/api/plaid/link-token',{method:'POST'});
+    const handler=Plaid.create({
+      token:link_token,
+      onSuccess:async(public_token,metadata)=>{
+        try{
+          const inst=metadata&&metadata.institution?metadata.institution:{};
+          const result=await plaidApiCall('/api/plaid/exchange-token',{method:'POST',body:JSON.stringify({
+            public_token,
+            institution_name:inst.name||'',
+            institution_id:inst.institution_id||'',
+          })});
+          if(!S.plaidConnections)S.plaidConnections=[];
+          S.plaidConnections=S.plaidConnections.filter(c=>c.item_id!==result.item_id);
+          S.plaidConnections.push({item_id:result.item_id,institution_name:result.institution_name,accounts:result.accounts,connected_at:Date.now()});
+          save();
+          renderPlaidStatus();
+          showBackupToast('✓ Bank connected — syncing…');
+          await plaidSyncNow();
+        }catch(e){
+          console.error('Plaid exchange error:',e);
+          if(statusEl)statusEl.innerHTML='<span style="color:var(--red);">⚠ Could not finish connecting</span>';
+        }
+      },
+      onExit:(err)=>{
+        if(err)console.error('Plaid Link exit:',err);
+        renderPlaidStatus();
+      },
+    });
+    handler.open();
+  }catch(e){
+    console.error('plaidConnectBank error:',e);
+    if(statusEl)statusEl.innerHTML='<span style="color:var(--red);">⚠ Could not reach server</span>';
+  }
+}
+
+function renderPlaidStatus(){
+  const statusEl=G('plaid-status-text');
+  const btn=G('plaid-connect-btn');
+  if(!statusEl)return;
+  const conns=S.plaidConnections||[];
+  if(!conns.length){
+    statusEl.innerHTML='<span style="color:var(--ts);">Not connected</span>';
+    if(btn)btn.textContent='🔗 Connect';
+  } else {
+    const names=conns.map(c=>c.institution_name||'Bank').join(', ');
+    statusEl.innerHTML=`<span style="color:var(--green);">● Connected — ${esc(names)}</span>`;
+    if(btn)btn.textContent='↻ Sync Now';
+  }
+}
+
+async function plaidSyncNow(){
+  try{
+    await plaidApiCall('/api/plaid/sync',{method:'POST'});
+    await plaidRefreshPending();
+    showBackupToast('✓ Bank sync complete');
+  }catch(e){
+    console.error('plaidSyncNow error:',e);
+    showBackupToast('⚠ Bank sync failed');
+  }
+}
+
+async function plaidRefreshPending(){
+  try{
+    plaidPending=await plaidApiCall('/api/plaid/pending-imports');
+  }catch(e){
+    console.error('plaidRefreshPending error:',e);
+    plaidPending=[];
+  }
+  const n=plaidPending.length;
+  const banner=G('plaid-import-banner');
+  if(banner)banner.style.display=n>0?'flex':'none';
+  const countEl=G('plaid-banner-count'); if(countEl)countEl.textContent=n;
+  const pluralEl=G('plaid-banner-plural'); if(pluralEl)pluralEl.textContent=n===1?'':'s';
+  if(G('plaid-import-modal-wrap')&&G('plaid-import-modal-wrap').classList.contains('open'))renderPlaidImportModal();
+}
+
+function openPlaidImportModal(){
+  renderPlaidImportModal();
+  G('plaid-import-modal-wrap').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePlaidImportModal(){
+  G('plaid-import-modal-wrap').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function renderPlaidImportModal(){
+  const body=G('plaid-import-modal-body');
+  if(!body)return;
+  if(!plaidPending.length){
+    body.innerHTML='<div class="fdd-empty-hint">No pending transactions — you\'re all caught up.</div>';
+    return;
+  }
+  body.innerHTML=plaidPending.map(t=>{
+    const isExpense=parseFloat(t.amount)>0;
+    const type=isExpense?'expense':'income';
+    const amtAbs=Math.abs(parseFloat(t.amount)).toFixed(2);
+    const cat=mapPlaidCategory(t.plaid_category,type);
+    const catOpts=getAllCats(type).map(c=>`<option${c===cat?' selected':''}>${esc(c)}</option>`).join('');
+    const label=t.merchant_name||t.name||'Transaction';
+    return `
+    <div class="plaid-import-row" id="plaid-row-${t.id}">
+      <div class="plaid-import-top">
+        <div>
+          <div class="plaid-import-name">${esc(label)}</div>
+          <div class="plaid-import-date">${esc(t.date)}${t.pending?' · pending':''}</div>
+        </div>
+        <div class="plaid-import-amt" style="color:${isExpense?'var(--red)':'var(--green)'};">${isExpense?'-':'+'}${amtAbs}</div>
+      </div>
+      <div class="plaid-import-controls">
+        <div class="plaid-import-toggle">
+          <button class="${type==='expense'?'on exp':''}" onclick="plaidSetRowType(${t.id},'expense')">Expense</button>
+          <button class="${type==='income'?'on inc':''}" onclick="plaidSetRowType(${t.id},'income')">Income</button>
+        </div>
+        <select class="fi" id="plaid-cat-${t.id}">${catOpts}</select>
+        <select class="fi" id="plaid-biz-${t.id}">
+          <option value="personal">👤 Personal</option>
+          <option value="business">💼 Business</option>
+        </select>
+      </div>
+      <div class="plaid-import-actions">
+        <button class="plaid-import-approve" onclick="plaidApproveImport(${t.id})">✓ Approve</button>
+        <button class="plaid-import-dismiss" onclick="plaidDismissImport(${t.id})">Dismiss</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function plaidSetRowType(id,type){
+  const row=plaidPending.find(t=>t.id===id);
+  if(!row)return;
+  const abs=Math.abs(parseFloat(row.amount));
+  row.amount=type==='expense'?abs:-abs;
+  renderPlaidImportModal();
+}
+
+async function plaidApproveImport(id){
+  const row=plaidPending.find(t=>t.id===id);
+  if(!row)return;
+  const isExpense=parseFloat(row.amount)>0;
+  const catSel=G('plaid-cat-'+id);
+  const bizSel=G('plaid-biz-'+id);
+  const cat=catSel?catSel.value:'Other';
+  const biz=bizSel?bizSel.value:'personal';
+  const amt=Math.abs(parseFloat(row.amount));
+  const desc=row.merchant_name||row.name||cat;
+  S.finance.push({d:desc,a:amt,t:isExpense?'expense':'income',c:cat,biz,dt:row.date,id:Date.now()});
+  if(isExpense)autoLinkToLivingBudget(cat,amt,row.date);
+  save();renderFinance();renderHome();
+  try{await plaidApiCall('/api/plaid/approve-import',{method:'POST',body:JSON.stringify({id})});}
+  catch(e){console.error('approve-import error:',e);}
+  plaidPending=plaidPending.filter(t=>t.id!==id);
+  renderPlaidImportModal();
+  plaidRefreshPending();
+  showBackupToast('✓ Imported: '+desc);
+}
+
+async function plaidDismissImport(id){
+  try{await plaidApiCall('/api/plaid/dismiss-import',{method:'POST',body:JSON.stringify({id})});}
+  catch(e){console.error('dismiss-import error:',e);}
+  plaidPending=plaidPending.filter(t=>t.id!==id);
+  renderPlaidImportModal();
+  plaidRefreshPending();
 }
 // Update a living category's budget limit inline
 function updateLiveCatBudget(id,val){
@@ -16058,6 +16300,7 @@ function gcalEventsForDate(dateStr){
 
 // Fetch on load
 setTimeout(gcalFetchEvents, 300);
+setTimeout(()=>{renderPlaidStatus();plaidRefreshPending();}, 400);
 
 // ══════════════════════════════════════════
 // MONTH CALENDAR VIEW
@@ -17691,6 +17934,18 @@ if (_origTaskCheck) {
       <button class="fd-day-modal-close" onclick="closeFdDayModal()">✕</button>
     </div>
     <div class="fd-day-modal-body" id="fd-day-modal-body"></div>
+  </div>
+</div>
+
+<!-- PLAID IMPORT REVIEW MODAL -->
+<div class="fd-day-modal-wrap" id="plaid-import-modal-wrap" onclick="if(event.target===this)closePlaidImportModal()">
+  <div class="fd-day-modal">
+    <div class="fd-day-modal-handle"></div>
+    <div class="fd-day-modal-hdr">
+      <div class="fd-day-modal-title">Review bank transactions</div>
+      <button class="fd-day-modal-close" onclick="closePlaidImportModal()">✕</button>
+    </div>
+    <div class="fd-day-modal-body" id="plaid-import-modal-body"></div>
   </div>
 </div>
 
