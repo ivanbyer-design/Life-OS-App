@@ -4810,7 +4810,22 @@ html,body{background:var(--bg);}
     border-bottom-right-radius: var(--radius);
     padding: 16px 18px;
     box-shadow: var(--shadow);
-  }#mp-root .category-body.open { display: block; animation: fadeIn 0.2s ease; }#mp-root .meal-card {
+  }#mp-root .category-body.open { display: block; animation: fadeIn 0.2s ease; }#mp-root .saved-subsection {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px dashed var(--border);
+  }#mp-root .saved-subsection-hdr {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.85rem; font-weight: 700;
+    color: var(--text);
+    margin-bottom: 10px;
+  }#mp-root .saved-subsection-count {
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--text-soft);
+    background: var(--bg);
+    padding: 1px 8px;
+    border-radius: 10px;
+  }#mp-root .saved-subsection-hdr .category-add-btn { margin-left: auto; }#mp-root .meal-card {
     background: var(--bg);
     border-radius: var(--radius-sm);
     padding: 16px;
@@ -5901,6 +5916,17 @@ html,body{background:var(--bg);}
     openEditSavedModal(idx);
   }
 
+  function addFruitItem() {
+    const name = prompt('Add a fruit:');
+    if (!name || !name.trim()) return;
+    const n = name.trim();
+    savedMeals.push({ name: n, ingredients: [n], category: 'breakfast', subcategory: 'fruits' });
+    openSavedCategories['breakfast'] = true;
+    renderSavedMeals();
+    scheduleSave();
+    showToast(`"${n}" added to Fruits`);
+  }
+
   function renderEditSavedIngredients() {
     const s = savedMeals[editSavedIdx];
     document.getElementById('editSavedIngredients').innerHTML = s.ingredients.map((ing, ii) => `
@@ -5973,6 +5999,19 @@ html,body{background:var(--bg);}
 
         const activeLabel = proteinTabs.find(p => p.key === savedDinnerProteinTab)?.label.toLowerCase() || '';
         bodyHtml = pillsHtml + renderSavedMealCards(grouped[savedDinnerProteinTab] || [], `No saved ${activeLabel} dinners yet`);
+      } else if (type.key === 'breakfast') {
+        const fruitItems = items.filter(({ s }) => s.subcategory === 'fruits');
+        const regularItems = items.filter(({ s }) => s.subcategory !== 'fruits');
+        const fruitsHtml = `
+              <div class="saved-subsection">
+                <div class="saved-subsection-hdr">
+                  <span>🍎 Fruits</span>
+                  <span class="saved-subsection-count">${fruitItems.length}</span>
+                  <button class="category-add-btn" onclick="event.stopPropagation();addFruitItem()" title="Add a fruit">+</button>
+                </div>
+                ${renderSavedMealCards(fruitItems, 'No fruits saved yet')}
+              </div>`;
+        bodyHtml = fruitsHtml + (regularItems.length ? renderSavedMealCards(regularItems, '') : (items.length ? '' : renderSavedMealCards(regularItems, `No saved ${type.label.toLowerCase()} yet`)));
       } else {
         bodyHtml = renderSavedMealCards(items, `No saved ${type.label.toLowerCase()} yet`);
       }
@@ -6420,6 +6459,7 @@ html,body{background:var(--bg);}
 
   // expose functions referenced by inline HTML event handlers
   window.addEditSavedIngredient = addEditSavedIngredient;
+  window.addFruitItem = addFruitItem;
   window.addGroceryItem = addGroceryItem;
   window.addHouseItem = addHouseItem;
   window.addHouseToGrocery = addHouseToGrocery;
