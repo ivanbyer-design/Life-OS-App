@@ -7972,6 +7972,7 @@ function getFinPeriodRangeFor(period, y, m){
 let currentDayKey='';
 function openFdDayModal(dk){
   currentDayKey=dk;
+  fddType='expense';
   const dateObj=new Date(dk+'T12:00:00');
   const title=dateObj.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'});
   G('fd-day-modal-title').textContent=title;
@@ -8021,14 +8022,14 @@ function renderFdDayBody(dk){
   <!-- ADD ENTRY FORM -->
   <div class="fdd-add-form">
     <div class="fdd-type-toggle">
-      <button class="fdd-type-btn on" id="fdd-btn-expense" onclick="fddSetType('expense')">Expense</button>
-      <button class="fdd-type-btn" id="fdd-btn-income" onclick="fddSetType('income')">Income</button>
+      <button class="fdd-type-btn${fddType==='expense'?' on':''}" id="fdd-btn-expense" onclick="fddSetType('expense')">Expense</button>
+      <button class="fdd-type-btn${fddType==='income'?' on':''}" id="fdd-btn-income" onclick="fddSetType('income')">Income</button>
     </div>
     <div class="fdd-form-row">
       <input class="fi fdd-inp" type="number" id="fdd-amt" placeholder="Amount" step="0.01" style="flex:1;">
     </div>
     <div class="fdd-form-row">
-      <select class="fi fdd-inp" id="fdd-cat" style="flex:1;" onchange="fddHandleCat()">${expOpts}</select>
+      <select class="fi fdd-inp" id="fdd-cat" style="flex:1;" onchange="fddHandleCat()">${fddType==='income'?incOpts:expOpts}</select>
       <select class="fi fdd-inp" id="fdd-biz" style="max-width:130px;">
         <option value="personal">👤 Personal</option>
         <option value="business">💼 Business</option>
